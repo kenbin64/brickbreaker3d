@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BrickBreaker 3D - Ken's Games</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #canvas { display: block; width: 100%; height: 100vh; }
+        
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0,255,200,0.8);
+            z-index: 100;
+            color: #00ffcc;
+        }
+        .hud-item { margin-bottom: 10px; }
+        
+        /* Top bar */
+        #top-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .top-btn {
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .top-btn:hover { background: rgba(255,255,255,0.1); border-color: #00ffcc; }
+        .top-btn.active { border-color: #00ffcc; color: #00ffcc; }
+        
+        /* Mode indicator */
+        #mode-indicator {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,255,200,0.5);
+            z-index: 100;
+            font-size: 14px;
+        }
+        
+        /* Start screen */
+        #start-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        #start-screen h1 {
+            font-size: 3rem;
+            color: #00ffcc;
+            text-shadow: 0 0 30px rgba(0,255,200,0.5);
+            margin-bottom: 20px;
+        }
+        #start-screen p { color: #888; margin-bottom: 30px; }
+        .start-btn {
+            background: linear-gradient(135deg, #00ffcc, #0088ff);
+            border: none;
+            color: black;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .start-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <!-- HUD -->
+    <div id="hud">
+        <div class="hud-item" id="score">Score: 0</div>
+        <div class="hud-item" id="level">Level: 1</div>
+        <div class="hud-item" id="bricks">Bricks: 0</div>
+    </div>
+    
+    <!-- Top bar -->
+    <div id="top-bar">
+        <button class="top-btn" id="btn-view" title="Reset View">🎥 View</button>
+        <button class="top-btn" id="btn-mode" title="Toggle Control Mode">🎮 Paddle</button>
+        <button class="top-btn" id="btn-settings" title="Settings">⚙️</button>
+    </div>
+    
+    <!-- Mode indicator -->
+    <div id="mode-indicator">
+        <span id="control-mode">🎮 Joystick → Paddle</span>
+    </div>
+    
+    <!-- Start screen -->
+    <div id="start-screen">
+        <h1>🧱 BrickBreaker 3D</h1>
+        <p>Break all the bricks in 3D space!</p>
+        <button class="start-btn" id="btn-start">▶️ Start Game</button>
+        <button class="start-btn" id="btn-start-settings" style="background: rgba(255,255,255,0.1); color: white;">
+            ⚙️ Settings
+        </button>
+    </div>
+
+    <!-- Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/engine/index.js"></script>
+    
+    <!-- Game Logic -->
+    <script src="game.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Battle — Ken's Arcade</title>
+  <meta name="description" content="80s arcade space combat. Dogfight enemy fighters with lasers, radar, and countermeasures. Free to play at Ken's Arcade.">
+
+  <!-- Fonts: Orbitron + Press Start 2P + Rajdhani -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Manifold substrate: pure CSS, zero inline styles -->
+  <link rel="stylesheet" href="substrate.css">
+
+  <!-- OG / Social -->
+  <meta property="og:title" content="Space Battle — Ken's Arcade">
+  <meta property="og:description" content="80s arcade space dogfighting. Free to play.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+  <!-- ═══ GAME CANVAS ═══ -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ═══ CRT OVERLAY ═══ -->
+  <div class="crt-overlay"></div>
+  <div class="vignette"></div>
+  <div class="cockpit-frame"></div>
+
+  <!-- ═══ CROSSHAIR ═══ -->
+  <div class="crosshair">
+    <div class="crosshair-ring"></div>
+    <div class="crosshair-pip top"></div>
+    <div class="crosshair-pip bottom"></div>
+    <div class="crosshair-pip left"></div>
+    <div class="crosshair-pip right"></div>
+    <div class="crosshair-dot"></div>
+  </div>
+
+  <!-- ═══ WARNING OVERLAYS ═══ -->
+  <div class="warning-overlay"></div>
+  <div class="damage-flash"></div>
+  <div class="alert-text"></div>
+  <div class="lock-warning"></div>
+  <div class="evasive-indicator"></div>
+
+  <!-- ═══ HUD — TOP ═══ -->
+  <div class="hud hud-top">
+    <span class="hud-title">SPACE BATTLE</span>
+    <span class="hud-score">00000000</span>
+  </div>
+
+  <!-- ═══ HUD — LEFT ═══ -->
+  <div class="hud hud-left">
+    <div class="bar-container">
+      <span class="hud-label">HULL</span>
+      <div class="bar-track"><div class="bar-fill health"></div></div>
+    </div>
+    <div class="bar-container">
+      <span class="hud-label">SHIELD</span>
+      <div class="bar-track"><div class="bar-fill shield"></div></div>
+    </div>
+    <div class="bar-container">
+      <span class="hud-label">ENERGY</span>
+      <div class="bar-track"><div class="bar-fill energy"></div></div>
+    </div>
+    <div class="throttle-container">
+      <div class="throttle-fill"></div>
+      <span class="throttle-label">THRUST</span>
+    </div>
+    <span class="speed-readout">0 M/S</span>
+  </div>
+
+  <!-- ═══ HUD — RIGHT ═══ -->
+  <div class="hud hud-right">
+    <div class="wave-info">
+      <span class="hud-label">MISSION</span>
+      <span class="wave-number">WAVE 1</span>
+      <span class="kills-count">0 KILLS</span>
+    </div>
+    <div class="weapon-info">
+      <span class="hud-label">WEAPON</span>
+      <span class="weapon-name">TWIN LASER</span>
+    </div>
+    <div>
+      <span class="hud-label">COUNTERMEASURES</span>
+      <div class="countermeasure-info">
+        <div class="cm-pip"></div>
+        <div class="cm-pip"></div>
+        <div class="cm-pip"></div>
+        <div class="cm-pip"></div>
+        <div class="cm-pip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HUD — BOTTOM ═══ -->
+  <div class="hud hud-bottom">
+    <div class="radar-container">
+      <div class="radar-bg">
+        <div class="radar-grid-line h"></div>
+        <div class="radar-grid-line v"></div>
+        <div class="radar-ring r1"></div>
+        <div class="radar-ring r2"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-center"></div>
+        <canvas class="radar-canvas"></canvas>
+      </div>
+      <span class="radar-count">HOSTILE: 0  |  ALLY: 0</span>
+    </div>
+  </div>
+
+  <!-- ═══ START SCREEN ═══ -->
+  <div class="screen-overlay" id="start-screen">
+    <span class="screen-title">SPACE BATTLE</span>
+    <span class="screen-subtitle">A Ken's Arcade Original</span>
+
+    <button class="btn-start" id="btn-start">LAUNCH MISSION</button>
+
+    <div class="controls-help">
+      <span class="key">W / ↑</span><span>Forward Thrust</span>
+      <span class="key">S / ↓</span><span>Reverse Thrust</span>
+      <span class="key">A / ↑</span><span>Bank Left</span>
+      <span class="key">D / →</span><span>Bank Right</span>
+      <span class="key">Q / E</span><span>Roll</span>
+      <span class="key">MOUSE</span><span>Aim / Look</span>
+      <span class="key">CLICK / SPACE</span><span>Fire Lasers</span>
+      <span class="key">C</span><span>Countermeasures</span>
+      <span class="key">ESC</span><span>Pause</span>
+    </div>
+
+    <span class="insert-coin">INSERT COIN TO CONTINUE</span>
+  </div>
+
+  <!-- ═══ GAME OVER SCREEN ═══ -->
+  <div class="screen-overlay hidden" id="gameover-screen">
+    <span class="screen-title">GAME OVER</span>
+    <span class="screen-subtitle">Your ship has been destroyed</span>
+
+    <div class="screen-stats">
+      <div class="screen-stat">
+        <span class="screen-stat-value score">0</span>
+        <span class="screen-stat-label">Score</span>
+      </div>
+      <div class="screen-stat">
+        <span class="screen-stat-value waves">1</span>
+        <span class="screen-stat-label">Waves</span>
+      </div>
+      <div class="screen-stat">
+        <span class="screen-stat-value kills-final">0</span>
+        <span class="screen-stat-label">Kills</span>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-restart">PLAY AGAIN</button>
+    <span class="insert-coin">INSERT COIN TO CONTINUE</span>
+  </div>
+
+  <!-- ═══ MUSIC TOGGLE ═══ -->
+  <button class="music-toggle">♫ MUSIC OFF</button>
+
+  <!-- ═══ BACK TO ARCADE ═══ -->
+  <a href="/" class="back-link">← KEN'S ARCADE</a>
+
+  <!-- Manifold behavior: pure JS, zero inline scripts -->
+  <script src="behavior.js"></script>
+</body>
+</html>

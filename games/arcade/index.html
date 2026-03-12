@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Arcade - Ken's Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+        }
+        
+        .crt-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid #00ffff;
+        }
+        
+        h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 48px;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 60px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .game-card:hover {
+            transform: scale(1.05);
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+        }
+        
+        .game-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 24px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 15px;
+        }
+        
+        .game-desc {
+            font-size: 20px;
+            color: #00ff00;
+            line-height: 1.6;
+        }
+        
+        .status-live {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #00ff00;
+            color: #000;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .status-dev {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #ffff00;
+            color: #000;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 28px; }
+            .subtitle { font-size: 18px; }
+            .games-grid { grid-template-columns: 1fr; padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-scanlines"></div>
+    
+    <header>
+        <h1>🕹️ 3D ARCADE</h1>
+        <div class="subtitle">IMMERSIVE RETRO GAMING</div>
+    </header>
+    
+    <div class="games-grid">
+        <a href="void-breaker.html" class="game-card">
+            <div class="game-icon">💥</div>
+            <div class="game-title">VOID BREAKER</div>
+            <div class="game-desc">3D Breakout • Curved manifold paddle • Dimensional portals</div>
+            <div class="status-live">● LIVE</div>
+        </a>
+        
+        <div class="game-card" style="opacity: 0.5; cursor: not-allowed;">
+            <div class="game-icon">👾</div>
+            <div class="game-title">WAVE DEFENSE</div>
+            <div class="game-desc">3D Space Invaders • 360° arena • Parametric enemy paths</div>
+            <div class="status-dev">IN DEV</div>
+        </div>
+        
+        <div class="game-card" style="opacity: 0.5; cursor: not-allowed;">
+            <div class="game-icon">🚀</div>
+            <div class="game-title">ASTEROID FIELD</div>
+            <div class="game-desc">3D Asteroids • 6DOF flight • Fractal splitting • Gravity wells</div>
+            <div class="status-dev">IN DEV</div>
+        </div>
+    </div>
+</body>
+</html>
+

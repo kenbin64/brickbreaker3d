@@ -1,0 +1,778 @@
+/* ═══════════════════════════════════════════════════════════
+   SPACE BATTLE — Dimensional Substrate CSS
+   Ken's Arcade · https://kensgames.com/spacebattle/
+   ButterflyFX Manifold: 7 Genesis @layers
+   φ = 1.618033988749895 · Fibonacci spacing
+   80s wireframe vector arcade aesthetic
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Layer Order: 7 Layers of Creation ── */
+@layer spark, mirror, relation, form, life, mind, completion;
+
+/* ── Dimensional Constants ── */
+:root {
+  /* φ (Golden Ratio) */
+  --phi: 1.618033988749895;
+
+  /* Fibonacci spacing scale (px) */
+  --f1: 1px;   --f2: 1px;   --f3: 2px;
+  --f5: 3px;   --f8: 5px;   --f13: 8px;
+  --f21: 13px; --f34: 21px; --f55: 34px;
+  --f89: 55px; --f144: 89px;
+
+  /* Palette — 80s arcade neon */
+  --void:       #000008;
+  --void-deep:  #00000c;
+  --neon-green: #39ff14;
+  --neon-cyan:  #00fff7;
+  --neon-pink:  #ff2d75;
+  --neon-gold:  #ffd700;
+  --neon-red:   #ff1a1a;
+  --neon-blue:  #4169e1;
+  --neon-orange:#ff8c00;
+  --neon-purple:#9b59ff;
+  --hud-green:  #33ff33;
+  --hud-amber:  #ffaa00;
+  --hud-red:    #ff3333;
+  --wire-color: #00ff88;
+  --grid-color: rgba(0, 255, 136, 0.08);
+  --text-main:  #e0e0e0;
+  --text-dim:   #888;
+
+  /* Typography */
+  --font-display: 'Press Start 2P', 'Orbitron', monospace;
+  --font-hud:     'Orbitron', 'Rajdhani', monospace;
+  --font-body:    'Rajdhani', sans-serif;
+
+  /* CRT scanline */
+  --scanline: repeating-linear-gradient(
+    transparent 0px, transparent 2px,
+    rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
+  );
+}
+
+
+/* ═══ LAYER 1 — SPARK: Reset & Existence ═══ */
+@layer spark {
+  *, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--void);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    cursor: crosshair;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+
+/* ═══ LAYER 2 — MIRROR: Canvas & Viewport ═══ */
+@layer mirror {
+  #game-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: block;
+  }
+
+  .crt-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    pointer-events: none;
+    background: var(--scanline);
+    opacity: 0.4;
+  }
+}
+
+
+/* ═══ LAYER 3 — RELATION: HUD Layout ═══ */
+@layer relation {
+  .hud {
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+    font-family: var(--font-hud);
+  }
+
+  .hud-top {
+    top: var(--f13);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--f21);
+    text-transform: uppercase;
+  }
+
+  .hud-bottom {
+    bottom: var(--f13);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--f34);
+    align-items: flex-end;
+  }
+
+  .hud-left {
+    top: 50%;
+    left: var(--f13);
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--f8);
+  }
+
+  .hud-right {
+    top: 50%;
+    right: var(--f13);
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--f8);
+    align-items: flex-end;
+  }
+}
+
+
+/* ═══ LAYER 4 — FORM: HUD Elements ═══ */
+@layer form {
+  /* ── Crosshair ── */
+  .crosshair {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    z-index: 150;
+    pointer-events: none;
+  }
+
+  .crosshair-ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--neon-green);
+    border-radius: 50%;
+    opacity: 0.7;
+    transition: all 0.2s;
+  }
+
+  .crosshair-pip {
+    position: absolute;
+    background: var(--neon-green);
+  }
+
+  .crosshair-pip.top    { top: 0; left: 50%; width: 2px; height: 12px; transform: translateX(-50%); }
+  .crosshair-pip.bottom { bottom: 0; left: 50%; width: 2px; height: 12px; transform: translateX(-50%); }
+  .crosshair-pip.left   { left: 0; top: 50%; width: 12px; height: 2px; transform: translateY(-50%); }
+  .crosshair-pip.right  { right: 0; top: 50%; width: 12px; height: 2px; transform: translateY(-50%); }
+
+  .crosshair-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 4px; height: 4px;
+    background: var(--neon-green);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Lock-on state */
+  .crosshair.locked .crosshair-ring {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px var(--neon-red), inset 0 0 15px rgba(255,26,26,0.2);
+    animation: lock-pulse 0.5s ease-in-out infinite;
+  }
+
+  .crosshair.locked .crosshair-pip,
+  .crosshair.locked .crosshair-dot {
+    background: var(--neon-red);
+  }
+
+  @keyframes lock-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+
+  /* ── Score / Title ── */
+  .hud-title {
+    font-family: var(--font-display);
+    font-size: clamp(10px, 1.5vw, 16px);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    letter-spacing: 3px;
+  }
+
+  .hud-score {
+    font-size: clamp(14px, 2vw, 22px);
+    font-weight: 700;
+    color: var(--neon-gold);
+    text-shadow: 0 0 8px var(--neon-gold);
+  }
+
+  .hud-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── Shield / Health Bar ── */
+  .bar-container {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--f3);
+  }
+
+  .bar-track {
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 1px;
+  }
+
+  .bar-fill.health {
+    background: linear-gradient(90deg, var(--hud-red), var(--neon-green));
+  }
+
+  .bar-fill.shield {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+  }
+
+  .bar-fill.energy {
+    background: linear-gradient(90deg, var(--neon-orange), var(--neon-gold));
+  }
+
+  /* ── Throttle ── */
+  .throttle-container {
+    width: 28px;
+    height: 140px;
+    border: 1px solid rgba(0,255,136,0.3);
+    background: rgba(0,0,0,0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .throttle-fill {
+    background: linear-gradient(0deg, var(--neon-green), var(--neon-cyan));
+    transition: height 0.15s;
+    width: 100%;
+  }
+
+  .throttle-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: var(--hud-green);
+    letter-spacing: 1px;
+  }
+
+  /* ── Radar ── */
+  .radar-container {
+    width: 160px;
+    height: 160px;
+    position: relative;
+  }
+
+  .radar-bg {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(0,255,136,0.4);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,30,10,0.8) 0%, rgba(0,0,0,0.9) 100%);
+    overflow: hidden;
+  }
+
+  .radar-grid-line {
+    position: absolute;
+    background: rgba(0,255,136,0.1);
+  }
+
+  .radar-grid-line.h {
+    width: 100%; height: 1px;
+    top: 50%; left: 0;
+  }
+
+  .radar-grid-line.v {
+    width: 1px; height: 100%;
+    top: 0; left: 50%;
+  }
+
+  .radar-ring {
+    position: absolute;
+    border: 1px solid rgba(0,255,136,0.12);
+    border-radius: 50%;
+  }
+
+  .radar-ring.r1 {
+    width: 33%; height: 33%;
+    top: 33.5%; left: 33.5%;
+  }
+
+  .radar-ring.r2 {
+    width: 66%; height: 66%;
+    top: 17%; left: 17%;
+  }
+
+  .radar-sweep {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 50%; height: 2px;
+    transform-origin: left center;
+    background: linear-gradient(90deg, var(--neon-green), transparent);
+    opacity: 0.6;
+    animation: radar-sweep 3s linear infinite;
+  }
+
+  @keyframes radar-sweep {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .radar-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 6px; height: 6px;
+    background: var(--neon-green);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 6px var(--neon-green);
+  }
+
+  .radar-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .radar-count {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--hud-green);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  /* ── Weapon / Ammo ── */
+  .weapon-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--f3);
+  }
+
+  .weapon-name {
+    font-size: 11px;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+  }
+
+  .weapon-ammo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--neon-gold);
+    text-shadow: 0 0 6px var(--neon-gold);
+  }
+
+  /* ── Speed readout ── */
+  .speed-readout {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--neon-green);
+    text-shadow: 0 0 6px var(--neon-green);
+    letter-spacing: 1px;
+  }
+
+  /* ── Wave / Kill counter ── */
+  .wave-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--f3);
+  }
+
+  .wave-number {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px var(--neon-pink);
+  }
+
+  .kills-count {
+    font-size: 12px;
+    color: var(--neon-orange);
+  }
+
+  /* ── Countermeasure ── */
+  .countermeasure-info {
+    display: flex;
+    gap: var(--f5);
+    align-items: center;
+  }
+
+  .cm-pip {
+    width: 10px; height: 10px;
+    border: 1px solid var(--neon-gold);
+    border-radius: 50%;
+    background: var(--neon-gold);
+    opacity: 0.9;
+    box-shadow: 0 0 4px var(--neon-gold);
+  }
+
+  .cm-pip.used {
+    background: transparent;
+    opacity: 0.3;
+    box-shadow: none;
+  }
+}
+
+
+/* ═══ LAYER 5 — LIFE: Alerts & Feedback ═══ */
+@layer life {
+  /* ── Warning Flash ── */
+  .warning-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    border: 4px solid transparent;
+    transition: border-color 0.1s;
+  }
+
+  .warning-overlay.active {
+    border-color: var(--neon-red);
+    animation: warn-flash 0.25s ease-in-out infinite alternate;
+  }
+
+  @keyframes warn-flash {
+    from { border-color: var(--neon-red); box-shadow: inset 0 0 80px rgba(255,0,0,0.15); }
+    to   { border-color: rgba(255,26,26,0.3); box-shadow: inset 0 0 40px rgba(255,0,0,0.05); }
+  }
+
+  /* ── Damage Flash ── */
+  .damage-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 201;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 30%, rgba(255,0,0,0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.08s;
+  }
+
+  .damage-flash.hit {
+    opacity: 1;
+  }
+
+  /* ── Alert Text ── */
+  .alert-text {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 250;
+    font-family: var(--font-display);
+    font-size: clamp(16px, 3vw, 32px);
+    color: var(--neon-red);
+    text-shadow: 0 0 20px var(--neon-red), 0 0 40px rgba(255,0,0,0.5);
+    opacity: 0;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .alert-text.visible {
+    opacity: 1;
+    animation: alert-blink 0.3s ease-in-out infinite alternate;
+  }
+
+  @keyframes alert-blink {
+    from { opacity: 1; }
+    to   { opacity: 0.5; }
+  }
+
+  /* ── Lock Warning ── */
+  .lock-warning {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 249;
+    font-family: var(--font-hud);
+    font-size: 14px;
+    color: var(--hud-amber);
+    text-shadow: 0 0 10px var(--hud-amber);
+    letter-spacing: 3px;
+    opacity: 0;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
+  .lock-warning.visible {
+    opacity: 1;
+    animation: lock-warn-blink 0.5s infinite alternate;
+  }
+
+  @keyframes lock-warn-blink {
+    from { opacity: 1; }
+    to   { opacity: 0.3; }
+  }
+
+  /* Evasive action indicator */
+  .evasive-indicator {
+    position: fixed;
+    bottom: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 248;
+    font-family: var(--font-hud);
+    font-size: 12px;
+    color: var(--neon-cyan);
+    letter-spacing: 3px;
+    opacity: 0;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
+  .evasive-indicator.visible {
+    opacity: 1;
+  }
+}
+
+
+/* ═══ LAYER 6 — MIND: Start / Game Over Screens ═══ */
+@layer mind {
+  .screen-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,8,0.92);
+    gap: var(--f21);
+    transition: opacity 0.5s;
+  }
+
+  .screen-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 5vw, 56px);
+    color: var(--neon-cyan);
+    text-shadow:
+      0 0 20px var(--neon-cyan),
+      0 0 60px rgba(0,255,247,0.4);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .screen-subtitle {
+    font-family: var(--font-hud);
+    font-size: clamp(12px, 2vw, 18px);
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    letter-spacing: 4px;
+  }
+
+  .screen-stats {
+    display: flex;
+    gap: var(--f34);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .screen-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--f5);
+  }
+
+  .screen-stat-value {
+    font-family: var(--font-hud);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--neon-gold);
+    text-shadow: 0 0 10px var(--neon-gold);
+  }
+
+  .screen-stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .btn-start {
+    font-family: var(--font-display);
+    font-size: clamp(12px, 2vw, 18px);
+    color: var(--neon-gold);
+    background: transparent;
+    border: 2px solid var(--neon-gold);
+    padding: var(--f13) var(--f34);
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px var(--neon-gold);
+    box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    transition: all 0.2s;
+    pointer-events: auto;
+    text-decoration: none;
+  }
+
+  .btn-start:hover {
+    background: rgba(255,215,0,0.15);
+    box-shadow: 0 0 30px rgba(255,215,0,0.5);
+    transform: scale(1.05);
+  }
+
+  .insert-coin {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    animation: coin-blink 1.2s infinite;
+  }
+
+  @keyframes coin-blink {
+    0%, 60% { opacity: 1; }
+    61%, 100% { opacity: 0; }
+  }
+
+  .controls-help {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: var(--f5) var(--f21);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .controls-help .key {
+    font-family: var(--font-display);
+    font-size: 9px;
+    color: var(--neon-green);
+    text-align: right;
+  }
+
+  .back-link {
+    position: fixed;
+    bottom: var(--f13);
+    right: var(--f13);
+    font-family: var(--font-hud);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 2px;
+    z-index: 510;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    pointer-events: auto;
+  }
+
+  .back-link:hover {
+    opacity: 1;
+    color: var(--neon-cyan);
+  }
+
+  /* Music toggle */
+  .music-toggle {
+    position: fixed;
+    top: var(--f13);
+    right: var(--f13);
+    z-index: 510;
+    font-family: var(--font-hud);
+    font-size: 9px;
+    color: var(--text-dim);
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: var(--f5) var(--f8);
+    cursor: pointer;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: var(--f5);
+    pointer-events: auto;
+    transition: all 0.2s;
+  }
+
+  .music-toggle:hover {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+}
+
+
+/* ═══ LAYER 7 — COMPLETION: Polish & Responsive ═══ */
+@layer completion {
+  /* Subtle vignette */
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 899;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(0,0,0,0.6) 100%
+    );
+  }
+
+  /* Cockpit frame overlay */
+  .cockpit-frame {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    border: 3px solid rgba(0,255,136,0.06);
+    border-radius: 8px;
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.5),
+      inset 0 0 120px rgba(0,0,0,0.3);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hud-top { gap: var(--f8); }
+    .hud-bottom { gap: var(--f13); }
+    .bar-container { width: 120px; }
+    .radar-container { width: 110px; height: 110px; }
+    .throttle-container { height: 100px; }
+    .crosshair { width: 60px; height: 60px; }
+    .controls-help { font-size: 9px; }
+  }
+
+  @media (max-width: 480px) {
+    .radar-container { width: 80px; height: 80px; }
+    .bar-container { width: 90px; }
+    .hud-bottom { flex-wrap: wrap; justify-content: center; }
+  }
+}

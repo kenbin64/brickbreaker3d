@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FastTrack 3D - Ken's Games</title>
+
+    <!-- Original FastTrack CSS -->
+    <link rel="stylesheet" href="assets/css/board-3d.css">
+
+    <style>
+        /* Canvas container */
+        #container { width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; }
+        #container canvas { display: block; }
+
+        /* Player panels - original style */
+        #player-panels {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 12px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            z-index: 10001;
+            flex-wrap: wrap;
+        }
+        .player-panel {
+            background: linear-gradient(135deg, rgba(30,40,60,0.95), rgba(20,25,40,0.98));
+            border: 2px solid rgba(100,200,255,0.3);
+            border-radius: 15px;
+            padding: 12px 24px;
+            min-width: 150px;
+            text-align: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .player-panel.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.5), inset 0 0 20px rgba(255,215,0,0.1);
+            transform: scale(1.08);
+        }
+        .player-indicator {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+            box-shadow: 0 0 8px currentColor;
+        }
+        .player-name { font-weight: bold; font-size: 15px; color: #fff; }
+        .player-pegs { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+
+        /* Card display - original dramatic style */
+        #current-card {
+            display: none;
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            color: #222;
+            font-size: 6rem;
+            font-family: 'Georgia', serif;
+            padding: 50px 70px;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.7), 0 0 0 8px rgba(255,255,255,0.1);
+            z-index: 20000;
+            animation: cardReveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #current-card.red { color: #cc0000; }
+        #current-card.black { color: #222; }
+        @keyframes cardReveal {
+            0% { transform: translate(-50%, -50%) rotateY(90deg) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) rotateY(-10deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Draw button - gold gradient like original */
+        #draw-btn {
+            position: fixed;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
+            border: none;
+            color: #1a1a2e;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 35px;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 8px 30px rgba(255,215,0,0.5), inset 0 2px 0 rgba(255,255,255,0.3);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.25s;
+            letter-spacing: 1px;
+        }
+        #draw-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 12px 40px rgba(255,215,0,0.7);
+        }
+        #draw-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: translateX(-50%); }
+
+        /* Status banner */
+        #status {
+            position: fixed;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(30,40,60,0.95), rgba(20,25,40,0.98));
+            border: 1px solid rgba(255,215,0,0.4);
+            padding: 14px 35px;
+            border-radius: 30px;
+            color: #ffd700;
+            font-size: 1.15rem;
+            font-weight: 500;
+            z-index: 10000;
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Info bar */
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.75);
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: #888;
+            font-size: 13px;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Settings button */
+        #settings-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(30,40,60,0.9);
+            border: 1px solid rgba(100,200,255,0.3);
+            color: #64d8ff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 10002;
+            font-size: 1.3rem;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+        #settings-btn:hover { border-color: #ffd700; color: #ffd700; }
+
+        /* Win overlay */
+        #win-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(20,20,40,0.98), rgba(0,0,0,0.99));
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50000;
+        }
+        #win-overlay h1 {
+            font-size: 5rem;
+            color: #ffd700;
+            margin-bottom: 25px;
+            animation: winPulse 1.5s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(255,215,0,0.8);
+        }
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 50px rgba(255,215,0,0.8); }
+            50% { transform: scale(1.1); text-shadow: 0 0 80px rgba(255,215,0,1); }
+        }
+        .winner-name { font-size: 3rem; color: #64d8ff; margin-bottom: 50px; }
+
+        /* Loading */
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a1a3e, #0a0a1a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+        #loading h2 { color: #ffd700; margin-bottom: 35px; font-size: 2.5rem; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .spinner {
+            width: 70px; height: 70px;
+            border: 6px solid rgba(255,215,0,0.15);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div id="loading">
+        <h2>🏁 FastTrack</h2>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Game canvas -->
+    <div id="container"></div>
+
+    <!-- Player panels -->
+    <div id="player-panels"></div>
+
+    <!-- Status -->
+    <div id="status">Initializing...</div>
+
+    <!-- Current card -->
+    <div id="current-card"></div>
+
+    <!-- Draw button -->
+    <button id="draw-btn">🃏 Draw Card</button>
+
+    <!-- Settings -->
+    <button id="settings-btn">⚙️</button>
+
+    <!-- Info -->
+    <div id="info">🖱️ Drag to rotate | Scroll to zoom</div>
+
+    <!-- Win overlay -->
+    <div id="win-overlay">
+        <h1>🏆 Winner!</h1>
+        <div class="winner-name"></div>
+        <button onclick="location.reload()" style="padding: 18px 50px; font-size: 1.3rem; background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; border-radius: 30px; cursor: pointer; font-weight: bold; color: #1a1a2e;">🔄 Play Again</button>
+    </div>
+
+    <!-- Three.js with OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Engine substrates -->
+    <script src="/engine/substrate/settings_substrate.js"></script>
+
+    <!-- FastTrack modules -->
+    <script src="modules/board_substrate.js"></script>
+    <script src="modules/peg_substrate.js"></script>
+    <script src="modules/card_substrate.js"></script>
+    <script src="modules/rules_manifold.js"></script>
+    <script src="modules/ai_manifold.js"></script>
+    <script src="modules/game_manifold.js"></script>
+    <script src="modules/render_manifold.js"></script>
+
+    <!-- Main game -->
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ken's Games - Play the Future</title>
+    <meta name="description" content="Experience next-generation gaming powered by ButterflyFX dimensional technology. Fast Track, coming soon games, and more.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/fasttrack/assets/images/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/fasttrack/assets/images/icon-192.png">
+    
+    <!-- Fonts — self-hosted, zero CDN -->
+    <link rel="stylesheet" href="../../../lib/fonts/fonts.css">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #22d3ee;
+            --bg-dark: #0a0a14;
+            --bg-card: rgba(20, 20, 40, 0.8);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --gold: #fbbf24;
+            --butterfly: #ff6b9d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* 3D Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Dark overlay for text readability */
+        #bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(10, 10, 20, 0.2) 0%,
+                rgba(10, 10, 20, 0.5) 100%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(10,10,20,0.95) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: color 0.3s, transform 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(48px, 10vw, 96px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 0 0 60px rgba(99, 102, 241, 0.5);
+        }
+        
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            border-radius: 50px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-4px);
+        }
+        
+        /* Section Styling */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 20px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(32px, 5vw, 48px);
+            text-align: center;
+            margin-bottom: 60px;
+            text-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Featured Game */
+        .featured-game {
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+        }
+        
+        .game-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+        
+        .game-visual {
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .game-card-3d {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 100px rgba(99, 102, 241, 0.2);
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        
+        .game-card-3d:hover {
+            transform: rotateY(-5deg) rotateX(5deg) scale(1.02);
+        }
+        
+        .game-card-3d img {
+            width: 100%;
+            display: block;
+        }
+        
+        .game-card-3d::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.3));
+            pointer-events: none;
+        }
+        
+        .game-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+        
+        .game-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .game-info p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .game-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-tag {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--accent);
+        }
+        
+        /* Upcoming Games */
+        .upcoming-games {
+            background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .upcoming-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upcoming-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .upcoming-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+        
+        .upcoming-card:hover::before {
+            opacity: 1;
+        }
+        
+        .upcoming-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .upcoming-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .upcoming-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .status-dev {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+        }
+        
+        .status-concept {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--secondary);
+        }
+        
+        .status-live {
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--accent);
+        }
+        
+        /* ButterflyFX Section */
+        .butterflyfx-section {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 107, 157, 0.05) 30%,
+                rgba(255, 107, 157, 0.08) 50%,
+                rgba(255, 107, 157, 0.05) 70%,
+                transparent 100%
+            );
+        }
+        
+        .butterflyfx-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .butterfly-visual {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .butterfly-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--butterfly), var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 100px rgba(255, 107, 157, 0.5);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        .butterfly-rings {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 2px solid rgba(255, 107, 157, 0.3);
+            border-radius: 50%;
+            animation: spin 20s linear infinite;
+        }
+        
+        .butterfly-rings:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            animation-duration: 25s;
+            animation-direction: reverse;
+        }
+        
+        .butterfly-rings:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            animation-duration: 30s;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .butterfly-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: var(--butterfly);
+        }
+        
+        .butterfly-info p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .tech-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+        }
+        
+        .tech-item span {
+            font-size: 24px;
+        }
+        
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 60px 20px 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .copyright {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .copyright a {
+            color: var(--butterfly);
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .game-showcase,
+            .butterflyfx-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .butterfly-visual {
+                order: -1;
+            }
+            
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding-top: 100px;
+            }
+        }
+        
+        /* Scroll animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+    <div id="bg-overlay"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="/" class="logo">KEN'S GAMES</a>
+        <ul class="nav-links">
+            <li><a href="#games">Games</a></li>
+            <li><a href="#upcoming">Coming Soon</a></li>
+            <li><a href="#tech">Technology</a></li>
+            <li><a href="/fasttrack/lobby.html">Play Now</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="hero-title">
+            PLAY THE<br><span class="highlight">FUTURE</span>
+        </h1>
+        <p class="hero-subtitle">
+            NEXT-GENERATION GAMES POWERED BY DIMENSIONAL TECHNOLOGY
+        </p>
+        <div class="hero-buttons">
+            <a href="/fasttrack/lobby.html" class="btn btn-primary">
+                <span>🎮</span> Play Fast Track
+            </a>
+            <a href="#games" class="btn btn-outline">>
+                <span>👇</span> Explore Games
+            </a>
+        </div>
+    </section>
+    
+    <!-- Featured Game: Fast Track -->
+    <section id="games" class="featured-game">
+        <h2 class="section-title">Featured Game</h2>
+        <div class="game-showcase">
+            <div class="game-visual reveal">
+                <div class="game-card-3d">
+                    <span class="game-badge">🔥 LIVE NOW</span>
+                    <img src="/fasttrack/assets/images/screenshot-game.png" alt="Fast Track Game">
+                </div>
+            </div>
+            <div class="game-info reveal">
+                <h3>Fast Track</h3>
+                <p>
+                    The classic marble racing board game reimagined for the digital age. 
+                    Race your pegs around a hexagonal track, cut your opponents, 
+                    and use strategy to victory. Play solo against bots or challenge 
+                    friends worldwide in real-time multiplayer.
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">2-6 Players</span>
+                    <span class="feature-tag">Real-time Multiplayer</span>
+                    <span class="feature-tag">Bot Opponents</span>
+                    <span class="feature-tag">3D Graphics</span>
+                    <span class="feature-tag">Cross-Platform</span>
+                    <span class="feature-tag">PWA Install</span>
+                </div>
+                <div class="hero-buttons">
+                    <a href="/fasttrack/lobby.html" class="btn btn-primary">Play Now</a>
+                    <a href="/fasttrack/FASTTRACK_RULES.md" class="btn btn-outline">Learn Rules</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Upcoming Games -->
+    <section id="upcoming" class="upcoming-games">
+        <h2 class="section-title">Coming Soon</h2>
+        <div class="games-grid">
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">♠️</span>
+                <h4>Dimensional Poker</h4>
+                <p>Texas Hold'em meets dimensional strategy. Cards exist across multiple probability spaces.</p>
+                <span class="status-badge status-dev">IN DEVELOPMENT</span>
+            </div>
+            
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">🏎️</span>
+                <h4>Helix Racer</h4>
+                <p>Race through spiraling dimensional tracks. Physics bend as you ascend the helix.</p>
+                <span class="status-badge status-concept">CONCEPT</span>
+            </div>
+            
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">🎯</span>
+                <h4>Manifold Chess</h4>
+                <p>Classic chess with pieces that can move through dimensional layers. 7-layer strategy.</p>
+                <span class="status-badge status-concept">CONCEPT</span>
+            </div>
+            
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">🌌</span>
+                <h4>Fibonacci Quest</h4>
+                <p>Adventure RPG where character growth follows the golden spiral. Level up dimensionally.</p>
+                <span class="status-badge status-concept">CONCEPT</span>
+            </div>
+            
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">🎵</span>
+                <h4>Harmonic Battle</h4>
+                <p>Music rhythm game using manifold waveforms. Create songs, battle others musically.</p>
+                <span class="status-badge status-dev">PROTOTYPE</span>
+            </div>
+            
+            <div class="upcoming-card reveal">
+                <span class="upcoming-icon">🃏</span>
+                <h4>Spades Arena</h4>
+                <p>Competitive Spades with global rankings, teams, and dimensional power-ups.</p>
+                <span class="status-badge status-dev">IN DEVELOPMENT</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ButterflyFX Section -->
+    <section id="tech" class="butterflyfx-section">
+        <h2 class="section-title">Powered By</h2>
+        <div class="butterflyfx-content">
+            <div class="butterfly-visual reveal">
+                <div class="butterfly-rings"></div>
+                <div class="butterfly-rings"></div>
+                <div class="butterfly-rings"></div>
+                <div class="butterfly-logo">BFX</div>
+            </div>
+            <div class="butterfly-info reveal">
+                <h3>ButterflyFX</h3>
+                <p>
+                    All Ken's Games are powered by ButterflyFX — a dimensional computing 
+                    framework that transmits mathematics instead of raw data. This enables 
+                    unprecedented efficiency, real-time synchronization, and gameplay 
+                    experiences that were previously impossible.
+                </p>
+                <div class="tech-highlights">
+                    <div class="tech-item">
+                        <span>📐</span>
+                        <div>7-Layer Dimensional Model</div>
+                    </div>
+                    <div class="tech-item">
+                        <span>🎵</span>
+                        <div>Manifold Audio (Math, not samples)</div>
+                    </div>
+                    <div class="tech-item">
+                        <span>⚡</span>
+                        <div>O(1) State Navigation</div>
+                    </div>
+                    <div class="tech-item">
+                        <span>🌀</span>
+                        <div>Fibonacci-Aligned Growth</div>
+                    </div>
+                </div>
+                <br>
+                <a href="https://butterflyfx.us" class="btn btn-outline" target="_blank">
+                    Learn More About ButterflyFX
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="/fasttrack/lobby.html">Play Fast Track</a>
+            <a href="#upcoming">Upcoming Games</a>
+            <a href="https://butterflyfx.us" target="_blank">ButterflyFX</a>
+            <a href="mailto:ken@kensgames.com">Contact</a>
+        </div>
+        <p class="copyright">
+            &copy; 2026 Ken's Games. Created by <a href="https://butterflyfx.us">Kenneth Bingham</a>.
+            <br>Powered by <a href="https://butterflyfx.us">ButterflyFX</a> Dimensional Technology.
+        </p>
+    </footer>
+    
+    <!-- Three.js for 3D Background (locally hosted — no CDN dependency) -->
+    <script src="../../../lib/three/three.min.js"></script>
+    <script>
+        // =========================================
+        // 🌌 ULTRA-IMMERSIVE 3D BACKDROP
+        // Dimensional Nebula with Depth Layers
+        // =========================================
+
+        const canvas = document.getElementById('bg-canvas');
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            alpha: true,
+            antialias: true,
+            powerPreference: 'high-performance'
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a0a14, 0.015); // Depth fog for atmosphere
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 0, 100);
+
+        // Color palette for dimensional layers
+        const colorPalette = [
+            new THREE.Color(0x6366f1), // Primary - Indigo
+            new THREE.Color(0x8b5cf6), // Secondary - Purple
+            new THREE.Color(0x22d3ee), // Accent - Cyan
+            new THREE.Color(0xff6b9d), // Butterfly - Pink
+            new THREE.Color(0x3b82f6), // Blue
+            new THREE.Color(0x06b6d4), // Teal
+        ];
+
+        // ═══════════════════════════════════════════════════════════
+        // LAYER 1: Deep Space Stars (Far Background)
+        // ═══════════════════════════════════════════════════════════
+        const starCount = 5000;
+        const starPositions = new Float32Array(starCount * 3);
+        const starColors = new Float32Array(starCount * 3);
+        const starSizes = new Float32Array(starCount);
+
+        for (let i = 0; i < starCount; i++) {
+            // Spherical distribution for enveloping effect
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const radius = 300 + Math.random() * 500;
+
+            starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            starPositions[i * 3 + 2] = radius * Math.cos(phi) - 200;
+
+            // Mostly white stars with occasional colored ones
+            const isColored = Math.random() > 0.85;
+            const color = isColored
+                ? colorPalette[Math.floor(Math.random() * colorPalette.length)]
+                : new THREE.Color(0xffffff);
+
+            starColors[i * 3] = color.r;
+            starColors[i * 3 + 1] = color.g;
+            starColors[i * 3 + 2] = color.b;
+
+            starSizes[i] = Math.random() * 2 + 0.5;
+        }
+
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+        starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+
+        const starMaterial = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true
+        });
+
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // ═══════════════════════════════════════════════════════════
+        // LAYER 2: Nebula Clouds (Mid Background)
+        // ═══════════════════════════════════════════════════════════
+        const nebulaLayers = [];
+        const nebulaCount = 3;
+
+        for (let n = 0; n < nebulaCount; n++) {
+            const cloudCount = 800;
+            const cloudPositions = new Float32Array(cloudCount * 3);
+            const cloudColors = new Float32Array(cloudCount * 3);
+            const cloudSizes = new Float32Array(cloudCount);
+
+            const layerColor = colorPalette[n * 2 % colorPalette.length];
+            const layerDepth = -100 - n * 80;
+
+            for (let i = 0; i < cloudCount; i++) {
+                // Organic cloud distribution
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 200 + 50;
+                const spread = (Math.random() - 0.5) * 100;
+
+                cloudPositions[i * 3] = Math.cos(angle) * radius + spread;
+                cloudPositions[i * 3 + 1] = (Math.random() - 0.5) * 150;
+                cloudPositions[i * 3 + 2] = Math.sin(angle) * radius + layerDepth;
+
+                cloudColors[i * 3] = layerColor.r;
+                cloudColors[i * 3 + 1] = layerColor.g;
+                cloudColors[i * 3 + 2] = layerColor.b;
+
+                cloudSizes[i] = Math.random() * 40 + 20;
+            }
+
+            const cloudGeometry = new THREE.BufferGeometry();
+            cloudGeometry.setAttribute('position', new THREE.BufferAttribute(cloudPositions, 3));
+            cloudGeometry.setAttribute('color', new THREE.BufferAttribute(cloudColors, 3));
+            cloudGeometry.setAttribute('size', new THREE.BufferAttribute(cloudSizes, 1));
+
+            const cloudMaterial = new THREE.PointsMaterial({
+                size: 30,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.15,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true,
+                depthWrite: false
+            });
+
+            const nebula = new THREE.Points(cloudGeometry, cloudMaterial);
+            nebulaLayers.push(nebula);
+            scene.add(nebula);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LAYER 3: 🌀 DIMENSIONAL MANIFOLD - z=xy Surfaces
+        // 5 instances at 45° intervals inside transparent sphere
+        // ═══════════════════════════════════════════════════════════
+
+        const manifoldGroup = new THREE.Group();
+        const manifoldSurfaces = [];
+
+        // Create z=xy surface geometry
+        function createManifoldSurface() {
+            const resolution = 50;
+            const size = 40;
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            const indices = [];
+
+            // Generate z=xy surface vertices
+            for (let i = 0; i <= resolution; i++) {
+                for (let j = 0; j <= resolution; j++) {
+                    const x = (i / resolution - 0.5) * size;
+                    const y = (j / resolution - 0.5) * size;
+                    const z = x * y / 10; // z=xy (scaled for visibility)
+
+                    positions.push(x, y, z);
+
+                    // Color based on height (z value)
+                    const colorIntensity = (z + size * size / 40) / (size * size / 20);
+                    const color = new THREE.Color();
+                    color.setHSL(0.6 + colorIntensity * 0.3, 0.8, 0.5);
+                    colors.push(color.r, color.g, color.b);
+                }
+            }
+
+            // Generate indices for triangles
+            for (let i = 0; i < resolution; i++) {
+                for (let j = 0; j < resolution; j++) {
+                    const a = i * (resolution + 1) + j;
+                    const b = a + resolution + 1;
+                    const c = a + 1;
+                    const d = b + 1;
+
+                    indices.push(a, b, c);
+                    indices.push(b, d, c);
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+
+            return geometry;
+        }
+
+        // Create 5 manifold surfaces at 45° intervals with different colors
+        const surfaceCount = 5;
+        const angleStep = (Math.PI * 2) / surfaceCount;
+
+        // Vibrant colors for each surface
+        const surfaceColors = [
+            new THREE.Color(0x6366f1), // Indigo
+            new THREE.Color(0x22d3ee), // Cyan
+            new THREE.Color(0xff6b9d), // Pink
+            new THREE.Color(0x8b5cf6), // Purple
+            new THREE.Color(0xfbbf24), // Gold
+        ];
+
+        for (let i = 0; i < surfaceCount; i++) {
+            const geometry = createManifoldSurface();
+
+            // Semi-transparent glowing face
+            const faceMaterial = new THREE.MeshPhongMaterial({
+                color: surfaceColors[i],
+                transparent: true,
+                opacity: 0.15,
+                side: THREE.DoubleSide,
+                shininess: 100,
+                emissive: surfaceColors[i],
+                emissiveIntensity: 0.3,
+                depthWrite: false
+            });
+
+            const surface = new THREE.Mesh(geometry, faceMaterial);
+            surface.rotation.y = i * angleStep;
+            manifoldSurfaces.push(surface);
+            manifoldGroup.add(surface);
+        }
+
+        // Add bright glowing wireframe edges for each surface
+        for (let i = 0; i < surfaceCount; i++) {
+            const geometry = createManifoldSurface();
+            const edgeMaterial = new THREE.MeshBasicMaterial({
+                color: surfaceColors[i],
+                transparent: true,
+                opacity: 0.8,
+                wireframe: true,
+                depthWrite: false
+            });
+
+            const wireframe = new THREE.Mesh(geometry, edgeMaterial);
+            wireframe.rotation.y = i * angleStep;
+            manifoldGroup.add(wireframe);
+        }
+
+        // Create transparent sphere container
+        const sphereGeometry = new THREE.SphereGeometry(60, 32, 32);
+        const sphereMaterial = new THREE.MeshPhongMaterial({
+            color: 0x6366f1,
+            transparent: true,
+            opacity: 0.08,
+            side: THREE.DoubleSide,
+            shininess: 100,
+            wireframe: false
+        });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        manifoldGroup.add(sphere);
+
+        // Add sphere wireframe
+        const sphereWireGeometry = new THREE.SphereGeometry(60, 16, 16);
+        const sphereWireMaterial = new THREE.MeshBasicMaterial({
+            color: 0x22d3ee,
+            transparent: true,
+            opacity: 0.15,
+            wireframe: true
+        });
+        const sphereWire = new THREE.Mesh(sphereWireGeometry, sphereWireMaterial);
+        manifoldGroup.add(sphereWire);
+
+        // Position the manifold group
+        manifoldGroup.position.set(0, 0, -50);
+        scene.add(manifoldGroup);
+
+        // Add lights for the manifold surfaces
+        const manifoldLight1 = new THREE.PointLight(0x6366f1, 1, 200);
+        manifoldLight1.position.set(50, 50, 0);
+        scene.add(manifoldLight1);
+
+        const manifoldLight2 = new THREE.PointLight(0x22d3ee, 1, 200);
+        manifoldLight2.position.set(-50, -50, 0);
+        scene.add(manifoldLight2);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+
+        // Mouse interaction
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            // Mouse controls manifold rotation
+            targetRotationY = mouseX * Math.PI * 0.3;
+            targetRotationX = mouseY * Math.PI * 0.2;
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.0001;
+
+            // Rotate stars slowly
+            stars.rotation.y += 0.0002;
+            stars.rotation.x = Math.sin(time * 0.5) * 0.05;
+
+            // Rotate nebula layers at different speeds
+            nebulaLayers.forEach((nebula, i) => {
+                nebula.rotation.y += 0.0003 * (i % 2 === 0 ? 1 : -1);
+                nebula.rotation.z += 0.0001 * (i % 2 === 0 ? -1 : 1);
+            });
+
+            // 🌀 Rotate manifold group - smooth interpolation to mouse position
+            manifoldGroup.rotation.y += (targetRotationY - manifoldGroup.rotation.y) * 0.05;
+            manifoldGroup.rotation.x += (targetRotationX - manifoldGroup.rotation.x) * 0.05;
+
+            // Add continuous slow rotation
+            manifoldGroup.rotation.y += 0.002;
+            manifoldGroup.rotation.x += 0.001;
+
+            // Pulse the sphere slightly
+            const sphereScale = 1 + Math.sin(time * 2) * 0.02;
+            sphere.scale.set(sphereScale, sphereScale, sphereScale);
+
+            // Camera follows mouse slightly
+            camera.position.x += (mouseX * 10 - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.02;
+            camera.lookAt(0, 0, -50);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // =========================================
+        // SCROLL REVEAL ANIMATIONS
+        // =========================================
+        
+        const reveals = document.querySelectorAll('.reveal');
+        
+        function checkReveal() {
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
+                const revealPoint = 150;
+                
+                if (elementTop < windowHeight - revealPoint) {
+                    el.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', checkReveal);
+        checkReveal(); // Initial check
+        
+        // =========================================
+        // SMOOTH SCROLL
+        // =========================================
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

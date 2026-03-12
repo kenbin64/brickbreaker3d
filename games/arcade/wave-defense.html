@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAVE DEFENSE - 3D Space Invaders | Ken's Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #game-canvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ffff;
+            z-index: 100;
+        }
+        
+        #score {
+            color: #00ffff;
+        }
+        
+        #wave {
+            color: #ff00ff;
+            margin-top: 10px;
+        }
+        
+        #enemies {
+            color: #ffff00;
+            margin-top: 10px;
+        }
+        
+        #game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 48px;
+            color: #ff00ff;
+            text-shadow: 0 0 20px #ff00ff;
+            display: none;
+            z-index: 200;
+        }
+        
+        #instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .crt-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        #crosshair {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 150;
+        }
+        
+        #crosshair::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            right: -10px;
+            height: 2px;
+            background: #00ff00;
+            transform: translateY(-50%);
+        }
+        
+        #crosshair::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -10px;
+            bottom: -10px;
+            width: 2px;
+            background: #00ff00;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game-canvas"></canvas>
+    
+    <div class="crt-scanlines"></div>
+    <div id="crosshair"></div>
+    
+    <div id="hud">
+        <div id="score">SCORE: 0</div>
+        <div id="wave">WAVE: 1</div>
+        <div id="enemies">ENEMIES: 0</div>
+    </div>
+    
+    <div id="game-over">
+        <div>GAME OVER</div>
+        <div style="font-size: 24px; margin-top: 20px;">PRESS SPACE TO RESTART</div>
+    </div>
+    
+    <div id="instructions">
+        MOVE: ← → ↑ ↓ or WASD | SHOOT: SPACE or CLICK | PAUSE: ESC
+    </div>
+    
+    <!-- THREE.js -->
+    <!-- Three.js (locally hosted — no CDN dependency) -->
+    <script src="../../lib/three/three.min.js"></script>
+    
+    <!-- Shared arcade engine -->
+    <script src="shared/engine3d.js"></script>
+    <script src="shared/controls.js"></script>
+    <script src="shared/audio.js"></script>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // 🎮 WAVE DEFENSE - 3D Space Invaders
+        // 360° arena, enemies on parametric curves, dimensional shields
+        // ═══════════════════════════════════════════════════════════════════
+
+        const canvas = document.getElementById('game-canvas');
+        const scene = ArcadeEngine3D.createScene();
+        const camera = ArcadeEngine3D.createCamera({ z: 50, y: 10, fov: 75 });
+        const renderer = ArcadeEngine3D.createRenderer(canvas);
+
+        // Initialize controls and audio
+        ArcadeControls.init();
+        ArcadeAudio.init();
+
+        // Game state
+        const gameState = {
+            score: 0,
+            wave: 1,
+            gameOver: false,
+            shootCooldown: 0
+        };
+
+        // 🚀 Create player ship
+        const player = new THREE.Group();
+        const shipBody = ArcadeEngine3D.createPyramid(2, 'cyan');
+        shipBody.rotation.x = Math.PI;
+        player.add(shipBody);
+        player.position.set(0, -20, 0);
+        scene.add(player);
+
+        // 👾 Enemies array
+        const enemies = [];
+        const bullets = [];
+
+        // 🌌 Create starfield
+        const stars = ArcadeEngine3D.createStarfield(1000);
+        scene.add(stars);
+
+        // 📐 Create arena grid
+        const grid = ArcadeEngine3D.createGrid(80, 16, 'cyan');
+        grid.position.y = -30;
+        scene.add(grid);
+
+        // 👾 Create enemy
+        const createEnemy = (x, y, z, type = 0) => {
+            const enemy = new THREE.Group();
+
+            const colors = ['magenta', 'yellow', 'green', 'orange'];
+            const body = ArcadeEngine3D.createBox(3, 2, 3, colors[type % 4]);
+            enemy.add(body);
+
+            // Add antenna
+            const antenna = ArcadeEngine3D.createSphere(0.5, colors[type % 4], 8);
+            antenna.position.y = 1.5;
+            enemy.add(antenna);
+
+            enemy.position.set(x, y, z);
+            enemy.userData.type = type;
+            enemy.userData.health = 1 + type;
+            enemy.userData.points = (type + 1) * 100;
+            enemy.userData.phase = Math.random() * Math.PI * 2;
+            enemy.userData.active = true;
+
+            scene.add(enemy);
+            enemies.push(enemy);
+
+            return enemy;
+        };
+
+        // 🌊 Spawn wave of enemies
+        const spawnWave = (waveNum) => {
+            const rows = 3 + Math.floor(waveNum / 2);
+            const cols = 5 + Math.floor(waveNum / 3);
+            const spacing = 8;
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = (col - cols / 2) * spacing;
+                    const y = 20 + row * spacing;
+                    const z = -10 + Math.sin(col * 0.5) * 5;
+                    const type = Math.floor(row / 2);
+
+                    setTimeout(() => {
+                        createEnemy(x, y, z, type);
+                    }, (row * cols + col) * 50);
+                }
+            }
+
+            updateEnemyCount();
+        };
+
+        // 🔫 Create bullet
+        const createBullet = (x, y, z) => {
+            const bullet = ArcadeEngine3D.createSphere(0.5, 'cyan', 8);
+            bullet.position.set(x, y, z);
+            bullet.userData.velocity = { x: 0, y: 2, z: 0 };
+            bullet.userData.active = true;
+
+            scene.add(bullet);
+            bullets.push(bullet);
+
+            return bullet;
+        };
+
+        // 🎮 Update player
+        const updatePlayer = () => {
+            const movement = ArcadeControls.getMovementVector();
+            const mouse = ArcadeControls.getMousePosition();
+
+            // Move player
+            player.position.x += movement.x * 0.8;
+            player.position.z += movement.y * 0.8;
+
+            // Mouse aiming
+            player.position.x += (mouse.x * 30 - player.position.x) * 0.05;
+
+            // Clamp position
+            player.position.x = Math.max(-35, Math.min(35, player.position.x));
+            player.position.z = Math.max(-35, Math.min(35, player.position.z));
+
+            // Shooting
+            gameState.shootCooldown = Math.max(0, gameState.shootCooldown - 1);
+
+            if (ArcadeControls.isFiring() && gameState.shootCooldown === 0) {
+                createBullet(player.position.x, player.position.y + 3, player.position.z);
+                ArcadeAudio.shoot();
+                gameState.shootCooldown = 10;
+            }
+        };
+
+        // Update enemy count display
+        const updateEnemyCount = () => {
+            const activeEnemies = enemies.filter(e => e.userData.active).length;
+            document.getElementById('enemies').textContent = `ENEMIES: ${activeEnemies}`;
+        };
+
+        // Handle window resize
+        ArcadeEngine3D.handleResize(camera, renderer);
+
+        // Start first wave
+        spawnWave(1);
+    </script>
+</body>
+</html>
+

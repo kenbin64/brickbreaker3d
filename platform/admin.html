@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Ken's Games</title>
+  <link rel="stylesheet" href="substrate.css">
+  <style>body{background:#071019;color:#fff;font-family:Inter,Arial,Helvetica,sans-serif}.admin-box{max-width:920px;margin:6vh auto;padding:18px;background:rgba(255,255,255,0.02);border-radius:12px}label{display:block;margin-bottom:6px}input,select{padding:8px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;width:100%;margin-bottom:8px}button{background:#ffd166;color:#071019;padding:8px 12px;border-radius:6px;border:0}</style>
+</head>
+<body>
+  <div class="admin-box">
+    <h2>Admin Panel</h2>
+    <div id="who"></div>
+    <hr>
+    <h3>Create Admin (superuser only)</h3>
+    <div>
+      <input id="new-username" placeholder="username">
+      <input id="new-password" placeholder="password">
+      <button id="create-admin">Create Admin</button>
+    </div>
+    <hr>
+    <h3>Promote User to Admin (superuser only)</h3>
+    <div>
+      <input id="promote-username" placeholder="username">
+      <button id="promote">Promote</button>
+    </div>
+    <hr>
+    <h3>Kick / Suspend User</h3>
+    <div>
+      <input id="target-username" placeholder="username">
+      <button id="kick">Kick</button>
+      <input id="suspend-seconds" placeholder="seconds" style="width:120px;margin-left:8px">
+      <button id="suspend">Suspend</button>
+    </div>
+    <div id="msg" style="color:#f88;margin-top:12px"></div>
+  </div>
+
+  <script>
+  async function api(path, method='POST', body){
+    const token = localStorage.getItem('kg_token');
+    const res = await fetch(path, {method, headers: Object.assign({'Content-Type':'application/json'}, token?{'Authorization':'Bearer '+token}:{}) , body: body?JSON.stringify(body):undefined});
+    return res.json();
+  }
+  document.addEventListener('DOMContentLoaded', async ()=>{
+    const me = await api('/api/me','GET');
+    if(me.error){ document.getElementById('who').textContent = 'Not signed in'; }
+    else{ document.getElementById('who').textContent = 'Signed in as: '+me.username+' ('+me.role+')'; }
+
+    document.getElementById('create-admin').addEventListener('click', async ()=>{
+      const u = document.getElementById('new-username').value; const p = document.getElementById('new-password').value;
+      const r = await api('/api/admin/create_admin','POST',{username:u,password:p}); document.getElementById('msg').textContent = r.error || (r.ok? 'Created admin '+r.user.username : JSON.stringify(r));
+    });
+    document.getElementById('promote').addEventListener('click', async ()=>{
+      const u = document.getElementById('promote-username').value; const r = await api('/api/admin/promote','POST',{username:u}); document.getElementById('msg').textContent = r.error || (r.ok? 'Promoted '+r.user.username:'');
+    });
+    document.getElementById('kick').addEventListener('click', async ()=>{ const u=document.getElementById('target-username').value; const r=await api('/api/admin/kick','POST',{username:u}); document.getElementById('msg').textContent = r.error || (r.ok? 'Kicked '+u:''); });
+    document.getElementById('suspend').addEventListener('click', async ()=>{ const u=document.getElementById('target-username').value; const s=document.getElementById('suspend-seconds').value; const r=await api('/api/admin/suspend','POST',{username:u,seconds:parseInt(s,10)||0}); document.getElementById('msg').textContent = r.error || (r.ok? 'Suspended '+u:''); });
+  });
+  </script>
+</body>
+</html>

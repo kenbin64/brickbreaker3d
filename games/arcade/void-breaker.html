@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOID BREAKER - 3D Breakout | Ken's Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #game-canvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ffff;
+            z-index: 100;
+        }
+        
+        #score {
+            color: #00ffff;
+        }
+        
+        #lives {
+            color: #ff00ff;
+            margin-top: 10px;
+        }
+        
+        #level {
+            color: #ffff00;
+            margin-top: 10px;
+        }
+        
+        #game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 48px;
+            color: #ff00ff;
+            text-shadow: 0 0 20px #ff00ff;
+            display: none;
+            z-index: 200;
+        }
+        
+        #instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .crt-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game-canvas"></canvas>
+    
+    <div class="crt-scanlines"></div>
+    
+    <div id="hud">
+        <div id="score">SCORE: 0</div>
+        <div id="lives">LIVES: ♥♥♥</div>
+        <div id="level">LEVEL: 1</div>
+    </div>
+    
+    <div id="game-over">
+        <div>GAME OVER</div>
+        <div style="font-size: 24px; margin-top: 20px;">PRESS SPACE TO RESTART</div>
+    </div>
+    
+    <div id="instructions">
+        MOVE: ← → or A D | LAUNCH: SPACE | PAUSE: ESC
+    </div>
+    
+    <!-- THREE.js -->
+    <!-- Three.js (locally hosted — no CDN dependency) -->
+    <script src="../../lib/three/three.min.js"></script>
+    
+    <!-- Shared arcade engine -->
+    <script src="shared/engine3d.js"></script>
+    <script src="shared/controls.js"></script>
+    <script src="shared/audio.js"></script>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // 🎮 VOID BREAKER - 3D Breakout Game
+        // Paddle on curved manifold, bricks in 3D space, dimensional portals
+        // ═══════════════════════════════════════════════════════════════════
+
+        const canvas = document.getElementById('game-canvas');
+        const scene = ArcadeEngine3D.createScene();
+        const camera = ArcadeEngine3D.createCamera({ z: 80, fov: 60 });
+        const renderer = ArcadeEngine3D.createRenderer(canvas);
+
+        // Initialize controls and audio
+        ArcadeControls.init();
+        ArcadeAudio.init();
+
+        // Game state
+        const gameState = {
+            score: 0,
+            lives: 3,
+            level: 1,
+            paused: false,
+            gameOver: false,
+            ballLaunched: false
+        };
+
+        // 🏓 Create paddle
+        const paddle = ArcadeEngine3D.createBox(15, 2, 3, 'cyan');
+        paddle.position.set(0, -30, 0);
+        scene.add(paddle);
+
+        // ⚪ Create ball
+        const ball = ArcadeEngine3D.createSphere(1, 'magenta', 12);
+        ball.position.set(0, -25, 0);
+        ball.velocity = { x: 0, y: 0, z: 0 };
+        scene.add(ball);
+
+        // 🧱 Create bricks
+        const bricks = [];
+        const createBricks = (level) => {
+            // Clear existing bricks
+            bricks.forEach(brick => scene.remove(brick));
+            bricks.length = 0;
+
+            const rows = 5 + level;
+            const cols = 8;
+            const brickWidth = 8;
+            const brickHeight = 3;
+            const brickDepth = 3;
+            const spacing = 1;
+
+            const colors = ['cyan', 'magenta', 'yellow', 'green', 'orange'];
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const brick = ArcadeEngine3D.createBox(
+                        brickWidth,
+                        brickHeight,
+                        brickDepth,
+                        colors[row % colors.length]
+                    );
+
+                    brick.position.set(
+                        (col - cols / 2) * (brickWidth + spacing),
+                        20 - row * (brickHeight + spacing),
+                        -10 + Math.sin(col * 0.5) * 5 // Curved arrangement
+                    );
+
+                    brick.userData.active = true;
+                    brick.userData.points = (rows - row) * 10;
+
+                    scene.add(brick);
+                    bricks.push(brick);
+                }
+            }
+        };
+
+        createBricks(gameState.level);
+
+        // 🌌 Add starfield
+        const stars = ArcadeEngine3D.createStarfield(500);
+        scene.add(stars);
+
+        // 📐 Add grid floor
+        const grid = ArcadeEngine3D.createGrid(100, 20, 'cyan');
+        grid.position.y = -40;
+        scene.add(grid);
+
+        // 🎮 Update paddle position
+        const updatePaddle = () => {
+            const movement = ArcadeControls.getMovementVector();
+            const mouse = ArcadeControls.getMousePosition();
+
+            // Keyboard/touch control
+            paddle.position.x += movement.x * 1.5;
+
+            // Mouse control (optional)
+            const mouseInfluence = mouse.x * 40;
+            paddle.position.x += (mouseInfluence - paddle.position.x) * 0.1;
+
+            // Clamp paddle position
+            paddle.position.x = Math.max(-35, Math.min(35, paddle.position.x));
+
+            // Ball follows paddle before launch
+            if (!gameState.ballLaunched) {
+                ball.position.x = paddle.position.x;
+                ball.position.y = paddle.position.y + 5;
+            }
+        };
+
+        // ⚡ Launch ball
+        const launchBall = () => {
+            if (!gameState.ballLaunched && ArcadeControls.isFiring()) {
+                gameState.ballLaunched = true;
+                ball.velocity.y = 0.8;
+                ball.velocity.x = (Math.random() - 0.5) * 0.3;
+                ball.velocity.z = (Math.random() - 0.5) * 0.2;
+                ArcadeAudio.shoot();
+            }
+        };
+
+        // 🎯 Update ball physics
+        const updateBall = () => {
+            if (!gameState.ballLaunched) return;
+
+            // Move ball
+            ball.position.x += ball.velocity.x;
+            ball.position.y += ball.velocity.y;
+            ball.position.z += ball.velocity.z;
+
+            // Wall collisions (left/right)
+            if (ball.position.x < -40 || ball.position.x > 40) {
+                ball.velocity.x *= -1;
+                ArcadeAudio.blip();
+            }
+
+            // Wall collisions (front/back)
+            if (ball.position.z < -20 || ball.position.z > 20) {
+                ball.velocity.z *= -1;
+                ArcadeAudio.blip();
+            }
+
+            // Ceiling collision
+            if (ball.position.y > 40) {
+                ball.velocity.y *= -1;
+                ArcadeAudio.blip();
+            }
+
+            // Paddle collision
+            const paddleBox = new THREE.Box3().setFromObject(paddle);
+            const ballBox = new THREE.Box3().setFromObject(ball);
+
+            if (paddleBox.intersectsBox(ballBox) && ball.velocity.y < 0) {
+                ball.velocity.y *= -1;
+                // Add spin based on where ball hits paddle
+                const hitOffset = (ball.position.x - paddle.position.x) / 7.5;
+                ball.velocity.x += hitOffset * 0.3;
+                ArcadeAudio.hit();
+            }
+
+            // Brick collisions
+            bricks.forEach(brick => {
+                if (!brick.userData.active) return;
+
+                const brickBox = new THREE.Box3().setFromObject(brick);
+                if (brickBox.intersectsBox(ballBox)) {
+                    brick.userData.active = false;
+                    scene.remove(brick);
+
+                    // Update score
+                    gameState.score += brick.userData.points;
+                    document.getElementById('score').textContent = `SCORE: ${gameState.score}`;
+
+                    // Bounce ball
+                    ball.velocity.y *= -1;
+
+                    ArcadeAudio.explosion();
+
+                    // Check if level complete
+                    const activeBricks = bricks.filter(b => b.userData.active);
+                    if (activeBricks.length === 0) {
+                        nextLevel();
+                    }
+                }
+            });
+
+            // Ball fell off bottom
+            if (ball.position.y < -40) {
+                loseLife();
+            }
+        };
+
+        // 💀 Lose a life
+        const loseLife = () => {
+            gameState.lives--;
+            gameState.ballLaunched = false;
+
+            ball.position.set(0, -25, 0);
+            ball.velocity = { x: 0, y: 0, z: 0 };
+
+            const hearts = '♥'.repeat(gameState.lives);
+            document.getElementById('lives').textContent = `LIVES: ${hearts}`;
+
+            ArcadeAudio.death();
+
+            if (gameState.lives <= 0) {
+                gameOver();
+            }
+        };
+
+        // 🎊 Next level
+        const nextLevel = () => {
+            gameState.level++;
+            gameState.ballLaunched = false;
+
+            ball.position.set(0, -25, 0);
+            ball.velocity = { x: 0, y: 0, z: 0 };
+
+            createBricks(gameState.level);
+
+            document.getElementById('level').textContent = `LEVEL: ${gameState.level}`;
+
+            ArcadeAudio.victory();
+        };
+
+        // 💀 Game over
+        const gameOver = () => {
+            gameState.gameOver = true;
+            document.getElementById('game-over').style.display = 'block';
+        };
+
+        // 🔄 Restart game
+        const restart = () => {
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.level = 1;
+            gameState.gameOver = false;
+            gameState.ballLaunched = false;
+
+            ball.position.set(0, -25, 0);
+            ball.velocity = { x: 0, y: 0, z: 0 };
+
+            createBricks(1);
+
+            document.getElementById('score').textContent = 'SCORE: 0';
+            document.getElementById('lives').textContent = 'LIVES: ♥♥♥';
+            document.getElementById('level').textContent = 'LEVEL: 1';
+            document.getElementById('game-over').style.display = 'none';
+        };
+
+        // 🎬 Animation loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            if (gameState.gameOver && ArcadeControls.isPressed('start')) {
+                restart();
+            }
+
+            if (!gameState.gameOver && !gameState.paused) {
+                updatePaddle();
+                launchBall();
+                updateBall();
+
+                // Rotate stars slowly
+                stars.rotation.y += 0.0002;
+            }
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        // Handle window resize
+        ArcadeEngine3D.handleResize(camera, renderer);
+
+        console.log('🎮 VOID BREAKER - Ready to play!');
+    </script>
+</body>
+</html>
+
