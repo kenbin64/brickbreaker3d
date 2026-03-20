@@ -13,8 +13,25 @@
     <link rel="stylesheet" href="assets/css/lobby.css">
     
     <link rel="stylesheet" href="assets/css/lobby-inline.css">
+    <script src="fibonacci_spiral.js"></script>
 </head>
 <body>
+    <script>
+        // ButterflyFX Fibonacci Spiral — plays on every load.
+        // Schwarz Diamond law: 7 squares spiral outward (L1→L7),
+        // then collapse to 1 Void-Seed, then the lobby appears.
+        document.addEventListener('DOMContentLoaded', () => {
+            FibonacciSpiral.boot({ onDone: () => {
+                // Seed is planted — lobby crystallises into view
+                document.getElementById('auth-screen').style.opacity    = '0';
+                document.getElementById('auth-screen').style.transition = 'opacity 0.5s';
+                requestAnimationFrame(() => {
+                    document.getElementById('auth-screen').style.opacity = '1';
+                });
+            }});
+        });
+    </script>
+
     <!-- Auth Screen -->
     <div id="auth-screen" class="auth-screen">
         <div class="auth-logo">

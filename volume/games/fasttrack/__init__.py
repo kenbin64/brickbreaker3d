@@ -3,14 +3,21 @@ Fast Track - ButterflyFX Kernel Game Module
 Integrates Fast Track board game into the dimensional kernel
 """
 
-from helix import (
-    HelixKernel,
-    manifold,
-    Dimension
-)
-from helix.geometric_substrate import Shape
-from helix.enhanced_primitives import Color
-from helix.substrates import Frequency, Amplitude, Waveform, Duration, TimePoint
+try:
+    from helix import (
+        HelixKernel,
+        manifold,
+        Dimension
+    )
+    from helix.geometric_substrate import Shape
+    from helix.enhanced_primitives import Color
+    from helix.substrates import Frequency, Amplitude, Waveform, Duration, TimePoint
+    HELIX_AVAILABLE = True
+except ImportError:
+    HELIX_AVAILABLE = False
+    HelixKernel = None
+    Shape = type('Shape', (), {'HEXAGON': 'hexagon', 'CIRCLE': 'circle'})()
+    Color = type('Color', (), {'from_hex': staticmethod(lambda h: h)})()
 from .server import FastTrackRoom, FastTrackServer, fasttrack_server
 
 # Game metadata as dimensional entity
@@ -50,8 +57,8 @@ class FastTrackKernel:
     Registers the game as a dimensional entity with full helix support.
     """
     
-    def __init__(self, helix_kernel: HelixKernel = None):
-        self.helix_kernel = helix_kernel or HelixKernel()
+    def __init__(self, helix_kernel=None):
+        self.helix_kernel = helix_kernel or (HelixKernel() if HELIX_AVAILABLE else None)
         self.server = fasttrack_server
         self._register_entity()
     
@@ -217,15 +224,15 @@ class FastTrackKernel:
 # Global kernel instance
 fasttrack_kernel = None
 
-def init_fasttrack(helix_kernel: HelixKernel = None) -> FastTrackKernel:
+def init_fasttrack(helix_kernel=None):
     """Initialize Fast Track kernel integration."""
     global fasttrack_kernel
     fasttrack_kernel = FastTrackKernel(helix_kernel)
     return fasttrack_kernel
 
-def get_fasttrack() -> FastTrackKernel:
+def get_fasttrack():
     """Get the Fast Track kernel instance."""
     global fasttrack_kernel
     if fasttrack_kernel is None:
-        fasttrack_kernel = FastTrackKernel(HelixKernel())
+        fasttrack_kernel = FastTrackKernel(HelixKernel() if HELIX_AVAILABLE else None)
     return fasttrack_kernel
