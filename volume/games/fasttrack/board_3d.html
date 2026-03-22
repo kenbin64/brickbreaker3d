@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,23 +94,23 @@
     
     <!-- Start Game Screen â€” Clean Mode Picker (single concern) -->
     <div id="start-game-screen">
-        <h1>ðŸŽ¯ Fast Track</h1>
+        <h1>🎯 Fast Track</h1>
         <div class="subtitle">ButterflyFX Board Game</div>
         
         <!-- Mode Cards â€” one tap to proceed -->
         <div class="game-mode-selector">
             <div class="game-mode-btn" onclick="window.location.href='ai_setup.html'">
-                <div class="mode-icon">ðŸ¤–</div>
+                <div class="mode-icon">🤖</div>
                 <div class="mode-name">Solo vs Bots</div>
                 <div class="mode-desc">Choose avatar, difficulty &amp; play</div>
             </div>
             <div class="game-mode-btn" data-mode="quickmatch" onclick="selectGameMode('quickmatch')">
-                <div class="mode-icon">âš¡</div>
+                <div class="mode-icon">⚡</div>
                 <div class="mode-name">Quick Match</div>
                 <div class="mode-desc">Find players online</div>
             </div>
             <div class="game-mode-btn" data-mode="private" onclick="selectGameMode('private')">
-                <div class="mode-icon">ðŸ”’</div>
+                <div class="mode-icon">🔒</div>
                 <div class="mode-name">Private Game</div>
                 <div class="mode-desc">Invite friends with code</div>
             </div>
@@ -126,7 +126,7 @@
         
         <!-- Private Game Section (hidden by default, clean 2-action layout) -->
         <div id="private-game-section">
-            <h3 style="color: #f59e0b; margin-bottom: 15px;">ðŸ”’ Private Game</h3>
+            <h3 style="color: #f59e0b; margin-bottom: 15px;">🔒 Private Game</h3>
             
             <div id="private-create-section" style="margin-bottom: 20px;">
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
@@ -150,7 +150,7 @@
                         </label>
                     </div>
                 </div>
-                <button class="private-btn create" onclick="createPrivateGame()">ðŸŽ® Create New Game</button>
+                <button class="private-btn create" onclick="createPrivateGame()">🎮 Create New Game</button>
             </div>
             
             <div style="margin-bottom: 15px; color: #888;">â€” or join with code â€”</div>
@@ -164,7 +164,7 @@
         <div id="solo-setup" style="display:none;"></div>
         
         <!-- Quick Match start button (shown only for quickmatch mode) -->
-        <button id="start-btn" onclick="startGameSession()" disabled style="display:none; opacity: 0.5; cursor: not-allowed;">ðŸ” FIND MATCH</button>
+        <button id="start-btn" onclick="startGameSession()" disabled style="display:none; opacity: 0.5; cursor: not-allowed;">🔍 FIND MATCH</button>
         
         <div id="loading-status" class="loading-status">Loading board...</div>
     </div>
@@ -175,17 +175,16 @@
     <div id="right-icon-panel"
          class="d-flex align-items-center"
          role="toolbar" aria-label="Game controls">
-        <button id="theme-btn"        onclick="openThemePanel()"     title="Change Theme"   aria-label="Change theme">ðŸŽ¨</button>
-        <button id="music-toggle-btn" onclick="openMusicPanel()"     title="Music &amp; Sound" aria-label="Music and sound settings">ðŸ”‡</button>
+        <button id="theme-btn"        onclick="openThemePanel()"     title="Change Theme"   aria-label="Change theme">🎨</button>
+        <button id="music-toggle-btn" onclick="openMusicPanel()"     title="Music &amp; Sound" aria-label="Music and sound settings">🔇</button>
         <button id="leave-game-btn"   onclick="showExitConfirm()"    title="Leave Game"     aria-label="Leave game"><span class="exit-txt">EXIT</span></button>
-        <button id="board-view-btn"   onclick="setBoardViewMode()"   title="Fixed Views"    aria-label="Board view">ðŸŽ¯</button>
-        <button id="ask-mom-btn"      onclick="toggleMomAdvice()"    title="Ask Mom"        aria-label="Ask Mom for advice">ðŸ‘©</button>
+        <button id="board-view-btn"   onclick="setBoardViewMode()"   title="Fixed Views"    aria-label="Board view">🎯</button>
     </div>
 
     <!-- Music & Sound Panel â€” slide-in from right -->
     <div id="music-sound-panel">
         <div class="msp-header">
-            <span>ðŸŽµ Music &amp; Sound</span>
+            <span>🎵 Music &amp; Sound</span>
             <button class="msp-close" onclick="closeMusicPanel()">Ã—</button>
         </div>
         <label class="msp-row">
@@ -201,11 +200,11 @@
     <!-- Exit Confirmation Modal -->
     <div id="exit-confirm-modal" onclick="hideExitConfirm()" style="pointer-events:all;">
         <div id="exit-confirm-content" onclick="event.stopPropagation()">
-            <h3>ðŸšª Exit Game?</h3>
+            <h3>🚪 Exit Game?</h3>
             <p>If you leave, a bot will take over your pegs. The game will continue for other players.</p>
             <div class="exit-modal-btns">
                 <button class="cancel-btn" onclick="hideExitConfirm()">Cancel</button>
-                <button class="lobby-btn" onclick="exitToLobby()" style="background: #3498db;">ðŸ  Lobby</button>
+                <button class="lobby-btn" onclick="exitToLobby()" style="background: #3498db;">🏠 Lobby</button>
                 <button class="confirm-btn" onclick="confirmExitGame()">Exit Game</button>
             </div>
         </div>
@@ -213,75 +212,46 @@
     
     <!-- Illegal Move Popup (Hard Mode) -->
     <div id="illegal-move-popup">
-        <h3>ðŸš« Illegal Move!</h3>
+        <h3>🚫 Illegal Move!</h3>
         <p id="illegal-move-reason">That move is not allowed.</p>
         <button onclick="hideIllegalMovePopup()">OK</button>
-    </div>
-    
-    <!-- Mom Introduction Modal -->
-    <div id="mom-intro-modal">
-        <div id="mom-intro-content">
-            <div class="mom-avatar">ðŸ‘©</div>
-            <h2>Hi, I'm Mom!</h2>
-            <p>I'm your game guide and I'm here to help you learn Fast Track! 
-            Whenever you need help, just click the <strong>Ask Mom</strong> button 
-            and I'll give you tips and explain what you can do.</p>
-            <button class="mom-btn" onclick="closeMomIntro()">Let's Play! ðŸŽ¯</button>
-        </div>
-    </div>
-    
-    <!-- Mom Help Panel â€” click anywhere on the panel (outside close btn) for fresh advice -->
-    <div id="mom-help-panel" onclick="showMomHelp()" title="Tap for more advice">
-        <div class="mom-header">
-            <div class="mom-title">
-                <span>ðŸ‘©</span>
-                <span>Mom says...</span>
-            </div>
-            <button class="close-btn" onclick="event.stopPropagation(); hideMomHelp()">Ã—</button>
-        </div>
-        <div class="mom-message" id="mom-message-text">
-            I'm here to help!
-        </div>
-        <div class="mom-options" id="mom-options" onclick="event.stopPropagation()">
-            <!-- Options will be populated dynamically -->
-        </div>
     </div>
     
     <!-- Rules Modal (in-game) -->
     <div id="rules-modal">
         <div id="rules-modal-content">
             <button id="rules-modal-close" onclick="toggleRulesModal()">Ã—</button>
-            <h3 style="color: #4ade80; margin-bottom: 15px;">ðŸ“œ Game Rules</h3>
+            <h3 style="color: #4ade80; margin-bottom: 15px;">📜 Game Rules</h3>
             <ul style="list-style: none; padding: 0;">
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸŽ¯</span> Move all 5 pegs clockwise around the board into your safe zone to win
+                    <span>🎯</span> Move all 5 pegs clockwise around the board into your safe zone to win
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸƒ</span> Ace, Joker, 6 = Enter from holding + extra turn
+                    <span>🃏</span> Ace, Joker, 6 = Enter from holding + extra turn
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸ‘‘</span> J, Q, K = Move 1 + extra turn + exit bullseye (only these 3!)
+                    <span>👑</span> J, Q, K = Move 1 + extra turn + exit bullseye (only these 3!)
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>âš¡</span> Land exactly on a FastTrack hole to enter the shortcut loop
+                    <span>⚡</span> Land exactly on a FastTrack hole to enter the shortcut loop
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸŽ±</span> Bullseye: Enter from FT with 1-step card; exit only with J/Q/K
+                    <span>🎱</span> Bullseye: Enter from FT with 1-step card; exit only with J/Q/K
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
                     <span>â¬…ï¸</span> Card 4 = Back 4 spaces (can't enter FT, bullseye, or safe zone)
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>âœ¨</span> Card 7 = Wild card - move any token 1-7 spaces
+                    <span>✨</span> Card 7 = Wild card - move any token 1-7 spaces
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸ’¥</span> Land on opponent = Cut them back to holding
+                    <span>💥</span> Land on opponent = Cut them back to holding
                 </li>
                 <li style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
-                    <span>ðŸ”¥</span> FT pegs lose status if you move a non-FT peg instead
+                    <span>🔥</span> FT pegs lose status if you move a non-FT peg instead
                 </li>
                 <li style="padding: 6px 0; display: flex; gap: 8px;">
-                    <span>ðŸš«</span> Can't pass or land on your own peg
+                    <span>🚫</span> Can't pass or land on your own peg
                 </li>
             </ul>
         </div>
@@ -291,17 +261,17 @@
     <div id="tutorial-modal">
         <div id="tutorial-content">
             <div class="tutorial-header">
-                <h2>ðŸ“š How to Play Fast Track</h2>
+                <h2>📚 How to Play Fast Track</h2>
                 <p style="color: #888;">Master the game in minutes!</p>
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸŽ¯ Objective</h3>
+                <h3>🎯 Objective</h3>
                 <p>Be the first to move all <strong>5 pegs</strong> from your holding area, around the board clockwise, and into your <strong>safe zone</strong>.</p>
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸš€ Getting Started</h3>
+                <h3>🚀 Getting Started</h3>
                 <ul>
                     <li>Click the <strong>deck</strong> to draw a card</li>
                     <li>Your pegs start in the <strong>holding area</strong> (off the track)</li>
@@ -311,7 +281,7 @@
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸƒ Card Effects</h3>
+                <h3>🃏 Card Effects</h3>
                 <div class="card-chart">
                     <div class="card-row"><span class="card-value" style="color:#f00;">A</span><span class="card-effect">Enter track + Extra turn</span></div>
                     <div class="card-row"><span class="card-value">2-3</span><span class="card-effect">Move 2-3 spaces forward</span></div>
@@ -326,16 +296,16 @@
             </div>
             
             <div class="tutorial-section">
-                <h3>âš¡ FastTrack Shortcut</h3>
+                <h3>⚡ FastTrack Shortcut</h3>
                 <ul>
-                    <li>Land <strong>exactly</strong> on the FastTrack hole (marked âš¡)</li>
+                    <li>Land <strong>exactly</strong> on the FastTrack hole (marked ⚡)</li>
                     <li>Take the shortcut loop to skip ahead!</li>
                     <li>Strategic use can give you a huge advantage</li>
                 </ul>
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸŽ± Bullseye</h3>
+                <h3>🎱 Bullseye</h3>
                 <ul>
                     <li>The center <strong>bullseye</strong> is a safe haven â€” you can't be cut there</li>
                     <li>Enter from <strong>FastTrack</strong> with a 1-step card (A, J, Q, K, Joker)</li>
@@ -345,7 +315,7 @@
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸ’¥ Cutting Opponents</h3>
+                <h3>💥 Cutting Opponents</h3>
                 <ul>
                     <li>Land on an opponent's peg to <strong>cut</strong> them</li>
                     <li>Cut pegs return to their holding area (or home if holding is full)</li>
@@ -355,7 +325,7 @@
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸ”¥ FastTrack Tips</h3>
+                <h3>🔥 FastTrack Tips</h3>
                 <ul>
                     <li>FT pegs <strong>lose status</strong> if you move a different (non-FT) peg</li>
                     <li>Drawing a <strong>4</strong> forces your FT peg off the fast track</li>
@@ -364,7 +334,7 @@
             </div>
             
             <div class="tutorial-section">
-                <h3>ðŸ† Winning</h3>
+                <h3>🏆 Winning</h3>
                 <ul>
                     <li>Fill all <strong>4 safe zone</strong> holes with your pegs</li>
                     <li>Then land the <strong>5th peg</strong> exactly on your winner hole</li>
@@ -373,14 +343,14 @@
                 </ul>
             </div>
             
-            <button class="close-tutorial" onclick="hideTutorial()">Got it! Let's Play ðŸŽ¯</button>
+            <button class="close-tutorial" onclick="hideTutorial()">Got it! Let's Play 🎯</button>
         </div>
     </div>
     
     <!-- Private Game Lobby (Waiting Room) -->
     <div id="private-lobby">
         <div class="private-lobby-header">
-            <h2>ðŸ”’ Private Game Lobby</h2>
+            <h2>🔒 Private Game Lobby</h2>
             <p style="color: #888;">Share the code below to invite friends</p>
         </div>
         
@@ -391,44 +361,44 @@
             
             <div class="share-url-box">
                 <input type="text" class="share-url-input" id="private-share-url" readonly value="" />
-                <button class="copy-btn" id="copy-url-btn" onclick="copyShareUrl()">ðŸ“‹ Copy</button>
+                <button class="copy-btn" id="copy-url-btn" onclick="copyShareUrl()">📋 Copy</button>
             </div>
             
             <div style="color: #888; font-size: 13px; margin: 15px 0;">Share via:</div>
             <div class="social-share-btns">
                 <button class="social-btn whatsapp" onclick="shareVia('whatsapp')">
-                    <span>ðŸ“±</span> WhatsApp
+                    <span>📱</span> WhatsApp
                 </button>
                 <button class="social-btn telegram" onclick="shareVia('telegram')">
                     <span>âœˆï¸</span> Telegram
                 </button>
                 <button class="social-btn messenger" onclick="shareVia('messenger')">
-                    <span>ðŸ’¬</span> Messenger
+                    <span>💬</span> Messenger
                 </button>
                 <button class="social-btn sms" onclick="shareVia('sms')">
-                    <span>ðŸ“²</span> SMS
+                    <span>📲</span> SMS
                 </button>
                 <button class="social-btn email" onclick="shareVia('email')">
-                    <span>ðŸ“§</span> Email
+                    <span>📧</span> Email
                 </button>
                 <button class="social-btn copy-link" onclick="copyShareUrl()">
-                    <span>ðŸ”—</span> Copy Link
+                    <span>🔗</span> Copy Link
                 </button>
             </div>
         </div>
         
         <!-- Pending Join Requests (host only) -->
         <div id="pending-requests-section" style="display: none; margin: 15px 0;">
-            <h4 style="color: #f59e0b; margin-bottom: 10px;">ðŸ“¥ Pending Requests</h4>
+            <h4 style="color: #f59e0b; margin-bottom: 10px;">📥 Pending Requests</h4>
             <div id="pending-requests-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
         
         <!-- Host Settings Panel -->
         <div id="lobby-host-settings" style="display: none; margin: 10px 0; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px;">
-            <h4 style="color: #4ade80; margin-bottom: 10px; font-size: 14px;">âš™ï¸ Host Settings</h4>
+            <h4 style="color: #4ade80; margin-bottom: 10px; font-size: 14px;">⚙ï¸ Host Settings</h4>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="private-btn" id="add-ai-btn" onclick="addAIPlayer()" style="font-size: 12px; padding: 6px 14px; background: #2563eb;">ðŸ¤– Add Bot</button>
-                <button class="private-btn" id="toggle-music-all-btn" onclick="toggleMusicForAll()" style="font-size: 12px; padding: 6px 14px; background: #7c3aed;">ðŸŽµ Music: ON</button>
+                <button class="private-btn" id="add-ai-btn" onclick="addAIPlayer()" style="font-size: 12px; padding: 6px 14px; background: #2563eb;">🤖 Add Bot</button>
+                <button class="private-btn" id="toggle-music-all-btn" onclick="toggleMusicForAll()" style="font-size: 12px; padding: 6px 14px; background: #7c3aed;">🎵 Music: ON</button>
             </div>
         </div>
         
@@ -449,7 +419,7 @@
         
         <!-- Chat -->
         <div class="private-chat">
-            <div class="chat-header">ðŸ’¬ Game Chat</div>
+            <div class="chat-header">💬 Game Chat</div>
             <div class="chat-messages" id="private-chat-messages">
                 <div class="chat-message system">Welcome to the private lobby! Chat with your friends here.</div>
             </div>
@@ -461,7 +431,7 @@
         
         <!-- Actions -->
         <div class="lobby-actions">
-            <button class="lobby-action-btn" onclick="toggleRulesModal()" style="background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3);">ðŸ“œ Rules</button>
+            <button class="lobby-action-btn" onclick="toggleRulesModal()" style="background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3);">📜 Rules</button>
             <button class="lobby-action-btn leave" onclick="leavePrivateLobby()">Leave</button>
             <button class="lobby-action-btn start-game" id="start-private-game-btn" onclick="startPrivateGame()" disabled>
                 Start Game (Waiting for ready...)
@@ -471,7 +441,7 @@
     
     <!-- Move Announcement Indicator -->
     <div id="ai-thinking" class="ai-thinking">
-        ðŸŽ² <span id="ai-name">Player</span> <span id="move-info">moving</span><span class="dots"></span>
+        🎲 <span id="ai-name">Player</span> <span id="move-info">moving</span><span class="dots"></span>
     </div>
     
     <!-- Turn Action Banner -->
@@ -489,7 +459,7 @@
     <!-- Game Controls Bar â€” Leave/Rules REMOVED (available in hamburger menu) -->
     <div id="game-controls-bar">
         <button id="organizer-menu-btn" onclick="toggleOrganizerMenu()" title="Host Controls" style="display: none;">
-            ðŸ‘‘
+            👑
             <span id="join-request-badge" class="join-request-badge" style="display: none;">0</span>
         </button>
     </div>
@@ -498,13 +468,13 @@
     <div id="turn-timer-display" style="display: none;">
         <div id="turn-timer-label">Time Remaining</div>
         <div id="turn-timer-countdown">1:00</div>
-        <div id="turn-timer-warning" style="display: none;">âš ï¸ Make your move!</div>
+        <div id="turn-timer-warning" style="display: none;">⚠ï¸ Make your move!</div>
     </div>
     
     <!-- Leave Game Modal -->
     <div id="leave-game-modal" style="display: none;">
         <div class="leave-game-content">
-            <h3>ðŸšª Leave Game?</h3>
+            <h3>🚪 Leave Game?</h3>
             <p id="leave-game-message">Your position will be replaced by a bot until you return.</p>
             <div class="leave-game-buttons">
                 <button class="leave-btn-cancel" onclick="closeLeaveGameModal()">Cancel</button>
@@ -516,35 +486,35 @@
     <!-- Return to Game Banner (shown when player has left but can return) -->
     <div id="return-game-banner" style="display: none;">
         <div class="return-content">
-            <span>ðŸ¤– A bot is playing for you</span>
+            <span>🤖 A bot is playing for you</span>
             <button onclick="returnToGame()">â†©ï¸ Return to Game</button>
         </div>
     </div>
     
     <!-- Game Chat Toggle Button (for minimized chat) -->
     <button id="game-chat-toggle" class="game-chat-toggle-btn" onclick="toggleGameChat()">
-        ðŸ’¬
+        💬
         <span class="unread-badge" id="chat-unread-badge" style="display: none;">0</span>
     </button>
     
     <!-- Game Chat Panel (Tournament/Guild games) -->
     <div id="game-chat-panel">
         <div class="game-chat-header" onclick="minimizeGameChat()">
-            <span>ðŸ’¬ Game Chat</span>
+            <span>💬 Game Chat</span>
             <div class="game-chat-header-actions">
-                <button onclick="event.stopPropagation(); showGameChatSettings()" title="Chat Settings">âš™ï¸</button>
+                <button onclick="event.stopPropagation(); showGameChatSettings()" title="Chat Settings">⚙ï¸</button>
                 <button onclick="event.stopPropagation(); minimizeGameChat()" title="Minimize">âˆ’</button>
             </div>
         </div>
         
         <!-- Chat disabled notice -->
         <div id="game-chat-disabled" class="game-chat-disabled" style="display: none;">
-            ðŸ”‡ Chat disabled
+            🔇 Chat disabled
         </div>
         
         <!-- Chat opted out notice -->
         <div id="game-chat-opted-out" class="game-chat-disabled" style="display: none;">
-            ðŸ”• You have opted out of chat
+            🔕 You have opted out of chat
             <button onclick="toggleGameChatOptOut()" style="margin-top: 10px; padding: 5px 15px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.3); background: none; color: #fff; cursor: pointer;">Re-enable</button>
         </div>
         
@@ -564,7 +534,7 @@
     <div id="game-chat-settings-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9500; align-items: center; justify-content: center;">
         <div style="background: linear-gradient(135deg, rgba(30,40,60,0.98), rgba(20,25,40,0.99)); border: 1px solid rgba(100,200,255,0.3); border-radius: 15px; padding: 20px; max-width: 350px; width: 90%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="color: #64d8ff; margin: 0;">âš™ï¸ Chat Settings</h3>
+                <h3 style="color: #64d8ff; margin: 0;">⚙ï¸ Chat Settings</h3>
                 <button onclick="hideGameChatSettings()" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">Ã—</button>
             </div>
             
@@ -574,12 +544,12 @@
                     <div style="font-size: 12px; color: rgba(255,255,255,0.5);">Hide all messages</div>
                 </div>
                 <button id="game-chat-opt-btn" onclick="toggleGameChatOptOut()" style="padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold;">
-                    ðŸ”‡ Opt Out
+                    🔇 Opt Out
                 </button>
             </div>
             
             <button onclick="showGameBlockedUsers()" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer; text-align: left;">
-                ðŸš« Manage Blocked Users
+                🚫 Manage Blocked Users
             </button>
         </div>
     </div>
@@ -587,14 +557,14 @@
     <!-- Organizer Menu (Host Controls) -->
     <div id="organizer-menu" style="display: none;">
         <div class="organizer-menu-header">
-            <span>ðŸ‘‘ Host Controls</span>
+            <span>👑 Host Controls</span>
             <button onclick="closeOrganizerMenu()">Ã—</button>
         </div>
         
         <!-- Join Requests Section -->
         <div id="join-requests-section" class="join-requests-section" style="display: none;">
             <div class="join-requests-header">
-                <span>ðŸ“¥</span>
+                <span>📥</span>
                 <span>Join Requests</span>
             </div>
             <div id="join-requests-list"></div>
@@ -607,11 +577,11 @@
     <!-- Join Request Notification Popup -->
     <div id="join-request-notification">
         <div class="join-notify-header">
-            <span>ðŸ“¥</span>
+            <span>📥</span>
             <span>Join Request</span>
         </div>
         <div class="join-notify-player">
-            <span class="join-notify-avatar" id="join-notify-avatar">ðŸ‘¤</span>
+            <span class="join-notify-avatar" id="join-notify-avatar">👤</span>
             <span class="join-notify-name" id="join-notify-name">Player Name</span>
         </div>
         
@@ -621,7 +591,7 @@
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <label id="join-replace-bot-option" style="display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(100,200,255,0.1); border-radius: 8px; cursor: pointer; border: 1px solid transparent;">
                     <input type="radio" name="join-slot-type" value="replace-bot" checked style="width: 16px; height: 16px;">
-                    <span>ðŸ¤– Replace a bot</span>
+                    <span>🤖 Replace a bot</span>
                 </label>
                 <label id="join-new-slot-option" style="display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(100,200,255,0.1); border-radius: 8px; cursor: pointer; border: 1px solid transparent;">
                     <input type="radio" name="join-slot-type" value="new-slot" style="width: 16px; height: 16px;">
@@ -635,7 +605,7 @@
         
         <div class="join-notify-buttons">
             <button class="join-notify-deny" onclick="denyJoinRequest()">Deny</button>
-            <button class="join-notify-approve" onclick="approveJoinRequest()">âœ“ Approve</button>
+            <button class="join-notify-approve" onclick="approveJoinRequest()">✓ Approve</button>
         </div>
     </div>
     
@@ -654,7 +624,7 @@
             </div>
         </div>
         
-        <button class="resume-btn" onclick="resumeGame()">â–¶ï¸ Resume Game</button>
+        <button class="resume-btn" onclick="resumeGame()">▶ï¸ Resume Game</button>
     </div>
     
     <!-- Peg Move Dropdown -->
@@ -683,7 +653,7 @@
     
     <!-- Bot Replacement Alert -->
     <div id="bot-alert">
-        <div class="alert-icon">ðŸ¤–</div>
+        <div class="alert-icon">🤖</div>
         <div class="alert-title" id="bot-alert-title">Player Replaced</div>
         <div class="alert-message" id="bot-alert-message">A player has been replaced with a bot</div>
     </div>
@@ -699,15 +669,15 @@
     <!-- Floating Draggable Reaction Bar -->
     <div id="floating-reactions" class="floating-reactions-bar">
         <div class="reactions-handle" id="reactions-handle">â‹®â‹®</div>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ˜±', 'shock')" title="Shock">ðŸ˜±</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ‘', 'clap')" title="Well played">ðŸ‘</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ˜¬', 'ouch')" title="Ouch">ðŸ˜¬</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ˜ˆ', 'revenge')" title="Revenge">ðŸ˜ˆ</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ”¥', 'fire')" title="On fire">ðŸ”¥</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ˜­', 'cry')" title="Sad">ðŸ˜­</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸŽ‰', 'celebrate')" title="Celebrate">ðŸŽ‰</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ’€', 'dead')" title="Dead">ðŸ’€</button>
-        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('ðŸ‘»', 'boo')" title="Boo">ðŸ‘»</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('😱', 'shock')" title="Shock">😱</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('👏', 'clap')" title="Well played">👏</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('😬', 'ouch')" title="Ouch">😬</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('😈', 'revenge')" title="Revenge">😈</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('🔥', 'fire')" title="On fire">🔥</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('😭', 'cry')" title="Sad">😭</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('🎉', 'celebrate')" title="Celebrate">🎉</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('💀', 'dead')" title="Dead">💀</button>
+        <button class="reaction-btn-desktop" onclick="sendDesktopReaction('👻', 'boo')" title="Boo">👻</button>
     </div>
     
     <!-- Suggestions Toggle Button -->
@@ -717,7 +687,7 @@
         border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer;
         font-family: inherit; backdrop-filter: blur(4px); transition: all 0.2s;
         box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    ">ðŸ’¡ Suggestions ON</button>
+    ">💡 Suggestions ON</button>
 
     <div id="info">
         <div>Drag to rotate | Scroll to zoom</div>
@@ -725,7 +695,7 @@
     </div>
 
     <!-- jQuery (for reliable DOM ready handling) -->
-    <script src="assets/js/jquery-3.7.1.min.js"></script>
+    <script src="/lib/jquery/jquery.min.js"></script>
 
     <!-- Three.js (locally hosted â€” no CDN dependency) -->
     <script src="../../lib/three/three.min.js"></script>
@@ -734,7 +704,7 @@
     <!-- Fibonacci Spiral Backdrop for Board View -->
     <script src="fibonacci_backdrop.js?v=20260308"></script>
 
-    <!-- ðŸŒŠ DIMENSIONAL PROGRAMMING CORE SUBSTRATES -->
+    <!-- 🌊 DIMENSIONAL PROGRAMMING CORE SUBSTRATES -->
     <!-- "Everything exists. Only observation manifests reality." -->
     <script src="observation_substrate.js?v=20260308"></script>
     <script src="intent_manifold.js?v=20260308"></script>
@@ -775,13 +745,11 @@
     <script src="test_fasttrack_rules.js?v=20260308"></script>
 
     <script src="manifold_ai.js?v=20260308"></script>
-    <!-- Unified Game Initialization System -->
-    <script src="game_init.js?v=20260308"></script>
     <script src="mobile_ui.js?v=20260308"></script>
     <script src="mobile_dimensional_fixes.js?v=20260308"></script>
     <!-- Advanced Mobile Touch Engine (NEW) -->
     <script src="mobile_touch_engine.js?v=20260308"></script>
-    <!-- ðŸŒŠ Meta Quest VR - Entangled Substrate Protocol (ESP) -->
+    <!-- 🌊 Meta Quest VR - Entangled Substrate Protocol (ESP) -->
     <script src="vr_esp.js?v=20260308"></script>
     <script src="move_selection_modal.js?v=20260308"></script>
     <script src="lobby_ui.js?v=20260308"></script>
@@ -804,6 +772,8 @@
     <!-- Game Sound Effects -->
     <script src="game_sfx.js?v=20260308"></script>
     <script src="game_engine.js?v=20260308"></script>
+    <!-- GameInit: unified quickplay/offline game initialization from URL params -->
+    <script src="game_init.js?v=20260308"></script>
     <script src="victory_ceremony.js?v=20260308"></script>
     <!-- Peg Personality & Cutscene Systems -->
     <script src="peg_personality.js?v=20260312"></script>
@@ -817,10 +787,8 @@
     <script src="multiplayer_client.js?v=20260308"></script>
     <script src="avatars.js?v=20260308"></script>
 
-    <!-- Tutorial & Ask Mom Advisor -->
+    <!-- Tutorial -->
     <script src="tutorial.js?v=20260308"></script>
-    <script src="ask_mom.js?v=20260308"></script>
-    <script src="mom_daemon.js?v=20260308"></script>
     <script src="board_tooltips.js?v=20260308"></script>
 
     <!-- Board Renderer Substrate: 3D board, pegs, camera, themes, audio, hints -->
@@ -857,5 +825,38 @@
     <!-- ============================================================ -->
     <!-- Beta Session Substrate: WebSocket session integration -->
     <script src="board_3d_session.js"></script>
+
+    <!-- ============================================================ -->
+    <!-- TEMPORARY DIAGNOSTIC OVERLAY — remove after black-screen fix -->
+    <!-- ============================================================ -->
+    <script>
+    setTimeout(function() {
+        try {
+            var cvs = document.querySelector('#container canvas');
+            var ss  = document.getElementById('start-game-screen');
+            var lines = [
+                'THREE: '    + (typeof THREE !== 'undefined' ? '✅' : '❌ MISSING'),
+                '$: '        + (typeof $ !== 'undefined' ? '✅' : '❌ MISSING'),
+                'renderer: ' + (window.renderer ? '✅ ' + window.renderer.domElement.width + 'x' + window.renderer.domElement.height : '❌ none'),
+                'canvas in #container: ' + (cvs ? '✅ css=' + cvs.clientWidth + 'x' + cvs.clientHeight : '❌ NO'),
+                'scene objs: ' + (window.scene ? window.scene.children.length : 'n/a'),
+                'holeReg: '  + (window.holeRegistry ? window.holeRegistry.size + ' holes' : '❌ none'),
+                'boardReady: ' + (window.boardReady || false),
+                'GameInit: ' + (window.GameInit ? '✅' : '❌'),
+                'Engine: '   + (window.FastrackEngine ? '✅' : '❌'),
+                'startScr: ' + (ss ? ss.style.display || 'flex(default)' : 'not found'),
+                'container z: ' + (document.getElementById('container') ? getComputedStyle(document.getElementById('container')).zIndex : 'n/a'),
+            ];
+            var d = document.createElement('div');
+            d.id = 'ft-diag';
+            d.style.cssText = 'position:fixed;top:60px;left:10px;z-index:2147483647;background:rgba(0,0,30,0.97);color:#0f0;font:11px/1.7 monospace;padding:10px 14px;border:2px solid #0f0;border-radius:6px;max-width:380px;pointer-events:none;box-shadow:0 0 20px #0f0a;';
+            d.innerHTML = '<b style="color:#ff0;font-size:13px">⚙️ FT Diagnostics</b><br>' + lines.join('<br>');
+            document.body.appendChild(d);
+            setTimeout(function() { var e = document.getElementById('ft-diag'); if (e) e.remove(); }, 20000);
+        } catch(ex) {
+            console.error('Diag failed', ex);
+        }
+    }, 3000);
+    </script>
 </body>
 </html>

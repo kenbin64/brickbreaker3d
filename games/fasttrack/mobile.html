@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- PWA Essential Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fast Track">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="msapplication-TileColor" content="#1a1a2e">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="Play Fast Track - the classic marble board game">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="assets/images/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="assets/images/icon-192.png">
+    
+    <!-- Android Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/images/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icon-96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icon-72.png">
+    
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="assets/images/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="assets/images/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="assets/images/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+    
+    <title>Fast Track</title>
+    
+    <!-- Mobile CSS -->
+    <link rel="stylesheet" href="assets/css/mobile.css">
+    
+    <style>
+    <link rel="stylesheet" href="assets/css/mobile-inline.css">
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-logo">🎯</div>
+        <div class="loading-text">Loading Fast Track...</div>
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Game Container (iframe to board_3d.html with mobile param) -->
+    <iframe id="game-frame" src="board_3d.html?mobile=true" allow="fullscreen; autoplay" allowfullscreen></iframe>
+    
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner">
+        <div class="install-icon">🎯</div>
+        <div class="install-text">
+            <div class="install-title">Install Fast Track</div>
+            <div class="install-subtitle">Add to home screen for the best experience</div>
+        </div>
+        <button class="install-btn" id="install-btn">Install</button>
+        <button class="install-dismiss" id="install-dismiss">×</button>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="mobile-toast"></div>
+    
+    <script>
+        // ============================================================
+        // PWA SERVICE WORKER REGISTRATION
+        // ============================================================
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('[PWA] Service Worker registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showToast('Update available! Restart for new version.');
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('[PWA] Service Worker registration failed:', error);
+                    });
+            });
+        }
+        
+        // ============================================================
+        // PWA INSTALL PROMPT
+        // ============================================================
+        
+        let deferredPrompt = null;
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('install-btn');
+        const installDismiss = document.getElementById('install-dismiss');
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install banner after a delay (don't interrupt initial load)
+            setTimeout(() => {
+                if (!localStorage.getItem('pwa-install-dismissed')) {
+                    installBanner.classList.add('show');
+                }
+            }, 3000);
+        });
+        
+        // Handle install button click
+        installBtn?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            console.log('[PWA] Install outcome:', outcome);
+            deferredPrompt = null;
+            installBanner.classList.remove('show');
+            
+            if (outcome === 'accepted') {
+                showToast('Fast Track installed! 🎉');
+            }
+        });
+        
+        // Handle dismiss
+        installDismiss?.addEventListener('click', () => {
+            installBanner.classList.remove('show');
+            localStorage.setItem('pwa-install-dismissed', 'true');
+        });
+        
+        // Detect if app is installed
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] App installed');
+            installBanner.classList.remove('show');
+            deferredPrompt = null;
+        });
+        
+        // Check if running as standalone PWA
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                            window.navigator.standalone === true;
+        
+        if (isStandalone) {
+            console.log('[PWA] Running as installed app');
+            // Hide install banner for installed apps
+            installBanner.classList.remove('show');
+        }
+        
+        // ============================================================
+        // iOS INSTALLATION INSTRUCTIONS
+        // ============================================================
+        
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+        
+        function showIOSInstallInstructions() {
+            if (isIOS() && !isStandalone && !localStorage.getItem('ios-install-shown')) {
+                setTimeout(() => {
+                    const iosPrompt = document.createElement('div');
+                    iosPrompt.id = 'ios-install-prompt';
+                    iosPrompt.innerHTML = `
+                        <div style="position:fixed; bottom:0; left:0; right:0; background:rgba(20,20,40,0.98); padding:20px; padding-bottom:calc(env(safe-area-inset-bottom) + 20px); z-index:10050; border-radius:20px 20px 0 0; text-align:center;">
+                            <div style="font-size:16px; margin-bottom:12px;">📲 Install Fast Track</div>
+                            <div style="font-size:13px; color:#aaa; margin-bottom:16px;">
+                                Tap <span style="font-size:18px;">⬆️</span> Share, then "Add to Home Screen"
+                            </div>
+                            <button onclick="this.parentElement.remove(); localStorage.setItem('ios-install-shown','true');" style="padding:12px 32px; background:#4a4a6e; border:none; border-radius:20px; color:#fff; font-size:14px; cursor:pointer;">Got it</button>
+                        </div>
+                    `;
+                    document.body.appendChild(iosPrompt);
+                }, 5000);
+            }
+        }
+        
+        showIOSInstallInstructions();
+        
+        // ============================================================
+        // LOADING SCREEN
+        // ============================================================
+        
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameFrame = document.getElementById('game-frame');
+        
+        gameFrame.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                
+                // Communicate with iframe to enable mobile mode
+                try {
+                    gameFrame.contentWindow.postMessage({ type: 'mobile-init' }, '*');
+                } catch(e) {
+                    console.log('[Mobile] Could not send init message to iframe');
+                }
+            }, 500);
+        });
+        
+        // Timeout fallback - hide loading after 5 seconds max
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+        }, 5000);
+        
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+        
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('mobile-toast');
+            if (!toast) return;
+            
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // ============================================================
+        // FULLSCREEN HANDLING
+        // ============================================================
+        
+        // Request fullscreen on first interaction (for PWA feel)
+        let fullscreenRequested = false;
+        
+        document.addEventListener('click', () => {
+            if (fullscreenRequested) return;
+            if (isStandalone) return; // Already fullscreen as PWA
+            
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(() => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+            fullscreenRequested = true;
+        }, { once: true });
+        
+        // Handle orientation change
+        window.addEventListener('orientationchange', () => {
+            // Force redraw after orientation change
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 100);
+        });
+        
+        // Prevent pull-to-refresh
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.target === document.body) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Hide URL bar on scroll (older iOS)
+        window.scrollTo(0, 1);
+        
+        // ============================================================
+        // MESSAGE HANDLING WITH GAME IFRAME
+        // ============================================================
+        
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data || !data.type) return;
+            
+            switch (data.type) {
+                case 'game-ready':
+                    console.log('[Mobile] Game ready');
+                    loadingScreen.classList.add('hidden');
+                    break;
+                    
+                case 'show-toast':
+                    showToast(data.message);
+                    break;
+                    
+                case 'game-over':
+                    console.log('[Mobile] Game over:', data.winner);
+                    break;
+            }
+        });
+        
+        // ============================================================
+        // WAKE LOCK (Keep screen on during gameplay)
+        // ============================================================
+        
+        let wakeLock = null;
+        
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('[PWA] Wake lock acquired');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('[PWA] Wake lock released');
+                    });
+                } catch (err) {
+                    console.log('[PWA] Wake lock failed:', err);
+                }
+            }
+        }
+        
+        // Request wake lock when visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+        
+        // Initial request
+        requestWakeLock();
+        
+        // ============================================================
+        // VIBRATION FEEDBACK
+        // ============================================================
+        
+        function vibrate(pattern = 50) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+        
+        // Expose to iframe
+        window.mobileVibrate = vibrate;
+    </script>
+</body>
+</html>

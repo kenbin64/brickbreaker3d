@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wave Renderer — z=xy Manifold</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:monospace; }
+canvas { display:block; }
+#info { position:fixed; bottom:16px; left:16px; color:rgba(255,255,255,0.45);
+        font-size:12px; line-height:2; pointer-events:none; }
+#info b { color:#64d8ff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="info">
+  <b>Wave Renderer</b> — no polygons, no meshes<br>
+  Geometry: <b>z = x·y</b>  (6 orientations = Manifold Star)<br>
+  Color = wave function evaluated at the hit point<br>
+  Drag to rotate
+</div>
+<script>
+const canvas = document.getElementById('c');
+const W = canvas.width  = window.innerWidth;
+const H = canvas.height = window.innerHeight;
+const gl = canvas.getContext('webgl');
+if (!gl) { document.body.innerHTML = '<p style="color:red;padding:20px">WebGL not supported</p>'; }
+
+// ── Vertex shader: fullscreen quad, nothing else ─────────────────────────
+const VS = `attribute vec2 a; void main(){ gl_Position = vec4(a,0,1); }`;
+
+// ── Fragment shader: the entire 3D engine is here ────────────────────────
+const FS = `
+precision highp float;
+uniform vec2  res;
+uniform float t;
+uniform vec2  cam;
+
+// Signed distance to the saddle surface z = xy (gradient-normalised)
+float sdSaddle(vec3 p){
+    return (p.z - p.x*p.y) / sqrt(p.x*p.x + p.y*p.y + 1.0);
+}
+
+// Six orientations of z=xy form the Manifold Star.
+// Each orientation is a different logic gate (AND / NAND on x, y, z axis).
+float scene(vec3 p){
+    float d = 1e9;
+    d = min(d, abs(sdSaddle(p)));                            // z =  xy
+    d = min(d, abs(sdSaddle(p.xzy)));                        // y =  xz
+    d = min(d, abs(sdSaddle(p.yzx)));                        // x =  yz
+    vec3 n = p * vec3(1.0,-1.0,1.0);
+    d = min(d, abs(sdSaddle(n)));                            // z = -xy
+    d = min(d, abs(sdSaddle(n.xzy)));                        // y = -xz
+    d = min(d, abs(sdSaddle(n.yzx)));                        // x = -yz
+    return max(d, length(p) - 2.2);  // clip inside a sphere
+}
+
+// Normal via tetrahedron sampling (4 evaluations, no axis-aligned bias)
+vec3 calcNormal(vec3 p){
+    vec2 e = vec2(0.0015, -0.0015);
+    return normalize(
+        e.xyy*scene(p+e.xyy) + e.yyx*scene(p+e.yyx) +
+        e.yxy*scene(p+e.yxy) + e.xxx*scene(p+e.xxx));
+}
+
+// Color IS the wave — same z=xy wave function, sampled at the surface point.
+// R, G, B are three orthogonal axis-pair waves, like three light frequencies.
+vec3 waveColor(vec3 p){
+    float r = sin(p.x*p.y*4.0 + t*0.9 ) * 0.5 + 0.5;
+    float g = sin(p.y*p.z*4.0 + t*1.31) * 0.5 + 0.5;
+    float b = sin(p.x*p.z*4.0 + t*0.71) * 0.5 + 0.5;
+    return vec3(r, g, b);
+}
+
+void main(){
+    vec2 uv = (gl_FragCoord.xy - res*0.5) / res.y;
+
+    // Camera on a sphere, mouse-controlled
+    vec3 ro  = vec3(sin(cam.x)*cos(cam.y), sin(cam.y), cos(cam.x)*cos(cam.y)) * 4.5;
+    vec3 fwd = normalize(-ro);
+    vec3 rt  = normalize(cross(vec3(0,1,0), fwd));
+    vec3 up  = cross(fwd, rt);
+    vec3 rd  = normalize(fwd + uv.x*rt + uv.y*up);
+
+    // Ray march
+    float dist = 0.2, hit = -1.0;
+    for(int i = 0; i < 100; i++){
+        float d = scene(ro + rd*dist);
+        if(d < 0.001){ hit = dist; break; }
+        if(dist > 12.0) break;
+        dist += max(d * 0.55, 0.004);
+    }
+
+    // Void background + faint procedural stars
+    vec3 col = vec3(0.02, 0.02, 0.06);
+    float star = step(0.997, fract(sin(dot(uv*800.0, vec2(127.1,311.7)))*43758.5));
+    col += star * 0.5;
+
+    if(hit > 0.0){
+        vec3 p  = ro + rd*hit;
+        vec3 nm = calcNormal(p);
+
+        // Wave color at this surface coordinate
+        vec3 wc = waveColor(p);
+
+        // Lighting
+        vec3 L    = normalize(vec3(1.2, 2.0, 0.8));
+        float diff = max(dot(nm, L), 0.0);
+        float spec = pow(max(dot(reflect(-L, nm), -rd), 0.0), 40.0);
+        float rim  = pow(1.0 - abs(dot(nm, -rd)), 4.0);
+
+        col = wc * (diff*0.85 + 0.12)
+            + vec3(1.0)*spec*0.25
+            + vec3(0.15, 0.5, 1.0)*rim*0.55;
+
+        // The spark: origin = where all 6 surfaces meet = z/xy = 1 everywhere
+        float spark = exp(-length(p)*3.5) * (sin(t*37.0)*sin(t*53.0)*0.4 + 1.0);
+        col += vec3(1.0, 0.85, 0.3) * spark * 2.5;
+    }
+
+    col = pow(clamp(col, 0.0, 1.0), vec3(0.4545)); // gamma correct
+    gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ── Compile & link ───────────────────────────────────────────────────────
+function mkShader(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+        console.error(type === gl.VERTEX_SHADER ? 'VS' : 'FS', gl.getShaderInfoLog(s));
+    return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, mkShader(gl.VERTEX_SHADER,   VS));
+gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog); gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const aLoc = gl.getAttribLocation(prog, 'a');
+gl.enableVertexAttribArray(aLoc);
+gl.vertexAttribPointer(aLoc, 2, gl.FLOAT, false, 0, 0);
+
+const uRes = gl.getUniformLocation(prog, 'res');
+const uT   = gl.getUniformLocation(prog, 't');
+const uCam = gl.getUniformLocation(prog, 'cam');
+
+// ── Mouse drag rotation ──────────────────────────────────────────────────
+let theta = 0.6, phi = 0.35, drag = false, lx = 0, ly = 0;
+canvas.addEventListener('mousedown', e => { drag=true; lx=e.clientX; ly=e.clientY; });
+window.addEventListener('mouseup',   ()  => drag=false);
+window.addEventListener('mousemove', e  => {
+    if (!drag) return;
+    theta -= (e.clientX - lx) * 0.005;
+    phi    = Math.max(-1.4, Math.min(1.4, phi + (e.clientY - ly) * 0.005));
+    lx=e.clientX; ly=e.clientY;
+});
+
+// ── Render loop ──────────────────────────────────────────────────────────
+(function frame(ts){
+    gl.viewport(0, 0, W, H);
+    gl.uniform2f(uRes, W, H);
+    gl.uniform1f(uT,   ts * 0.001);
+    gl.uniform2f(uCam, theta, phi);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+})(0);
+</script>
+</body>
+</html>
+

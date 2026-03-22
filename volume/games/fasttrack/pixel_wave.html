@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pixel Wave Field</title>
+<style>
+* { margin:0; padding:0; } body { background:#000; overflow:hidden; }
+canvas { display:block; cursor:crosshair; }
+#info { position:fixed; bottom:14px; left:14px; color:rgba(255,255,255,0.4);
+        font:12px/2.2 monospace; pointer-events:none; }
+#info b { color:#64d8ff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="info">
+  <b>Pixel Wave Field</b><br>
+  Every pixel solves the wave equation independently<br>
+  Initial state: <b>z = x·y</b> (the saddle surface)<br>
+  Click · drag · hold for standing waves
+</div>
+<script>
+const C = document.getElementById('c');
+const W = C.width = window.innerWidth, H = C.height = window.innerHeight;
+const gl = C.getContext('webgl');
+gl.getExtension('OES_texture_float');   // float textures in WebGL1
+
+// Vertex shader: fullscreen quad, passes UV to fragment
+const VS = `attribute vec2 a; varying vec2 v;
+void main(){ v = a*0.5+0.5; gl_Position = vec4(a,0,1); }`;
+
+// Update pass: each pixel reads its own state + 4 neighbours, runs wave equation
+const FS_UP = `precision highp float;
+uniform sampler2D state; uniform vec2 res; uniform vec3 mouse;
+varying vec2 v;
+void main(){
+  vec2 px = 1.0/res;
+  float h   = texture2D(state, v).r;
+  float vel = texture2D(state, v).g;
+  float lap = texture2D(state, v+vec2( px.x,0)).r
+            + texture2D(state, v+vec2(-px.x,0)).r
+            + texture2D(state, v+vec2(0, px.y)).r
+            + texture2D(state, v+vec2(0,-px.y)).r
+            - 4.0*h;
+  vel += lap * 0.18;                          // c² × dt  (wave speed)
+  vel *= 0.986;                               // damping — energy dissipates
+  h   += vel;
+  // Inject height at mouse/touch position
+  float d = length(v - mouse.xy/res);
+  h += mouse.z * smoothstep(0.05, 0.0, d);
+  gl_FragColor = vec4(h, vel, 0.0, 1.0);
+}`;
+
+// Display pass: map wave height + velocity to colour
+const FS_DS = `precision highp float;
+uniform sampler2D state;
+varying vec2 v;
+vec3 hsv(float h, float s, float b){
+  vec3 c = clamp(abs(mod(h*6.0+vec3(0,4,2),6.0)-3.0)-1.0, 0.0, 1.0);
+  return b * mix(vec3(1.0), c, s);
+}
+void main(){
+  float h   = texture2D(state, v).r;
+  float vel = texture2D(state, v).g;
+  float bri = clamp(abs(h)*5.0 + 0.04, 0.04, 1.0);
+  vec3 col  = hsv(h*0.65 + 0.58, 0.9, bri);       // height → hue
+  col += vec3(1.0) * clamp(abs(vel)*10.0, 0.0, 0.6); // velocity → white glow
+  gl_FragColor = vec4(pow(clamp(col,0.0,1.0), vec3(0.4545)), 1.0);
+}`;
+
+// ── GL helpers ────────────────────────────────────────────────────────────
+function mkSh(type, src){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+function mkProg(fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, mkSh(gl.VERTEX_SHADER, VS));
+  gl.attachShader(p, mkSh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p); return p;
+}
+const pUp = mkProg(FS_UP);
+const pDs = mkProg(FS_DS);
+
+// Fullscreen quad buffer
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+function useQuad(p){
+  gl.useProgram(p); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  const a = gl.getAttribLocation(p, 'a');
+  gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+}
+
+// ── Textures: initial state = z=xy saddle at each pixel ──────────────────
+function mkTex(data){
+  const t = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.FLOAT, data);
+  return t;
+}
+
+// Seed: height = x*y (the saddle), velocity = 0
+const seed = new Float32Array(W * H * 4);
+for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+  const i = (y * W + x) * 4;
+  const nx = (x/W)*2 - 1, ny = (y/H)*2 - 1;
+  seed[i] = nx * ny * 0.3;   // height = x·y
+  seed[i+1] = 0;              // velocity = 0
+}
+
+let tA = mkTex(seed), tB = mkTex(null);
+
+function mkFB(tex){
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return fb;
+}
+let fbA = mkFB(tA), fbB = mkFB(tB);
+gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+// ── Mouse / touch ─────────────────────────────────────────────────────────
+let mx = 0, my = 0, mp = 0;
+function hit(e, p){ const r=C.getBoundingClientRect(); mx=e.clientX-r.left; my=H-(e.clientY-r.top); mp=p; }
+C.addEventListener('mousedown', e => hit(e, 1.0));
+C.addEventListener('mousemove', e => { if (mp) hit(e, 1.0); });
+C.addEventListener('mouseup',   ()  => mp = 0);
+C.addEventListener('touchstart', e => { e.preventDefault(); hit(e.touches[0], 1.0); }, {passive:false});
+C.addEventListener('touchmove',  e => { e.preventDefault(); hit(e.touches[0], 1.0); }, {passive:false});
+C.addEventListener('touchend',   ()  => mp = 0);
+
+// ── Render loop ───────────────────────────────────────────────────────────
+(function frame(){
+  requestAnimationFrame(frame);
+
+  // Pass 1: update — read tA, write new state into fbB
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbB);
+  gl.viewport(0, 0, W, H);
+  useQuad(pUp);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tA);
+  gl.uniform1i(gl.getUniformLocation(pUp, 'state'), 0);
+  gl.uniform2f(gl.getUniformLocation(pUp, 'res'),   W, H);
+  gl.uniform3f(gl.getUniformLocation(pUp, 'mouse'), mx, my, mp);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // Pass 2: display — read tB, draw to screen
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, W, H);
+  useQuad(pDs);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tB);
+  gl.uniform1i(gl.getUniformLocation(pDs, 'state'), 0);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // Swap ping-pong
+  [tA, tB] = [tB, tA];
+  [fbA, fbB] = [fbB, fbA];
+})();
+</script>
+</body>
+</html>
+

@@ -3445,7 +3445,6 @@ class GameState {
 
     // End current turn
     endTurn() {
-        // Dispatch event for Mom Daemon
         if (typeof document !== 'undefined') {
             document.dispatchEvent(new CustomEvent('turnChanged', { 
                 detail: { 

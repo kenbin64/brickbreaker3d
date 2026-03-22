@@ -24,7 +24,7 @@ except ImportError:
 
 # Import the new beta session server
 try:
-    from web.games.fasttrack.beta_server import beta_manager, BetaWebSocketServer
+    from games.fasttrack.beta_server import beta_manager, BetaWebSocketServer
     BETA_SERVER_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Could not import beta_server: {e}")
@@ -73,7 +73,7 @@ async def main(host: str, port: int):
         await server.start()
     else:
         # Fallback to old server
-        from web.games.fasttrack.server import fasttrack_server, handle_fasttrack_ws
+        from games.fasttrack.server import fasttrack_server, handle_fasttrack_ws
         
         print(f"🎮 Fast Track WebSocket Server starting on ws://{host}:{port}")
         print(f"   Connect with: ws://{host}:{port}/ws/fasttrack/{{room_code}}")

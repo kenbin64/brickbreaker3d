@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrickBreaker 3D - Manifold Audio Edition</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <canvas id="brandingCanvas"></canvas>
+
+    <!-- Title Banner -->
+    <div id="titleBanner">
+        <div id="gameTitle">BRICKBREAKER3D</div>
+    </div>
+    <div id="subtitleBanner">
+        <div id="gameSubtitle">Manifold Audio Edition</div>
+    </div>
+
+    <div id="hud">
+        <div id="score"><span class="hud-label">SCORE</span><span class="hud-value">0</span></div>
+        <div id="lives"><span class="hud-label">LIVES</span><span class="hud-value">5</span></div>
+        <div id="level"><span class="hud-label">LEVEL</span><span class="hud-value">1</span></div>
+        <div id="bricksLeft"><span class="hud-label">BRICKS</span><span class="hud-value">0</span></div>
+        <div id="energy"><span class="hud-label">SPEED</span><span class="hud-value">0</span></div>
+    </div>
+
+    <div id="poweredBy">POWERED BY <span>BUTTERFLYFX</span></div>
+
+    <div id="audioStatus">
+        <div style="font-weight: bold; margin-bottom: 10px;">🔊 Audio Controls</div>
+        <div style="margin-bottom: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="musicToggle" checked style="cursor: pointer; width: 16px; height: 16px;">
+                <span>Music</span>
+            </label>
+        </div>
+        <div style="margin-bottom: 12px; padding-left: 24px;">
+            <input type="range" id="musicVolume" min="0" max="100" value="30" style="width: 120px; cursor: pointer;">
+            <span id="musicVolumeLabel" style="font-size: 11px; margin-left: 8px;">30%</span>
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sfxToggle" checked style="cursor: pointer; width: 16px; height: 16px;">
+                <span>Sound FX</span>
+            </label>
+        </div>
+        <div style="padding-left: 24px;">
+            <input type="range" id="sfxVolume" min="0" max="100" value="70" style="width: 120px; cursor: pointer;">
+            <span id="sfxVolumeLabel" style="font-size: 11px; margin-left: 8px;">70%</span>
+        </div>
+    </div>
+
+    <!-- Three.js (local) -->
+    <script src="../../width/lib/three/three.min.js"></script>
+
+    <!-- Game script -->
+    <script src="./assets/js/script.js"></script>
+</body>
+</html>
+

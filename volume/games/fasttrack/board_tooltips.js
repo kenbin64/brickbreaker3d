@@ -123,7 +123,6 @@ window.BoardTooltips = (function () {
         // ── Side buttons ──
         ['#exit-game-btn',          '🚪 <b>Exit Game</b> — Leave the current game. An AI bot will take over your pegs.'],
         ['#tutorial-btn',           '📖 <b>Tutorial</b> — Launch an interactive walkthrough of all board holes, cards, and game mechanics.'],
-        ['#mom-help-btn',           '👩 <b>Ask Mom</b> — Get strategic advice. During your turn, Mom recommends moves and can auto-execute them. Otherwise she shares tips.'],
         ['#camera-toggle-btn',      '📸 <b>Camera Views</b> — Switch between Board, Ground, Chase, Orbit, and Manual camera modes.'],
         ['#game-chat-toggle',       '💬 <b>Chat</b> — Open/close the in-game chat panel to communicate with other players or AI.'],
         ['#organizer-menu-btn',     '🎛️ <b>Host Controls</b> — Manage the game session (host only).'],
@@ -160,9 +159,6 @@ window.BoardTooltips = (function () {
         ['#game-chat-panel',        '💬 <b>Game Chat</b> — Send messages to other players during the game.'],
         ['#game-chat-input',        '✏️ <b>Type Message</b> — Type your message here and press Enter to send.'],
         ['.game-chat-send-btn',     '📤 <b>Send</b> — Send your chat message.'],
-
-        // ── Mom help panel ──
-        ['#mom-help-panel',         '👩 <b>Mom\'s Advice</b> — Strategic recommendations for your current situation.'],
 
         // ── Rules modal ──
         ['#rules-modal',            '📜 <b>Game Rules</b> — Complete rules reference for Fast Track.'],

@@ -23,10 +23,10 @@
     const BOARD_RADIUS = 300;
     
     // Golden cascade: each level = previous Ã— Ï†
-    // Level 1: 5 Ã— Ï† = 8.09 â†’ 8
-    // Level 2: 8 Ã— Ï† = 12.94 â†’ 13
-    // Level 3: 13 Ã— Ï† = 21.03 â†’ 21
-    // Level 4: 21 Ã— Ï† = 34.0 â†’ 34
+    // Level 1: 5 Ã— Ï† = 8.09 → 8
+    // Level 2: 8 Ã— Ï† = 12.94 → 13
+    // Level 3: 13 Ã— Ï† = 21.03 → 21
+    // Level 4: 21 Ã— Ï† = 34.0 → 34
     const LEVEL_1 = Math.round(BASE_UNIT * PHI);           // 8
     const LEVEL_2 = Math.round(LEVEL_1 * PHI);             // 13
     const LEVEL_3 = Math.round(LEVEL_2 * PHI);             // 21
@@ -103,7 +103,7 @@
     // A hole can have multiple roles/properties
     // ============================================================
     
-    // Helper function to normalize hole type (side-left/side-right â†’ outer)
+    // Helper function to normalize hole type (side-left/side-right → outer)
     function getNormalizedHoleType(holeId) {
         if (!holeId) return 'unknown';
         if (holeId === 'center') return 'center';
@@ -143,7 +143,7 @@
         holeRegistry.set(id, hole);
         // Debug: Log first few holes
         if (holeRegistry.size <= 3) {
-            console.log('ðŸ•³ï¸ Created hole:', id, 'Registry size:', holeRegistry.size, 'Props:', hole.properties);
+            console.log('🕳ï¸ Created hole:', id, 'Registry size:', holeRegistry.size, 'Props:', hole.properties);
         }
         return hole;
     }
@@ -183,7 +183,7 @@
         return `${color} ${num}`;
     }
     
-    // â”€â”€ Friendly hole name helper â”€â”€
+    // ── Friendly hole name helper ──
     // Converts raw hole IDs to simple, human-readable descriptions
     function friendlyHoleName(holeId) {
         if (!holeId) return 'Unknown';
@@ -443,7 +443,7 @@
         const textRadius = size * 0.44;
         
         // Full circle text: "Fastrack!" repeated with star glyphs
-        const brandText = "â˜… Fastrack! â˜… Fastrack! â˜… Fastrack! â˜… Fastrack! ";
+        const brandText = "★ Fastrack! ★ Fastrack! ★ Fastrack! ★ Fastrack! ";
         ctx.font = 'bold 72px "Segoe UI", Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -546,7 +546,7 @@
         // Create VR button
         const vrButton = document.createElement('button');
         vrButton.id = 'vr-button';
-        vrButton.innerHTML = 'ðŸ¥½ ENTER VR';
+        vrButton.innerHTML = '🥽 ENTER VR';
         vrButton.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -610,7 +610,7 @@
     }
     
     function init() {
-        console.log('ðŸ”„ init() started');
+        console.log('🔄 init() started');
 
         // Guard: Three.js is loaded locally from /lib/three/three.min.js.
         // If it's still undefined, the file failed to load â€” show message and reload.
@@ -618,7 +618,7 @@
             console.error('âŒ THREE.js not loaded â€” local lib may not have served correctly. Reloading...');
             const msg = document.createElement('div');
             msg.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0a14;color:#64d8ff;font-family:sans-serif;z-index:99999;gap:16px;';
-            msg.innerHTML = '<div style="font-size:2em;">ðŸŽ² Fast Track</div><div>Loading 3D engineâ€¦ please wait.</div>';
+            msg.innerHTML = '<div style="font-size:2em;">🎲 Fast Track</div><div>Loading 3D engineâ€¦ please wait.</div>';
             document.body.appendChild(msg);
             window.location.reload();
             return;
@@ -632,8 +632,8 @@
         // Camera - far plane extended to see distant theme backdrops (stars, planets, etc.)
         // FOV 55Â° for wider field of view; lower angle for more level perspective
         camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 5000);
-        // ~22Â° above center â€” closer, more level view of the board
-        camera.position.set(0, 200, 450);
+        // Angled overview -- shows the whole board; user can zoom/rotate freely
+        camera.position.set(0, 450, 550);
         camera.lookAt(0, 0, 0);
 
         // Renderer
@@ -660,12 +660,12 @@
         try {
             boardViewMode = 0;
             fixedViewsActive = false;
-            currentCameraView = 'chase';
+            currentCameraView = 'manual';
             // UI: ensure board-view button is not marked active
             const bv = document.getElementById('board-view-btn');
             if (bv) bv.classList.remove('active');
-            // Apply automatic chase view immediately
-            if (typeof setCameraViewMode === 'function') setCameraViewMode('chase', { force: true });
+            // Apply manual mode immediately (disables CameraDirector auto-follow)
+            if (typeof setCameraViewMode === 'function') setCameraViewMode('manual', { force: true });
         } catch (e) {}
         controls.enablePan = true;
         controls.enableZoom = true;
@@ -707,7 +707,7 @@
         window.renderer = renderer;
 
         // Build hexagon and borders only
-        console.log('ðŸŽ® Creating hexagon board...');
+        console.log('🎮 Creating hexagon board...');
         try {
             createHexagonBoard();
             console.log('âœ… Hexagon board created');
@@ -715,7 +715,7 @@
             console.error('âŒ createHexagonBoard failed:', e);
         }
 
-        console.log('ðŸŒˆ Creating rainbow border...');
+        console.log('🌈 Creating rainbow border...');
         try {
             createRainbowBorder();
             console.log('âœ… Rainbow border created');
@@ -724,10 +724,10 @@
         }
 
         // Draw schema lines and create hole registry
-        console.log('ðŸ“ About to call drawSchemaLines...');
+        console.log('📐 About to call drawSchemaLines...');
         try {
             drawSchemaLines();
-            console.log('ðŸ“ drawSchemaLines completed, holeRegistry.size =', holeRegistry.size);
+            console.log('📐 drawSchemaLines completed, holeRegistry.size =', holeRegistry.size);
         } catch (e) {
             console.error('âŒ drawSchemaLines failed:', e);
         }
@@ -742,7 +742,7 @@
             if (vrDetected) {
                 // Auto-switch to VR Immersive theme
                 currentThemeName = 'vr_immersive';
-                console.log('[VR Detection] ðŸŽ® Activating VR Immersive theme');
+                console.log('[VR Detection] 🎮 Activating VR Immersive theme');
                 
                 // Add VR button for entering VR mode
                 addVRButton();
@@ -760,7 +760,7 @@
         
         // Log substrate status
         if (typeof FastTrackSubstrates !== 'undefined') {
-            console.log('ðŸŽ² FastTrack Substrates loaded:', {
+            console.log('🎲 FastTrack Substrates loaded:', {
                 Rules: FastTrackSubstrates.Rules.rules.size + ' rules',
                 Board: 'Board topology defined',
                 Card: Object.keys(FastTrackSubstrates.Card.cards).length + ' cards',
@@ -800,7 +800,7 @@
             // Surface unexpected init errors visibly so they aren't silently swallowed
             const errMsg = document.createElement('div');
             errMsg.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(200,30,30,0.9);color:#fff;padding:12px 24px;border-radius:8px;font-family:sans-serif;z-index:99999;';
-            errMsg.textContent = 'âš ï¸ 3D board failed to initialize. Try refreshing the page.';
+            errMsg.textContent = '⚠ï¸ 3D board failed to initialize. Try refreshing the page.';
             document.body.appendChild(errMsg);
         }
     }
@@ -1164,8 +1164,8 @@
         
         for (let i = 0; i < 6; i++) {
             // ============================================================
-            // PARALLEL LINES LAYOUT - side-left and side-right are PARALLEL
-            // to the safe zone (perpendicular to outer edge)
+            // PLAYER SECTION LAYOUT: 6 holes per section
+            // 1 FT pentagon + 4 outer edge + 1 home/diamond
             // ============================================================
 
             // Fast track hole positions (at inner hexagon corners)
@@ -1198,7 +1198,7 @@
             const sideTrackLength = outerRadius - innerHexRadius - 20; // Leave gap near FT
             const holeSpacing = sideTrackLength / 6;  // ~20 units between holes
 
-            // â”€â”€ OUTER EDGE: 5 holes centered on the outer edge â”€â”€
+            // ── OUTER EDGE: 5 holes centered on the outer edge ──
             // Holes are placed along the tangent direction
             const outerHolePositions = [];
             for (let h = 0; h < 5; h++) {
@@ -1267,57 +1267,13 @@
             boardGroup.add(diamond);
             coloredMarkers.push({ mesh: diamond, playerIndex: i });
 
-            // â”€â”€ SIDE-LEFT: 6 holes PARALLEL to safe zone (from FT toward left corner) â”€â”€
-            // These run INWARD from outer edge (opposite to radial direction)
-            // Start at left corner, go toward FT hole, all parallel to safe zone
+            // ── INWARD DIRECTION: used by safe zone below ──
             const inwardDirX = -radialDirX;  // Points toward center
             const inwardDirZ = -radialDirZ;
-
-            for (let h = 1; h <= 6; h++) {
-                // Start from left corner, go inward toward center
-                const holeX = leftCornerX + inwardDirX * (h * holeSpacing);
-                const holeZ = leftCornerZ + inwardDirZ * (h * holeSpacing);
-
-                const connHoleGeo = new THREE.CylinderGeometry(TRACK_HOLE_RADIUS, TRACK_HOLE_RADIUS, 5, 16);
-                const connHoleMat = new THREE.MeshStandardMaterial({
-                    color: 0x333333,
-                    roughness: 0.8
-                });
-                const connHoleMesh = new THREE.Mesh(connHoleGeo, connHoleMat);
-                connHoleMesh.position.set(holeX, LINE_HEIGHT - 2, holeZ);
-                boardGroup.add(connHoleMesh);
-
-                // h=1 is FT entry point (closest to FT hole, approaches from clockwise direction)
-                const sideLeftProps = { isOuterTrack: true };
-                if (h === 1) {
-                    sideLeftProps.isFastTrackEntry = true;  // Can enter FastTrack from here
-                }
-                const sideLeftHole = createHole(`side-left-${i}-${h}`, 'side-left', i, holeX, LINE_HEIGHT - 2, holeZ, null, sideLeftProps);
-                sideLeftHole.mesh = connHoleMesh;
-            }
-
-            // â”€â”€ SIDE-RIGHT: 6 holes PARALLEL to safe zone (from home toward next FT) â”€â”€
-            // These also run INWARD from outer edge, parallel to side-left
-            for (let h = 1; h <= 6; h++) {
-                // Start from right corner (home), go inward toward center
-                const holeX = rightCornerX + inwardDirX * (h * holeSpacing);
-                const holeZ = rightCornerZ + inwardDirZ * (h * holeSpacing);
-
-                const connHoleGeo = new THREE.CylinderGeometry(TRACK_HOLE_RADIUS, TRACK_HOLE_RADIUS, 5, 16);
-                const connHoleMat = new THREE.MeshStandardMaterial({
-                    color: 0x333333,
-                    roughness: 0.8
-                });
-                const connHoleMesh = new THREE.Mesh(connHoleGeo, connHoleMat);
-                connHoleMesh.position.set(holeX, LINE_HEIGHT - 2, holeZ);
-                boardGroup.add(connHoleMesh);
-
-                // Register side-right hole
-                const sideRightHole = createHole(`side-right-${i}-${h}`, 'side-right', i, holeX, LINE_HEIGHT - 2, holeZ, null, { isOuterTrack: true });
-                sideRightHole.mesh = connHoleMesh;
-            }
+            // Side-left and side-right holes removed — each player section has
+            // exactly 6 holes: 1 FastTrack (pentagon) + 4 outer + 1 home.
             
-            // â”€â”€ SAFE ZONE: 4 holes between the parallel lines, pointing to center â”€â”€
+            // ── SAFE ZONE: 4 holes between the parallel lines, pointing to center ──
             // Safe zone starts from center of outer edge (outer-2) and goes INWARD
             const safeStartX = outerCenterX;  // Center of outer edge
             const safeStartZ = outerCenterZ;
@@ -1384,7 +1340,7 @@
             boardGroup.add(safePlaneMesh);
             safeZonePlanes.push({ mesh: safePlaneMesh, playerIndex: i });
 
-            // â”€â”€ WINNER HOLE: at the end of safe zone (5th position, innermost) â”€â”€
+            // ── WINNER HOLE: at the end of safe zone (5th position, innermost) ──
             const winnerX = safeStartX + inwardDirX * (5 * holeSpacing);
             const winnerZ = safeStartZ + inwardDirZ * (5 * holeSpacing);
             
@@ -1503,7 +1459,7 @@
         // Export crowns for access from animate loop and update functions
         window._goldenCrowns = goldenCrowns;
         
-        // â”€â”€ Crown tagline DOM overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Crown tagline DOM overlay ──────────────────────────────────────
         let _crownTaglineEl = null;
         function _showCrownTagline(playerIndex, playerColor) {
             _hideCrownTagline();
@@ -1516,7 +1472,7 @@
                 'text-align:center', 'pointer-events:none',
                 'animation:crownTaglineFade 0.5s ease-out'
             ].join(';');
-            el.innerHTML = `<div style="font-size:2rem;line-height:1">ðŸ‘‘</div>
+            el.innerHTML = `<div style="font-size:2rem;line-height:1">👑</div>
                 <div style="color:gold;font-size:1.15rem;font-weight:700;margin-top:4px;text-shadow:0 0 12px gold">
                     Land here to WIN the Crown!
                 </div>`;
@@ -1546,7 +1502,7 @@
                 crown.mesh.visible = true;
                 crown.active = true;
                 crown.pointLight.intensity = 2.5;
-                console.log(`ðŸ‘‘ Golden crown ACTIVATED for player ${playerIndex}!`);
+                console.log(`👑 Golden crown ACTIVATED for player ${playerIndex}!`);
 
                 // Camera cut to winner hole + tagline overlay
                 const wp = crown.winnerPos;
@@ -1566,7 +1522,7 @@
                 crown.active = false;
                 crown.pointLight.intensity = 0;
                 _hideCrownTagline();
-                console.log(`ðŸ‘‘ Golden crown deactivated for player ${playerIndex}`);
+                console.log(`👑 Golden crown deactivated for player ${playerIndex}`);
             }
         };
         
@@ -1748,7 +1704,7 @@
     let userOverrideCamera = false;
     let userIsInteracting = false;  // true while mouse/touch is down on canvas
     let userInteractionTimeout = null;  // smooth-return delay timer
-    let cameraMode = 'cinematic'; // 'cinematic' = auto-follow, 'manual' = user control
+    let cameraMode = 'manual'; // 'cinematic' = auto-follow, 'manual' = user control (default)
     let activePegTracking = null; // Ref to peg being tracked for smooth follow
     // Pointer tracking to determine deliberate pan/rotate vs click
     let _pointerStart = null;
@@ -1904,7 +1860,7 @@
     const CAMERA_VIEWS = {
         smooth: {
             name: 'Smooth Focus',
-            icon: 'ðŸŽ¥',
+            icon: '🎥',
             description: 'Smoothly follows gameplay action (default)',
             height: 280,
             distance: 480,
@@ -1914,7 +1870,7 @@
         },
         board: {
             name: 'Board View',
-            icon: 'ðŸŽ¯',
+            icon: '🎯',
             description: 'Level view of the board',
             height: 200,
             distance: 450,
@@ -1923,7 +1879,7 @@
         },
         ground: {
             name: 'Ground Level',
-            icon: 'ðŸƒ',
+            icon: '🏃',
             description: 'Low angle following the action',
             height: 40,
             distance: 120,
@@ -1932,7 +1888,7 @@
         },
         chase: {
             name: 'Chase Cam',
-            icon: 'ðŸŽ¬',
+            icon: '🎬',
             description: 'Behind-the-peg cinematic view',
             height: 60,
             distance: 80,
@@ -1942,7 +1898,7 @@
         },
         orbit: {
             name: 'Orbit',
-            icon: 'ðŸŒ€',
+            icon: '🌀',
             description: 'Slowly orbiting the board',
             height: 350,
             distance: 450,
@@ -1951,7 +1907,7 @@
         },
         manual: {
             name: 'Manual',
-            icon: 'ðŸŽ®',
+            icon: '🎮',
             description: 'Full manual camera control',
             height: null,
             distance: null,
@@ -1960,7 +1916,7 @@
         },
         pegeye: {
             name: "Peg's Eye",
-            icon: 'ðŸ‘ï¸',
+            icon: '👁ï¸',
             description: 'First-person view from any peg â€” click a peg, then pan 360Â°',
             height: null,
             distance: null,
@@ -1977,7 +1933,7 @@
     // for silky-smooth motion with no jerk or double-takes.
     // ============================================================
     const CameraDirector = {
-        mode: 'auto',          // 'auto' | 'manual' | 'fixed-straight' | 'fixed-angled'
+        mode: 'manual',        // 'auto' | 'manual' | 'fixed-straight' | 'fixed-angled'
         _pos:   new THREE.Vector3(0, 200, 450),   // current camera position
         _look:  new THREE.Vector3(0, 0, 0),        // current look-at target
         _tPos:  new THREE.Vector3(0, 200, 450),    // target camera position
@@ -2165,7 +2121,7 @@
         pegEyeYaw = 0;
         pegEyePitch = 0;
         // Show selection prompt
-        _showPegEyePrompt('ðŸ‘ï¸ Click any peg to see its point of view');
+        _showPegEyePrompt('👁ï¸ Click any peg to see its point of view');
         _showPegEyeBackButton();
         // Highlight all pegs to show they're clickable
         pegRegistry.forEach(peg => {
@@ -2216,7 +2172,7 @@
 
         // Position camera at peg
         _updatePegEyeCamera();
-        _showPegEyePrompt("ðŸ‘ï¸ " + (peg.id || 'Peg') + " â€” drag to pan 360Â°");
+        _showPegEyePrompt("👁ï¸ " + (peg.id || 'Peg') + " â€” drag to pan 360Â°");
 
         console.log("[Peg's Eye] Activated on", peg.id);
     }
@@ -2313,7 +2269,7 @@
                 'padding:14px 32px;border-radius:30px;font-family:Orbitron,Rajdhani,sans-serif;font-size:1.05em;' +
                 'font-weight:700;letter-spacing:1px;cursor:pointer;border:2px solid rgba(255,255,255,0.2);' +
                 'box-shadow:0 4px 25px rgba(231,76,60,0.4);transition:transform 0.2s,box-shadow 0.2s;';
-            btn.textContent = 'ðŸŽ¯ Back to Board';
+            btn.textContent = '🎯 Back to Board';
             btn.addEventListener('mouseenter', function() { this.style.transform = 'translateX(-50%) scale(1.06)'; });
             btn.addEventListener('mouseleave', function() { this.style.transform = 'translateX(-50%) scale(1)'; });
             btn.addEventListener('click', exitPegEyeMode);
@@ -2485,7 +2441,7 @@
             // Exit board view mode - return to automatic camera
             if (btn) {
                 btn.classList.remove('active');
-                btn.textContent = 'ðŸŽ¯';
+                btn.textContent = '🎯';
                 btn.title = 'View: Auto (tap to switch to straight-down)';
                 btn.setAttribute('aria-label', 'Camera view: automatic');
                 try {
@@ -2559,7 +2515,7 @@
                     // Straight down view
                     // IMPORTANT: When looking straight down, the default up vector (0,1,0)
                     // is parallel to the look direction (0,-1,0), creating a degenerate
-                    // view matrix â†’ black screen. Use Z-axis as up instead.
+                    // view matrix → black screen. Use Z-axis as up instead.
                     camera.up.set(0, 0, -1);
                     camera.position.set(0, 700, 0);
                     camera.lookAt(0, 0, 0);
@@ -2570,7 +2526,7 @@
                         btn.setAttribute('aria-label', 'Camera view: straight down');
                     }
                     console.log('[Fixed Views] Mode 1: Straight Down - mouse controls enabled');
-                    showFixedViewInfo('Straight Down View â€” tap ðŸŽ¯ for angled');
+                    showFixedViewInfo('Straight Down View â€” tap 🎯 for angled');
                     currentCameraView = 'fixed-straight';
                     CameraDirector.mode = 'fixed-top';
                 } else if (boardViewMode === 2) {
@@ -2592,7 +2548,7 @@
                         btn.setAttribute('aria-label', 'Camera view: angled');
                     }
                     console.log('[Fixed Views] Mode 2: Angled View - mouse controls enabled');
-                    showFixedViewInfo('Angled View â€” tap ðŸŽ¯ for automatic');
+                    showFixedViewInfo('Angled View â€” tap 🎯 for automatic');
                     currentCameraView = 'fixed-angled';
                     CameraDirector.mode = 'fixed-angled';
                 }
@@ -2793,7 +2749,7 @@
         if (musicMuted) {
             // Mute music
             if (btn) {
-                btn.textContent = 'ðŸ”‡';
+                btn.textContent = '🔇';
                 btn.title = 'Music: Off (click to turn on)';
                 btn.classList.add('muted');
             }
@@ -2802,7 +2758,7 @@
         } else {
             // Unmute music
             if (btn) {
-                btn.textContent = 'ðŸŽµ';
+                btn.textContent = '🎵';
                 btn.title = 'Music: On (click to turn off)';
                 btn.classList.remove('muted');
             }
@@ -2860,7 +2816,7 @@
                     cameraTransition = null;
                     if (cb) cb();
                 }
-                showFixedViewInfo('ðŸ“· Exploring â€” auto camera resumes next turn');
+                showFixedViewInfo('📷 Exploring â€” auto camera resumes next turn');
             }
         }, { passive: true });
 
@@ -3150,7 +3106,7 @@
     function setTheme(themeName) {
         console.log('[Theme] Switching to:', themeName);
 
-        // â”€â”€ Analytics: Track theme change (skip during demo/promo auto-rotation) â”€â”€
+        // ── Analytics: Track theme change (skip during demo/promo auto-rotation) ──
         if (window.FTAnalytics && !window.DemoDirector) {
             FTAnalytics.themeChange(themeName);
         }
@@ -3228,7 +3184,7 @@
         }
     }
     
-    // â”€â”€ Music Toggle (floating button) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Music Toggle (floating button) ──────────────────────────
     let gameMusicPlaying = false;
     let musicAutoStarted = false;  // Track if music already auto-started on first card draw
     
@@ -3244,11 +3200,11 @@
                 StadiumController.systems.music.stop?.();
             }
             if (btn) {
-                btn.textContent = 'ðŸ”‡';
+                btn.textContent = '🔇';
                 btn.title = 'Music: OFF';
                 btn.classList.remove('music-on');
             }
-            console.log('ðŸŽµ Music OFF');
+            console.log('🎵 Music OFF');
         } else {
             // Turn ON
             gameMusicPlaying = true;
@@ -3260,16 +3216,16 @@
                 StadiumController.systems.music.play?.();
             }
             if (btn) {
-                btn.textContent = 'ðŸŽµ';
+                btn.textContent = '🎵';
                 btn.title = 'Music: ON';
                 btn.classList.add('music-on');
             }
-            console.log('ðŸŽµ Music ON');
+            console.log('🎵 Music ON');
         }
     }
     window.toggleGameMusic = toggleGameMusic;
 
-    // â”€â”€â”€ Music & Sound Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Music & Sound Panel ──────────────────────────────────────────────
     function openMusicPanel() {
         const panel = document.getElementById('music-sound-panel');
         if (!panel) return;
@@ -3294,13 +3250,13 @@
             if (typeof MusicSubstrate !== 'undefined') { MusicSubstrate.activate(); if (MusicSubstrate.play) MusicSubstrate.play(); }
             if (typeof StadiumController !== 'undefined' && StadiumController.systems?.music) StadiumController.systems.music.play?.();
             const btn = document.getElementById('music-toggle-btn');
-            if (btn) { btn.textContent = 'ðŸŽµ'; btn.title = 'Music & Sound'; btn.classList.add('music-on'); }
+            if (btn) { btn.textContent = '🎵'; btn.title = 'Music & Sound'; btn.classList.add('music-on'); }
         } else if (!enabled && gameMusicPlaying) {
             gameMusicPlaying = false;
             if (typeof MusicSubstrate !== 'undefined') MusicSubstrate.stop?.();
             if (typeof StadiumController !== 'undefined' && StadiumController.systems?.music) StadiumController.systems.music.stop?.();
             const btn = document.getElementById('music-toggle-btn');
-            if (btn) { btn.textContent = 'ðŸ”‡'; btn.title = 'Music & Sound'; btn.classList.remove('music-on'); }
+            if (btn) { btn.textContent = '🔇'; btn.title = 'Music & Sound'; btn.classList.remove('music-on'); }
         }
         localStorage.setItem('fasttrack_music', enabled ? 'true' : 'false');
     }
@@ -3314,31 +3270,13 @@
     }
     window.setGameSFX = setGameSFX;
 
-    // â”€â”€â”€ Ask Mom â€” persistent real-time advice toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    let momAdviceActive = false;
-    let momAdviceTimer  = null;
-    function toggleMomAdvice() {
-        const btn = document.getElementById('ask-mom-btn');
-        momAdviceActive = !momAdviceActive;
-        if (momAdviceActive) {
-            btn?.classList.add('mom-active');
-            showMomHelp();
-            momAdviceTimer = setInterval(() => { if (momAdviceActive) showMomHelp(); }, 15000);
-        } else {
-            btn?.classList.remove('mom-active');
-            clearInterval(momAdviceTimer);
-            momAdviceTimer = null;
-            hideMomHelp();
-        }
-    }
-    window.toggleMomAdvice = toggleMomAdvice;
 
     // Auto-start music on first card draw by any player
     function autoStartMusicOnFirstDraw() {
         if (musicAutoStarted || gameMusicPlaying) return;
         musicAutoStarted = true;
         
-        console.log('ðŸŽµ Auto-starting music on first card draw');
+        console.log('🎵 Auto-starting music on first card draw');
         gameMusicPlaying = true;
         
         if (typeof MusicSubstrate !== 'undefined') {
@@ -3351,7 +3289,7 @@
         
         const btn = document.getElementById('music-toggle-btn');
         if (btn) {
-            btn.textContent = 'ðŸŽµ';
+            btn.textContent = '🎵';
             btn.title = 'Music: ON';
             btn.classList.add('music-on');
         }
@@ -3394,23 +3332,23 @@
     // Sound check - plays a brief sample when audio is toggled on
     // Uses MusicSubstrate.ping() to generate sounds from substrate coordinates
     function playSoundCheck(type) {
-        console.log(`ðŸ”Š [Sound Check] Starting ${type} sound check...`);
+        console.log(`🔊 [Sound Check] Starting ${type} sound check...`);
         
         // Use MusicSubstrate ping system if available
         if (typeof MusicSubstrate !== 'undefined') {
-            console.log(`ðŸ”Š [Sound Check] MusicSubstrate available`);
+            console.log(`🔊 [Sound Check] MusicSubstrate available`);
             
             // Ensure substrate is activated
             const activated = MusicSubstrate.activate();
-            console.log(`ðŸ”Š [Sound Check] Activated: ${activated}, Context state: ${MusicSubstrate.audioContext?.state}`);
+            console.log(`🔊 [Sound Check] Activated: ${activated}, Context state: ${MusicSubstrate.audioContext?.state}`);
             
             if (type === 'music') {
                 // Ping a musical arpeggio across the substrate
-                console.log(`ðŸ”Š [Sound Check] Calling pingSoundCheck()`);
+                console.log(`🔊 [Sound Check] Calling pingSoundCheck()`);
                 MusicSubstrate.pingSoundCheck();
             } else if (type === 'crowd') {
                 // Ping multiple random points for crowd-like texture
-                console.log(`ðŸ”Š [Sound Check] Calling pingChord() for crowd`);
+                console.log(`🔊 [Sound Check] Calling pingChord() for crowd`);
                 const crowdPings = [
                     { x: Math.random() * 100, y: Math.random() * 30 },
                     { x: Math.random() * 100, y: Math.random() * 30 },
@@ -3422,7 +3360,7 @@
             } else if (type === 'commentary' || type === 'speech') {
                 // Use speech synthesis for commentary
                 if ('speechSynthesis' in window) {
-                    console.log(`ðŸ”Š [Sound Check] Using speech synthesis`);
+                    console.log(`🔊 [Sound Check] Using speech synthesis`);
                     const utterance = new SpeechSynthesisUtterance('Sound check!');
                     utterance.rate = 1.2;
                     utterance.pitch = type === 'commentary' ? 0.9 : 1.0;
@@ -3430,7 +3368,7 @@
                     window.speechSynthesis.speak(utterance);
                 } else {
                     // Fallback: ping a single attention tone
-                    console.log(`ðŸ”Š [Sound Check] Fallback ping for ${type}`);
+                    console.log(`🔊 [Sound Check] Fallback ping for ${type}`);
                     MusicSubstrate.ping(50, 70, { duration: 0.3, volume: 0.2 });
                 }
             }
@@ -3568,11 +3506,11 @@
         const btn = document.getElementById('suggestions-toggle');
         if (btn) {
             if (GAME_CONFIG.suggestionsDisabled) {
-                btn.textContent = 'ðŸ’¡ Suggestions OFF';
+                btn.textContent = '💡 Suggestions OFF';
                 btn.style.color = '#888';
                 btn.style.borderColor = '#555';
             } else {
-                btn.textContent = 'ðŸ’¡ Suggestions ON';
+                btn.textContent = '💡 Suggestions ON';
                 btn.style.color = '#ffd700';
                 btn.style.borderColor = '#ffd700';
             }
@@ -3611,42 +3549,42 @@
         
         // Entry from holding
         if (move.type === 'enter' || fromHole?.type === 'holding') {
-            return `${prefix}ðŸš€ Enter the board`;
+            return `${prefix}🚀 Enter the board`;
         }
         
         // Bullseye moves
         if (toHole?.type === 'bullseye' || move.toHoleId === 'center') {
-            return `${prefix}ðŸŽ¯ Enter Bullseye`;
+            return `${prefix}🎯 Enter Bullseye`;
         }
         if (fromHole?.type === 'bullseye' || move.fromHoleId === 'center') {
-            return `${prefix}ðŸŽ¯ Exit Bullseye`;
+            return `${prefix}🎯 Exit Bullseye`;
         }
         
         // FastTrack moves
         if (move.isFastTrack || move.enteringFastTrack) {
-            return `${prefix}âš¡ Traverse Fast Track`;
+            return `${prefix}⚡ Traverse Fast Track`;
         }
         if (move.exitingFastTrack) {
-            return `${prefix}ðŸšª Exit Fast Track`;
+            return `${prefix}🚪 Exit Fast Track`;
         }
         if (toHole?.type === 'fasttrack' && fromHole?.type !== 'fasttrack') {
-            return `${prefix}âš¡ Enter Fast Track`;
+            return `${prefix}⚡ Enter Fast Track`;
         }
         if (fromHole?.type === 'fasttrack' && toHole?.type !== 'fasttrack') {
-            return `${prefix}ðŸšª Leave Fast Track at this point`;
+            return `${prefix}🚪 Leave Fast Track at this point`;
         }
         
         // Safe zone moves
         if (toHole?.type === 'safezone' || toHole?.type === 'safe') {
-            return `${prefix}ðŸ›¡ï¸ Enter Safe Zone`;
+            return `${prefix}🛡ï¸ Enter Safe Zone`;
         }
         if (fromHole?.type === 'safezone' && toHole?.type === 'safezone') {
-            return `${prefix}ðŸ§¹ Tidy Up Safe Zone`;
+            return `${prefix}🧹 Tidy Up Safe Zone`;
         }
         
         // Winner move
         if (toHole?.type === 'home' && (move.isWinner || move.completesCircuit)) {
-            return `${prefix}ðŸ† Winner!`;
+            return `${prefix}🏆 Winner!`;
         }
         
         // Backward move (4 card)
@@ -3656,10 +3594,10 @@
         
         // Decline options
         if (move.declineFastTrack) {
-            return `${prefix}ðŸš« Decline Fast Track`;
+            return `${prefix}🚫 Decline Fast Track`;
         }
         if (move.declineBullseye) {
-            return `${prefix}ðŸš« Decline Bullseye`;
+            return `${prefix}🚫 Decline Bullseye`;
         }
         
         // Default
@@ -3722,7 +3660,7 @@
         
         const title = document.createElement('div');
         title.style.cssText = 'color: #ffd700; font-weight: bold; margin-bottom: 8px; font-size: 14px;';
-        title.textContent = `ðŸ“‹ ${moves.length} Legal Moves`;
+        title.textContent = `📋 ${moves.length} Legal Moves`;
         dropdown.appendChild(title);
         
         // Check if moves involve multiple different pegs
@@ -4171,12 +4109,12 @@
     // Helper to convert suit name to symbol
     function getSuitSymbol(suitName) {
         const symbols = {
-            'hearts': 'â™¥',
-            'diamonds': 'â™¦',
-            'clubs': 'â™£',
-            'spades': 'â™ ',
-            'red': 'â˜…',   // for red joker
-            'black': 'â˜…'  // for black joker
+            'hearts': '♥',
+            'diamonds': '♦',
+            'clubs': '♣',
+            'spades': '♠',
+            'red': '★',   // for red joker
+            'black': '★'  // for black joker
         };
         return symbols[suitName] || '';
     }
@@ -4198,7 +4136,7 @@
             playerName: playerName 
         });
         
-        console.log('ðŸš€ TEST: Fast Track triggered!');
+        console.log('🚀 TEST: Fast Track triggered!');
     }
     
     function testSendHome() {
@@ -4211,7 +4149,7 @@
             playerColor: playerColor 
         });
         
-        console.log('ðŸ  TEST: Send Home triggered!');
+        console.log('🏠 TEST: Send Home triggered!');
     }
     
     function testWinner() {
@@ -4220,7 +4158,7 @@
         const playerIndex = gameState?.currentPlayer?.index || 0;
         const playerColor = getThemedPlayerColor(playerIndex);
         const playerName = gameState?.currentPlayer?.name || 'Player 1';
-        const playerAvatar = gameState?.currentPlayer?.avatar || 'ðŸ‘¤';
+        const playerAvatar = gameState?.currentPlayer?.avatar || '👤';
         
         // Trigger swirl for winner too
         triggerThemeSwirl();
@@ -4229,7 +4167,7 @@
         FastTrackThemes.showBanner(`${playerAvatar} ${playerName} WINS!`, '#FFD700', '#4B0082', playerColor);
         FastTrackThemes.triggerCrowdReaction('roaring');
         
-        console.log('ðŸ† TEST: Winner triggered!');
+        console.log('🏆 TEST: Winner triggered!');
     }
     
     function debugUI() {
@@ -4321,7 +4259,7 @@
     // This is more reliable than window.onload or DOMContentLoaded alone
     // Fixes the issue where board doesn't load until hard refresh
     $(function() {
-        console.log('ðŸŽ® jQuery ready - initializing game board...');
+        console.log('🎮 jQuery ready - initializing game board...');
         init();
     });
 

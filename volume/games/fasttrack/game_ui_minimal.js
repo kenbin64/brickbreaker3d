@@ -1826,19 +1826,12 @@ const GameUIMinimal = {
             </div>
             
             <div class="dim-divider"></div>
-            
-            <div class="dim-item" onclick="GameUIMinimal.askMom()">
-                <span class="dim-item-icon">👩‍�</span>
-                <div class="dim-item-text">
-                    <span class="dim-item-label">Ask Mom</span>
-                    <span class="dim-item-about">Get helpful hints for your next move</span>
-                </div>
-            </div>
         `;
     },
 
+
     _renderCamera() {
-        const currentCam = window.currentCameraMode || 'chase';
+        const currentCam = window.currentCameraMode || 'manual';
         const cams = [
             { id: 'chase',  icon: '🎬', label: 'Automatic',        about: 'Cinematic view that follows the action' },
             { id: 'manual', icon: '✋', label: 'Manual',           about: 'Mouse-driven — drag to look around' },
@@ -1957,15 +1950,8 @@ const GameUIMinimal = {
     },
 
     // ============================================================
-    // ASK MOM / TUTORIAL / TOOLTIPS
+    // TUTORIAL / TOOLTIPS
     // ============================================================
-
-    askMom() {
-        if (typeof window.showMomHelp === 'function') {
-            window.showMomHelp();
-        }
-        this.toggleMenu(false);
-    },
 
     startTutorial() {
         if (window.FastTrackTutorial && typeof window.FastTrackTutorial.start === 'function') {

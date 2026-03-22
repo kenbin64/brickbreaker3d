@@ -8,7 +8,7 @@
  *   z = x·y          (Layer 3 — Relation / AND-gate / truth table)
  *   z = x·y²         (Layer 4 — Form / quadratic amplifier)
  *
- * Holes, pegs, cards, rules, the board itself, and Mom helper
+ * Holes, pegs, cards, rules, and the board itself
  * are ALL points on these manifolds. Each point self-asserts
  * its own rules — deterministic, pre-sealed, never recalculated.
  *
@@ -725,24 +725,7 @@ const BoardManifold = (() => {
         console.log(`[BoardManifold] Board z = ${BOARD.z().toFixed(4)} (φ⁴ enclosing manifold)`);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    //  MOM MANIFOLD — Mom helper as a surface point
-    // ═══════════════════════════════════════════════════════════
 
-    const MOM = {
-        surface: 'z=xy',
-        x: PHI,
-        y: PHI * PHI, // z = φ³ — nurturing surface
-        label: 'Mom Helper',
-        icon: '👩‍👧',       // family-style icon
-        fallbackIcon: '👩', // if combo emoji not supported
-        z() { return evalSurface(this.surface, this.x, this.y); },
-        ruleText: 'Contextual helper. Available when difficulty != hard.',
-        getIcon() {
-            // Test if the family emoji renders
-            return this.icon;
-        }
-    };
 
     // ═══════════════════════════════════════════════════════════
     //  NAME & ICON POOLS
@@ -955,9 +938,6 @@ const BoardManifold = (() => {
 
         // Board
         BOARD,
-
-        // Mom
-        MOM,
 
         // Name pools
         BOT_POOL,

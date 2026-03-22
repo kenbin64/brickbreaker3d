@@ -49,9 +49,9 @@ class KensGamesHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path == '/games/breakout3d.html':
             self.path = '/games/brickbreaker3d/index.html'
 
-        # Route /fasttrack to landing page, /fasttrack/play to game
+        # Route /fasttrack to lobby, /fasttrack/play to game
         elif self.path == '/fasttrack':
-            self.path = '/games/fasttrack/index.html'
+            self.path = '/games/fasttrack/lobby.html'
         elif self.path == '/fasttrack/play' or self.path == '/fasttrack/game':
             self.path = '/games/fasttrack/play.html'
 
@@ -65,9 +65,15 @@ class KensGamesHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path == '/behavior.js':
             self.path = '/platform/behavior.js'
 
-        # Route fasttrack assets
+        # Route fasttrack assets (absolute /fasttrack/ paths)
         elif self.path.startswith('/fasttrack/'):
             self.path = '/games' + self.path
+
+        # Route fasttrack relative assets (relative paths from lobby served at /fasttrack)
+        elif self.path.startswith('/assets/'):
+            self.path = '/games/fasttrack' + self.path
+        elif self.path in ('/avatars.js', '/lobby_client.js', '/manifest.json', '/sw.js'):
+            self.path = '/games/fasttrack' + self.path
 
         return super().do_GET()
 

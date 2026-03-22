@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8"><title>Puppet Painting</title>
+<style>
+*{margin:0;padding:0;}body{background:#111;overflow:hidden;font-family:monospace;}
+canvas{display:block;cursor:grab;}
+#drop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:16px;color:#aaa;font-size:22px;border:2px dashed #333;background:#111;z-index:10;}
+#drop.over{background:#1a1a2e;border-color:#64d8ff;color:#fff;}
+#drop span{font-size:13px;color:#555;}
+#hud{position:fixed;bottom:14px;left:14px;color:rgba(255,255,255,.4);font:11px/2.2 monospace;pointer-events:none;display:none;}
+#hud b{color:#64d8ff;}
+</style>
+</head><body>
+<div id="drop">🎨 Drop painting here<span>or click to choose</span></div>
+<input type="file" id="fi" accept="image/*" style="display:none">
+<canvas id="c"></canvas>
+<div id="hud"><b>Puppet Painting</b> — move mouse for parallax · drag to pull<br>Subjects 3D-lit · cattle &amp; horse auto-animate · dust reacts</div>
+<script>
+const drop=document.getElementById('drop'),fi=document.getElementById('fi');
+drop.addEventListener('click',()=>fi.click());
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');go(e.dataTransfer.files[0]);});
+fi.addEventListener('change',()=>go(fi.files[0]));
+function go(f){const r=new FileReader();r.onload=e=>{const i=new Image();i.onload=()=>init(i);i.src=e.target.result;};r.readAsDataURL(f);}
+
+function init(img){
+  drop.style.display='none'; document.getElementById('hud').style.display='block';
+  const C=document.getElementById('c'), W=C.width=window.innerWidth, H=C.height=window.innerHeight;
+  const gl=C.getContext('webgl'); gl.getExtension('OES_texture_float');
+
+  const VS=`attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;gl_Position=vec4(a,0,1);}`;
+
+  // State texture: RG = wave height+velocity, BA = puppet drag displacement
+  const FS_UP=`precision highp float;
+uniform sampler2D s;uniform vec2 res;uniform vec4 sp;varying vec2 v;
+void main(){
+  vec2 px=1./res;
+  float h=texture2D(s,v).r, vel=texture2D(s,v).g;
+  float lap=texture2D(s,v+vec2(px.x,0)).r+texture2D(s,v-vec2(px.x,0)).r
+           +texture2D(s,v+vec2(0,px.y)).r+texture2D(s,v-vec2(0,px.y)).r-4.*h;
+  vel=(vel+lap*.19)*.981; h+=vel;
+  // wave injection at mouse (atmosphere/dust)
+  float di=smoothstep(.08,.0,length(v-sp.xy/res));
+  h+=sp.z*di;
+  // puppet displacement in BA — just decay + directional inject
+  vec2 pd=texture2D(s,v).ba*.88;
+  pd+=sp.zw*smoothstep(.18,.0,length(v-sp.xy/res));
+  gl_FragColor=vec4(h,vel,pd);
+}`;
+
+  const FS_DS=`precision highp float;
+uniform sampler2D s,p;uniform float t;uniform vec2 mNDC,iRes;varying vec2 v;
+void main(){
+  float h=texture2D(s,v).r, vel=abs(texture2D(s,v).g);
+  vec2 pd=texture2D(s,v).ba;
+  vec2 img=vec2(v.x,1.-v.y); // image-space (y=0=top)
+
+  // ---- DEPTH MAP: vertical + luminance (dark silhouettes = close) ----
+  float vd=pow(clamp((img.y-.1)/.9,0.,1.),1.0);      // sky=0 ground=1
+  float luma0=dot(texture2D(p,img).rgb,vec3(.299,.587,.114));
+  float subj=(1.-smoothstep(.15,.55,luma0))*smoothstep(.35,.65,vd); // dark+mid = subject
+  float depth=mix(vd,1.,subj*.5);
+
+  // ---- PARALLAX (far=slow, near=fast) ----
+  vec2 par=mNDC*depth*.045;                           // layer shift from mouse
+  par+=(img-.5)*depth*.014;                           // forced perspective: near pushes outward
+
+  // ---- AUTONOMOUS RIGS ----
+  float gnd=pow(clamp((img.y-.25)/.75,0.,1.),1.6);
+  vec2 au=vec2(0.);
+  float horse=smoothstep(.13,.0,length(img-vec2(.48,.52)));
+  au.y+=sin(t*5.6)*.007*horse; au.x+=sin(t*5.6+1.4)*.003*horse;
+  float cowboy=smoothstep(.08,.0,length(img-vec2(.48,.38)));
+  au.x+=sin(t*5.6+.7)*.005*cowboy; au.y+=cos(t*5.6)*.003*cowboy;
+  float cL=smoothstep(.18,.0,length(img-vec2(.18,.72)));
+  au.x+=sin(t*4.3+.5)*.012*cL; au.y+=cos(t*4.3)*.005*cL;
+  float cR=smoothstep(.16,.0,length(img-vec2(.82,.72)));
+  au.x+=sin(t*4.1+1.1)*.011*cR; au.y+=cos(t*4.1+.6)*.005*cR;
+  float cC=smoothstep(.15,.0,length(img-vec2(.45,.78)));
+  au.x+=sin(t*4.7+.3)*.009*cC; au.y+=cos(t*4.7)*.004*cC;
+  vec2 wave=vec2(h*.024+sin(img.y*30.+t*1.8)*.003,h*.014+sin(img.x*25.+t*2.3)*.002)*gnd;
+
+  vec2 uv=clamp(img+par+au+wave+pd*.13,0.,1.);
+  vec3 col=texture2D(p,uv).rgb;
+
+  // ---- SOBEL NORMALS → 3D LIGHTING ----
+  vec2 px=2./iRes;
+  float lL=dot(texture2D(p,uv+vec2(-px.x,0.)).rgb,vec3(.299,.587,.114));
+  float lR=dot(texture2D(p,uv+vec2( px.x,0.)).rgb,vec3(.299,.587,.114));
+  float lU=dot(texture2D(p,uv+vec2(0., px.y)).rgb,vec3(.299,.587,.114));
+  float lD=dot(texture2D(p,uv+vec2(0.,-px.y)).rgb,vec3(.299,.587,.114));
+  vec3 nm=normalize(vec3((lL-lR)*3.,(lD-lU)*3.,.35));
+  // light: sun fixed top-right + mouse secondary light
+  vec3 sun=normalize(vec3(.5,.7,1.));
+  vec3 eye=normalize(vec3(mNDC*.8,1.2));
+  vec3 ld=normalize(sun+eye*.4);
+  float diff=clamp(dot(nm,ld),0.,1.);
+  float spec=pow(clamp(dot(reflect(-ld,nm),vec3(0.,0.,1.)),0.,1.),52.);
+  // shading strength: full on close subjects, subtle on background
+  float shStr=mix(.12,.7,subj+depth*.2);
+  col=col*(diff*.65+.35+shStr*.25)+vec3(1.,.95,.85)*spec*shStr*.3;
+
+  // atmosphere: dust glow, pull highlight, vignette
+  col=mix(col,vec3(.84,.6,.28),clamp(vel*gnd*20.,0.,.45));
+  col=mix(col,col*1.3+.05,clamp(length(pd)*4.,0.,1.)*.25);
+  col*=clamp(1.-dot(v-.5,v-.5)*1.3,0.,1.);
+  col=pow(clamp(col,0.,1.),vec3(.4545));
+  gl_FragColor=vec4(col,1.);
+}`;
+
+  function mkSh(t,src){const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));return s;}
+  function mkP(fs){const p=gl.createProgram();gl.attachShader(p,mkSh(gl.VERTEX_SHADER,VS));
+    gl.attachShader(p,mkSh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);return p;}
+  const pUp=mkP(FS_UP), pDs=mkP(FS_DS);
+  const qb=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,qb);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  function useQ(p){gl.useProgram(p);gl.bindBuffer(gl.ARRAY_BUFFER,qb);const a=gl.getAttribLocation(p,'a');
+    gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);}
+
+  function mkTex(data,w,h,isImg){const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    if(isImg)gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,data);
+    else gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.FLOAT,data);
+    return t;}
+  function mkFB(tex){const fb=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);return fb;}
+
+  const tPaint=mkTex(img,0,0,true);
+  let tA=mkTex(null,W,H,false), tB=mkTex(null,W,H,false);
+  let fbA=mkFB(tA), fbB=mkFB(tB);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+
+  const imgW=img.naturalWidth||img.width, imgH=img.naturalHeight||img.height;
+  let mx=W/2,my=H/2,pmx=W/2,pmy=H/2,mp=0,t0=null;
+  let snx=0,sny=0; // smooth mouse NDC for parallax (always tracked)
+  function hit(e,btn){const r=C.getBoundingClientRect();pmx=mx;pmy=my;mx=e.clientX-r.left;my=H-(e.clientY-r.top);mp=btn;}
+  C.addEventListener('mousedown',e=>{C.style.cursor='grabbing';hit(e,1);});
+  C.addEventListener('mousemove',e=>{
+    const r=C.getBoundingClientRect();
+    snx+=((e.clientX-r.left)/W*2-1-snx)*.06; // smooth lerp toward cursor NDC
+    sny+=(-((e.clientY-r.top)/H*2-1)-sny)*.06;
+    if(mp)hit(e,1);
+  });
+  C.addEventListener('mouseup',()=>{mp=0;C.style.cursor='grab';});
+  C.addEventListener('touchstart',e=>{e.preventDefault();hit(e.touches[0],1);},{passive:false});
+  C.addEventListener('touchmove',e=>{e.preventDefault();hit(e.touches[0],1);},{passive:false});
+  C.addEventListener('touchend',()=>mp=0);
+
+  (function frame(ts){
+    requestAnimationFrame(frame); if(!t0)t0=ts; const time=(ts-t0)*.001;
+    const dx=(mx-pmx)*.4, dy=(my-pmy)*.4;
+    const pressure=mp*(Math.sqrt(dx*dx+dy*dy)+.5);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fbB); gl.viewport(0,0,W,H); useQ(pUp);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tA);
+    gl.uniform1i(gl.getUniformLocation(pUp,'s'),0);
+    gl.uniform2f(gl.getUniformLocation(pUp,'res'),W,H);
+    gl.uniform4f(gl.getUniformLocation(pUp,'sp'),mx,my,pressure,dy*mp*.4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,W,H); useQ(pDs);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tB);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,tPaint);
+    gl.uniform1i(gl.getUniformLocation(pDs,'s'),0);
+    gl.uniform1i(gl.getUniformLocation(pDs,'p'),1);
+    gl.uniform1f(gl.getUniformLocation(pDs,'t'),time);
+    gl.uniform2f(gl.getUniformLocation(pDs,'mNDC'),snx,sny);
+    gl.uniform2f(gl.getUniformLocation(pDs,'iRes'),imgW,imgH);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    [tA,tB]=[tB,tA]; [fbA,fbB]=[fbB,fbA];
+    pmx=mx; pmy=my;
+  })();
+}
+</script>
+</body></html>
+

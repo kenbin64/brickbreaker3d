@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>z=xy Manifold Star</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#030308; overflow:hidden; }
+    #info {
+      position:fixed; top:14px; left:16px; z-index:10;
+      color:#0ff; font:13px/1.9 monospace;
+      text-shadow:0 0 10px #0ff9; pointer-events:none;
+    }
+    #legend {
+      position:fixed; bottom:16px; left:16px; z-index:10;
+      font:12px/2 monospace; pointer-events:none;
+    }
+    .leg { display:flex; align-items:center; gap:9px; }
+    .sw  { width:13px; height:13px; border-radius:2px; flex-shrink:0; }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <b>z = xy  Manifold Star</b><br>
+    6 hyperbolic paraboloids · 3 lock-and-key pairs<br>
+    <span style="opacity:.55">drag · scroll · right-drag to pan</span><br>
+    <span id="mode-label" style="color:#ff0;opacity:.85">[ W ] wire &nbsp; [ S ] solid &nbsp; [ A ] auto-rotate</span><br>
+    <span style="opacity:.45">[ 1 ] compass·square &nbsp; [ 2 ] eye &nbsp; [ 3 ] top &nbsp; [ 4 ] free &nbsp; [ 5 ] ✦ spark</span><br>
+    <span style="color:#fa0;opacity:.85">[ 1 ] compass+square &nbsp; [ 2 ] all-seeing eye &nbsp; [ 3 ] top &nbsp; [ 4 ] free</span>
+  </div>
+  <div id="legend"></div>
+
+  <script src="../../lib/three/three.min.js"></script>
+  <script src="../../lib/three/OrbitControls.js"></script>
+  <script>
+    // ── scene ─────────────────────────────────────────────────────
+    const scene    = new THREE.Scene();
+    scene.background = new THREE.Color(0x030308);
+    scene.fog        = new THREE.FogExp2(0x030308, 0.055);
+
+    const camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 300);
+    camera.position.set(5.5, 4, 7.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true });
+    renderer.setPixelRatio(devicePixelRatio);
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping  = true;
+    controls.dampingFactor  = 0.07;
+    controls.autoRotate     = true;
+    controls.autoRotateSpeed = 0.5;
+
+    // ── one base saddle: z = xy on a CIRCULAR disk ───────────────
+    //   A rotated circle is still a circle ⟹ all 6 share one sphere.
+    function buildBaseSaddle(rings=44, segs=80, R=2.0) {
+      const pos = [0, 0, 0];   // centre vertex (index 0)
+      const idx = [];
+
+      for (let ri = 1; ri <= rings; ri++) {
+        const r = (ri / rings) * R;
+        for (let si = 0; si <= segs; si++) {
+          const theta = (si / segs) * Math.PI * 2;
+          const x = r * Math.cos(theta);
+          const y = r * Math.sin(theta);
+          pos.push(x, y, x * y);        // z = xy
+        }
+      }
+
+      // centre fan  (ring 1)
+      for (let si = 0; si < segs; si++) {
+        idx.push(0, 1 + si, 2 + si);
+      }
+      // ring quads
+      for (let ri = 1; ri < rings; ri++) {
+        const base = 1 + (ri - 1) * (segs + 1);
+        for (let si = 0; si < segs; si++) {
+          const a = base + si, b = a + 1;
+          const c = a + segs + 1, d = c + 1;
+          idx.push(a, b, d,  a, d, c);
+        }
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    // ── 6 instances: one z=xy saddle, rotated by every 90° combo ─
+    //   All 6 are the SAME shape — only the Euler rotation differs.
+    //   This is the key insight: rotation IS the lock-and-key mechanism.
+    const D = Math.PI / 2;   // 90° in radians
+    const INSTANCES = [
+      { label:'(0°,0°,0°)',    gate:'AND · Z',   eq:'z = xy',   color:0x00e5ff, rx:0, ry:0, rz:0 },
+      { label:'(90°,0°,0°)',   gate:'AND · Y',   eq:'y = xz',   color:0xff3060, rx:D, ry:0, rz:0 },
+      { label:'(0°,90°,0°)',   gate:'AND · X',   eq:'x = yz',   color:0x44ff88, rx:0, ry:D, rz:0 },
+      { label:'(0°,0°,90°)',   gate:'NAND · Z',  eq:'z = −xy',  color:0xffaa00, rx:0, ry:0, rz:D },
+      { label:'(90°,0°,90°)',  gate:'NAND · Y',  eq:'y = −xz',  color:0xcc44ff, rx:D, ry:0, rz:D },
+      { label:'(90°,90°,90°)', gate:'NAND · X',  eq:'x = −yz',  color:0xff88cc, rx:D, ry:D, rz:D },
+    ];
+
+    const baseGeo = buildBaseSaddle();
+    const legend  = document.getElementById('legend');
+
+    // track all materials so we can toggle modes globally
+    const solidMats = [], wireMats = [];
+
+    // floating 3D gate labels — projected to screen each frame
+    // anchor = saddle "horn": local high-point (R/√2, R/√2, R²/2), pushed out ×1.4
+    const R = 2.0;
+    const localHorn = new THREE.Vector3(R/Math.SQRT2, R/Math.SQRT2, R*R/2).multiplyScalar(1.4);
+    const floatLabels = [];   // { div, worldPos:THREE.Vector3 }
+
+    INSTANCES.forEach(({ label, gate, eq, color, rx, ry, rz }) => {
+      const hex = '#' + color.toString(16).padStart(6,'0');
+
+      const solid = new THREE.MeshPhongMaterial({
+        color, transparent:true, opacity:0.18,
+        side:THREE.DoubleSide, shininess:160, specular:0xffffff,
+        depthWrite:false
+      });
+      const wire = new THREE.MeshBasicMaterial({
+        color, wireframe:true, transparent:true, opacity:0.55
+      });
+
+      solidMats.push(solid);
+      wireMats.push(wire);
+
+      [solid, wire].forEach(mat => {
+        const mesh = new THREE.Mesh(baseGeo, mat);
+        mesh.rotation.set(rx, ry, rz);
+        scene.add(mesh);
+      });
+
+      // legend row
+      const row = document.createElement('div');
+      row.className = 'leg';
+      row.innerHTML = `<div class="sw" style="background:${hex}"></div>
+                       <span style="color:${hex}">${gate} &nbsp;<span style="opacity:.55">${eq}</span></span>`;
+      legend.appendChild(row);
+
+      // floating label — world position = horn rotated to match this surface
+      const worldPos = localHorn.clone().applyEuler(new THREE.Euler(rx, ry, rz));
+      const div = document.createElement('div');
+      div.style.cssText = [
+        'position:fixed','pointer-events:none','z-index:20',
+        `color:${hex}`,`border:1px solid ${hex}44`,
+        'background:rgba(3,3,8,0.78)','border-radius:4px',
+        'padding:2px 7px','font:bold 11px/1.6 monospace',
+        `text-shadow:0 0 10px ${hex}`,
+        'transform:translate(-50%,-50%)','white-space:nowrap'
+      ].join(';');
+      div.innerHTML = `${gate}<br><span style="font-weight:normal;opacity:.7">${eq}</span>`;
+      document.body.appendChild(div);
+      floatLabels.push({ div, worldPos });
+    });
+
+    // ── mode toggle ───────────────────────────────────────────────
+    //  'solid'     = translucent fill + faint wire
+    //  'wireframe' = wire only (pure geometry — reveals the symbols)
+    let viewMode = 'wireframe';
+    function applyMode() {
+      if (viewMode === 'wireframe') {
+        solidMats.forEach(m => { m.opacity = 0.04; });
+        wireMats .forEach(m => { m.opacity = 0.70; });
+      } else {
+        solidMats.forEach(m => { m.opacity = 0.22; });
+        wireMats .forEach(m => { m.opacity = 0.08; });
+      }
+    }
+    applyMode();   // start in wireframe — best for symbol hunting
+
+    // ── preset camera snap ────────────────────────────────────────
+    //  1 = compass + square  (diagonal ~35° — what Blender showed)
+    //  2 = all-seeing eye    (side-on along X axis)
+    //  3 = top-down          (straight down Z)
+    //  4 = restore free cam
+    //  5 = THE SPARK         (close-in along saddle axis — all gates at zero)
+    const VIEWS = {
+      '1': { pos:[4.2, 4.2, 4.2],   tgt:[0,0,0] },   // compass+square
+      '2': { pos:[8.5, 0.3, 0.3],   tgt:[0,0,0] },   // all-seeing eye
+      '3': { pos:[0.01, 0.01, 9],   tgt:[0,0,0] },   // top-down
+      '4': { pos:[5.5,  4,   7.5],  tgt:[0,0,0] },   // free / default
+      '5': { pos:[0.6,  0.4, 2.8],  tgt:[0,0,0] },   // the spark — close, on-axis
+    };
+
+    function snapTo(view) {
+      controls.autoRotate = false;
+      const {pos, tgt} = view;
+      camera.position.set(...pos);
+      controls.target.set(...tgt);
+      controls.update();
+    }
+
+    window.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'w') { viewMode = 'wireframe'; applyMode(); }
+      if (k === 's') { viewMode = 'solid';     applyMode(); }
+      if (k === 'a') { controls.autoRotate = !controls.autoRotate; }
+      if (VIEWS[e.key]) snapTo(VIEWS[e.key]);
+    });
+
+    // start at compass+square view, wireframe
+    snapTo(VIEWS['1']);
+
+    // ── lighting ──────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+    const key = new THREE.DirectionalLight(0xffffff, 1.3);
+    key.position.set(7, 10, 6);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x4060ff, 0.55);
+    rim.position.set(-6, -5, -6);
+    scene.add(rim);
+
+    // ── axes ──────────────────────────────────────────────────────
+    scene.add(new THREE.AxesHelper(3.2));
+
+    // ── THE SPARK — glowing origin node ───────────────────────────
+    // Canvas radial-gradient → sprite texture (additive blend)
+    const sparkCanvas = document.createElement('canvas');
+    sparkCanvas.width = sparkCanvas.height = 128;
+    const ctx = sparkCanvas.getContext('2d');
+    const grad = ctx.createRadialGradient(64,64,0, 64,64,64);
+    grad.addColorStop(0,   'rgba(255,220,140,1)');
+    grad.addColorStop(0.15,'rgba(255,160, 40,0.85)');
+    grad.addColorStop(0.45,'rgba(255,100,  0,0.35)');
+    grad.addColorStop(1,   'rgba(  0,  0,  0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,128,128);
+
+    const sparkTex = new THREE.CanvasTexture(sparkCanvas);
+    const sparkMat = new THREE.SpriteMaterial({
+      map: sparkTex, blending: THREE.AdditiveBlending,
+      depthWrite: false, transparent: true
+    });
+    const spark = new THREE.Sprite(sparkMat);
+    spark.scale.set(0.55, 0.55, 1);
+    scene.add(spark);
+
+    // hard bright core
+    const coreMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 16, 16),
+      new THREE.MeshBasicMaterial({ color:0xffddaa })
+    );
+    scene.add(coreMesh);
+
+    // point light at origin so nearby surfaces catch the spark
+    const sparkLight = new THREE.PointLight(0xff9933, 1.6, 4.5);
+    scene.add(sparkLight);
+
+    // ── render loop ───────────────────────────────────────────────
+    let clock = 0;
+    (function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+
+      // pulse: slow breathe + sharp flicker
+      clock += 0.016;
+      const breathe = 0.72 + 0.28 * Math.sin(clock * 1.4);
+      const flicker = 1 + 0.08 * Math.sin(clock * 37) * Math.sin(clock * 53);
+      const pulse   = breathe * flicker;
+      spark.scale.setScalar(0.55 * pulse);
+      sparkMat.opacity     = 0.85 * pulse;
+      sparkLight.intensity = 1.6  * pulse;
+
+      renderer.render(scene, camera);
+    })();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
+

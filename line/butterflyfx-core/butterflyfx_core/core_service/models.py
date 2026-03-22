@@ -59,3 +59,67 @@ class HealthResponse(BaseModel):
     status: Literal["ok"] = "ok"
     core_hash: str
     kernel_hash: str
+
+
+# --- Dimensional Doctrine Models ---
+
+class SeedResponse(BaseModel):
+    'Result of applying Dimensional Collapse or Expansion doctrine to a state.'
+    original_state: State
+    seed_state: State
+    doctrine: str   # 'collapse' or 'expand'
+    receipt: dict
+
+
+class DoctrineInfo(BaseModel):
+    'Metadata about a single active doctrine.'
+    name: str
+    description: str
+    trigger_level: int
+    result_level: int
+
+
+class DoctrineSummary(BaseModel):
+    'Summary of all active dimensional doctrines.'
+    collapse_doctrine: DoctrineInfo
+    expansion_doctrine: DoctrineInfo
+
+
+# --- Lens / Registry Models ---
+
+class LensInfo(BaseModel):
+    'Metadata about a registered lens.'
+    name: str
+    version: str
+    description: str
+    manifest_hash: str
+
+
+class LensManifestResponse(BaseModel):
+    'Response listing all registered lenses.'
+    lenses: List[LensInfo]
+    count: int
+
+
+class KernelOpInfo(BaseModel):
+    'Metadata about a registered kernel operation.'
+    name: str
+    description: str
+    tags: List[str]
+
+
+class KernelOpsResponse(BaseModel):
+    'Response listing all registered kernel operations.'
+    operations: List[KernelOpInfo]
+    count: int
+
+
+# --- Enhanced Health ---
+
+class HealthResponseV2(BaseModel):
+    status: Literal['ok'] = 'ok'
+    core_hash: str
+    kernel_hash: str
+    lenses: List[str]
+    kernel_ops: List[str]
+    doctrines: List[str]

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Liquid Transition</title>
+<style>
+* { margin:0; padding:0; } body { background:#000; overflow:hidden; }
+canvas { display:block; cursor:pointer; }
+#info { position:fixed; bottom:14px; left:14px; color:rgba(255,255,255,0.45);
+        font:12px/2.2 monospace; pointer-events:none; }
+#info b { color:#64d8ff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="info"><b>Liquid Transition</b><br>Click anywhere to trigger</div>
+<script>
+const C = document.getElementById('c');
+const W = C.width = window.innerWidth, H = C.height = window.innerHeight;
+const gl = C.getContext('webgl');
+gl.getExtension('OES_texture_float');
+
+const VS = `attribute vec2 a; varying vec2 v; void main(){ v=a*.5+.5; gl_Position=vec4(a,0,1); }`;
+
+// Wave update: same wave equation as pixel_wave, but faster decay for clean transitions
+const FS_UP = `precision highp float;
+uniform sampler2D state; uniform vec2 res; uniform vec3 splash;
+varying vec2 v;
+void main(){
+  vec2 px = 1.0/res;
+  float h   = texture2D(state,v).r, vel = texture2D(state,v).g;
+  float lap = texture2D(state,v+vec2(px.x,0)).r + texture2D(state,v-vec2(px.x,0)).r
+            + texture2D(state,v+vec2(0,px.y)).r  + texture2D(state,v-vec2(0,px.y)).r - 4.0*h;
+  vel = (vel + lap*0.22) * 0.978;
+  h  += vel;
+  // inject a big positive wave at click point
+  float d = length(v - splash.xy/res);
+  h += splash.z * smoothstep(0.06, 0.0, d);
+  gl_FragColor = vec4(h, vel, 0.0, 1.0);
+}`;
+
+// Display: use wave height to blend between two procedural scenes
+const FS_DS = `precision highp float;
+uniform sampler2D state; uniform float sceneIdx; uniform float time;
+varying vec2 v;
+
+vec3 sceneA(vec2 uv){
+  // Deep ocean — dark teal with manifold star hint
+  float r = sin(uv.x*6.28*3.0+time*0.4)*sin(uv.y*6.28*2.0+time*0.3)*0.5+0.5;
+  return mix(vec3(0.02,0.12,0.22), vec3(0.05,0.55,0.7), r*r);
+}
+vec3 sceneB(vec2 uv){
+  // Ember field — warm gold to crimson
+  float r = sin(uv.x*uv.y*18.0+time*0.6)*0.5+0.5;
+  float g = sin((uv.x+uv.y)*9.0-time*0.5)*0.5+0.5;
+  return mix(vec3(0.6,0.05,0.02), vec3(1.0,0.75,0.1), r*g);
+}
+
+void main(){
+  float h   = texture2D(state,v).r;
+  float vel = abs(texture2D(state,v).g);
+
+  // which scene is "current" vs "next"
+  vec3 curr = sceneIdx < 0.5 ? sceneA(v) : sceneB(v);
+  vec3 next = sceneIdx < 0.5 ? sceneB(v) : sceneA(v);
+
+  // wave crest (h > 0) reveals next scene; add velocity glow at boundary
+  float t   = smoothstep(-0.08, 0.08, h);
+  vec3 col  = mix(curr, next, t);
+
+  // liquid shimmer at the wavefront
+  float rim = smoothstep(0.0, 0.25, vel);
+  col = mix(col, vec3(1.0), rim * 0.55);
+
+  col = pow(clamp(col,0.0,1.0), vec3(0.4545));
+  gl_FragColor = vec4(col,1.0);
+}`;
+
+function mkSh(type, src){
+  const s = gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+function mkProg(fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, mkSh(gl.VERTEX_SHADER, VS));
+  gl.attachShader(p, mkSh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p); return p;
+}
+const pUp = mkProg(FS_UP), pDs = mkProg(FS_DS);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+function useQuad(p){
+  gl.useProgram(p); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  const a = gl.getAttribLocation(p,'a');
+  gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
+}
+
+function mkTex(data){
+  const t = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.FLOAT,data);
+  return t;
+}
+function mkFB(tex){
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return fb;
+}
+
+let tA = mkTex(null), tB = mkTex(null);
+let fbA = mkFB(tA), fbB = mkFB(tB);
+gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+// State: which scene is showing, pending splash
+let sceneIdx = 0;
+let splash = [0, 0, 0]; // x, y, pressure — zero until clicked
+
+C.addEventListener('click', e => {
+  const r = C.getBoundingClientRect();
+  splash = [e.clientX - r.left, H - (e.clientY - r.top), 2.5];
+  // flip scene after wave has time to cross
+  setTimeout(() => { sceneIdx = 1 - sceneIdx; }, 800);
+});
+
+let t0 = null;
+(function frame(ts){
+  requestAnimationFrame(frame);
+  if(!t0) t0 = ts;
+  const time = (ts - t0) * 0.001;
+
+  // Pass 1: update wave state
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbB);
+  gl.viewport(0,0,W,H);
+  useQuad(pUp);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tA);
+  gl.uniform1i(gl.getUniformLocation(pUp,'state'), 0);
+  gl.uniform2f(gl.getUniformLocation(pUp,'res'), W, H);
+  gl.uniform3f(gl.getUniformLocation(pUp,'splash'), splash[0], splash[1], splash[2]);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  splash[2] *= 0.7; // decay the injection so it doesn't keep firing
+
+  // Pass 2: display
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0,0,W,H);
+  useQuad(pDs);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tB);
+  gl.uniform1i(gl.getUniformLocation(pDs,'state'), 0);
+  gl.uniform1f(gl.getUniformLocation(pDs,'sceneIdx'), sceneIdx);
+  gl.uniform1f(gl.getUniformLocation(pDs,'time'), time);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  [tA,tB]=[tB,tA]; [fbA,fbB]=[fbB,fbA];
+})();
+</script>
+</body>
+</html>
+

@@ -20,7 +20,7 @@
 //  CONSTANTS — Genesis Layer 1: Spark
 // ═══════════════════════════════════════════════════════════
 
-const PHI = (1 + Math.sqrt(5)) / 2; // Golden ratio φ ≈ 1.618
+// PHI is declared globally by fibonacci_backdrop.js — do not redeclare
 const VR_SUBSTRATE_ID = 0x5652454E54414E474C45n; // "VRENTANGLE"
 
 // ═══════════════════════════════════════════════════════════

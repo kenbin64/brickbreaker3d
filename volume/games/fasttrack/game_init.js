@@ -290,6 +290,17 @@ window.GameInit = (function() {
             log('Syncing CardUI');
             window.cardUI.updateCurrentPlayer(gameState.currentPlayer);
         }
+
+        // Sync MobileUI player name/avatar (initGame set it before configureHumanPlayer ran)
+        if (window.mobileUI && typeof window.mobileUI.updatePlayerInfo === 'function') {
+            const cp = gameState.currentPlayer;
+            window.mobileUI.updatePlayerInfo(
+                cp.name,
+                cp.avatar || '👤',
+                cp.deck?.remaining || 54,
+                cp.colorHex
+            );
+        }
         
         // Show UI elements
         const panels = document.getElementById('player-panels');
@@ -312,9 +323,7 @@ window.GameInit = (function() {
         
         // Show game controls
         const exitBtn = document.getElementById('exit-game-btn');
-        const momBtn = document.getElementById('mom-help-btn');
         if (exitBtn) exitBtn.style.display = 'flex';
-        if (momBtn) momBtn.style.display = 'flex';
     }
     
     // ============================================================

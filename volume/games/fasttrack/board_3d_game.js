@@ -26,7 +26,6 @@
     let highlightedHoles = [];
     let highlightsActive = false;  // True while flashing destination holes are shown â€” blocks camera yanks
     
-    // Expose legalMoves to external modules (ask_mom.js)
     // Uses a getter so window.legalMoves always reflects the local variable
     Object.defineProperty(window, 'legalMoves', {
         get() { return legalMoves; },
@@ -55,75 +54,75 @@
         probability: 0.75,  // 75% chance AI reacts to events
         // Reactions for positive outcomes (AI did something good)
         positive: [
-            { emoji: 'ðŸŽ‰', name: 'celebrate' },
-            { emoji: 'ðŸ”¥', name: 'fire' },
-            { emoji: 'ðŸ’ƒ', name: 'dance' },
-            { emoji: 'ðŸ¥³', name: 'party' }
+            { emoji: '🎉', name: 'celebrate' },
+            { emoji: '🔥', name: 'fire' },
+            { emoji: '💃', name: 'dance' },
+            { emoji: '🥳', name: 'party' }
         ],
         // Reactions when AI cuts an opponent â€” playful, not mean!
         cut: [
-            { emoji: 'ðŸ˜œ', name: 'playful' },
-            { emoji: 'ðŸ˜', name: 'smirk' },
-            { emoji: 'ðŸ¤­', name: 'oopsie' },
-            { emoji: 'ðŸ’…', name: 'sassy' },
-            { emoji: 'ðŸ˜˜', name: 'kiss' }
+            { emoji: '😜', name: 'playful' },
+            { emoji: '😏', name: 'smirk' },
+            { emoji: '🤭', name: 'oopsie' },
+            { emoji: '💅', name: 'sassy' },
+            { emoji: '😘', name: 'kiss' }
         ],
         // Reactions for special moves (fasttrack, bullseye)
         special: [
-            { emoji: 'ðŸ”¥', name: 'fire' },
-            { emoji: 'ðŸŽ‰', name: 'celebrate' },
-            { emoji: 'ðŸ‘', name: 'clap' },
-            { emoji: 'âš¡', name: 'lightning' },
-            { emoji: 'ðŸš€', name: 'rocket' }
+            { emoji: '🔥', name: 'fire' },
+            { emoji: '🎉', name: 'celebrate' },
+            { emoji: '👏', name: 'clap' },
+            { emoji: '⚡', name: 'lightning' },
+            { emoji: '🚀', name: 'rocket' }
         ],
         // Reactions when AI gets cut (negative) â€” good-spirited
         negative: [
-            { emoji: 'ðŸ˜±', name: 'shock' },
-            { emoji: 'ðŸ˜¤', name: 'determined' },
-            { emoji: 'ðŸ«£', name: 'peekaboo' },
-            { emoji: 'ðŸ˜…', name: 'sweat' },
-            { emoji: 'ðŸ’ª', name: 'comeback' }
+            { emoji: '😱', name: 'shock' },
+            { emoji: '😤', name: 'determined' },
+            { emoji: '🫣', name: 'peekaboo' },
+            { emoji: '😅', name: 'sweat' },
+            { emoji: '💪', name: 'comeback' }
         ],
         // Reactions for close games / frustration â€” competitive but fun
         frustration: [
-            { emoji: 'ðŸ˜¤', name: 'determined' },
-            { emoji: 'ðŸ˜…', name: 'sweat' },
-            { emoji: 'ðŸ¥´', name: 'dizzy' },
-            { emoji: 'ðŸ¤¯', name: 'mindblown' }
+            { emoji: '😤', name: 'determined' },
+            { emoji: '😅', name: 'sweat' },
+            { emoji: '🥴', name: 'dizzy' },
+            { emoji: '🤯', name: 'mindblown' }
         ],
         // NEW: Encouragement â€” when human makes a great move, bots cheer!
         encouragement: [
-            { emoji: 'ðŸ‘', name: 'clap' },
-            { emoji: 'ðŸ”¥', name: 'fire' },
-            { emoji: 'ðŸ’ª', name: 'strong' },
-            { emoji: 'ðŸ‘€', name: 'watchout' },
-            { emoji: 'ðŸ˜®', name: 'wow' },
-            { emoji: 'ðŸ«¡', name: 'salute' }
+            { emoji: '👏', name: 'clap' },
+            { emoji: '🔥', name: 'fire' },
+            { emoji: '💪', name: 'strong' },
+            { emoji: '👀', name: 'watchout' },
+            { emoji: '😮', name: 'wow' },
+            { emoji: '🫡', name: 'salute' }
         ],
         // NEW: Sportsmanship â€” when game ends (win or lose)
         sportsmanship: [
-            { emoji: 'ðŸ¤', name: 'handshake' },
-            { emoji: 'ðŸ‘', name: 'clap' },
-            { emoji: 'ðŸŽ‰', name: 'celebrate' },
-            { emoji: 'ðŸ’™', name: 'love' },
-            { emoji: 'ðŸ«¶', name: 'heart_hands' }
+            { emoji: '🤝', name: 'handshake' },
+            { emoji: '👏', name: 'clap' },
+            { emoji: '🎉', name: 'celebrate' },
+            { emoji: '💙', name: 'love' },
+            { emoji: '🫶', name: 'heart_hands' }
         ],
         // NEW: Game start â€” friendly welcome
         welcome: [
-            { emoji: 'ðŸ‘‹', name: 'wave' },
-            { emoji: 'ðŸ¤—', name: 'hug' },
-            { emoji: 'ðŸ˜Š', name: 'smile' },
-            { emoji: 'ðŸŽ®', name: 'gamepad' },
-            { emoji: 'ðŸŽ²', name: 'dice' }
+            { emoji: '👋', name: 'wave' },
+            { emoji: '🤗', name: 'hug' },
+            { emoji: '😊', name: 'smile' },
+            { emoji: '🎮', name: 'gamepad' },
+            { emoji: '🎲', name: 'dice' }
         ],
         // NEW: Warpath-specific â€” intense but still fun/playful
         warpathCut: [
-            { emoji: 'ðŸ˜ˆ', name: 'revenge' },
-            { emoji: 'ðŸ‘¹', name: 'ogre' },
-            { emoji: 'ðŸ”¥', name: 'fire' },
+            { emoji: '😈', name: 'revenge' },
+            { emoji: '👹', name: 'ogre' },
+            { emoji: '🔥', name: 'fire' },
             { emoji: 'âš”ï¸', name: 'swords' },
-            { emoji: 'ðŸ’€', name: 'dead' },
-            { emoji: 'ðŸ˜', name: 'smirk' }
+            { emoji: '💀', name: 'dead' },
+            { emoji: '😏', name: 'smirk' }
         ]
     };
 
@@ -132,83 +131,83 @@
     const AI_CHAT_MESSAGES = {
         // When bot cuts the human
         cut: [
-            "Sorry, not sorry! ðŸ˜œ",
-            "Oops! My bad! ðŸ¤­",
-            "Nothing personal! ðŸ’•",
-            "It's part of the game! ðŸ˜˜",
-            "Had to do it! ðŸ˜…",
-            "I still love you tho! ðŸ’™",
-            "Gotcha! Good sport? ðŸ¤—",
-            "Tag, you're it! ðŸ˜"
+            "Sorry, not sorry! 😜",
+            "Oops! My bad! 🤭",
+            "Nothing personal! 💕",
+            "It's part of the game! 😘",
+            "Had to do it! 😅",
+            "I still love you tho! 💙",
+            "Gotcha! Good sport? 🤗",
+            "Tag, you're it! 😝"
         ],
         // When human makes a great move
         encouragement: [
-            "Nice move! ðŸ‘",
-            "Wow, impressive! ðŸ”¥",
-            "You're on fire! âš¡",
-            "Watch out for this one! ðŸ‘€",
-            "Great play! ðŸ’ª",
-            "Ooh, smart move! ðŸ§ ",
-            "That was slick! ðŸ˜Ž"
+            "Nice move! 👏",
+            "Wow, impressive! 🔥",
+            "You're on fire! ⚡",
+            "Watch out for this one! 👀",
+            "Great play! 💪",
+            "Ooh, smart move! 🧠",
+            "That was slick! 😎"
         ],
         // When human cuts a bot
         gotCut: [
-            "Nooo! Well played! ðŸ˜…",
-            "I'll be back! ðŸ’ª",
-            "You got me! Good one! ðŸ‘",
-            "Ouch! But respect! ðŸ«¡",
-            "Fair play, fair play! ðŸ¤",
-            "Revenge will be sweet! ðŸ˜¤",
-            "Okay okay, nice one! ðŸ˜‚"
+            "Nooo! Well played! 😅",
+            "I'll be back! 💪",
+            "You got me! Good one! 👏",
+            "Ouch! But respect! 🫡",
+            "Fair play, fair play! 🤝",
+            "Revenge will be sweet! 😤",
+            "Okay okay, nice one! 😂"
         ],
         // Game start greetings
         welcome: [
-            "Let's have fun! ðŸŽ®",
-            "May the best player win! ðŸ†",
-            "Good luck everyone! ðŸ€",
-            "Let's gooo! ðŸš€",
-            "Ready to play! ðŸŽ²",
-            "This is gonna be great! ðŸ˜Š"
+            "Let's have fun! 🎮",
+            "May the best player win! 🏆",
+            "Good luck everyone! 🍀",
+            "Let's gooo! 🚀",
+            "Ready to play! 🎲",
+            "This is gonna be great! 😊"
         ],
         // When human wins (sportsmanship)
         humanWins: [
-            "GG! You earned it! ðŸ†",
-            "Well played! Great game! ðŸ‘",
-            "You're too good! ðŸ™Œ",
-            "Champion! Rematch? ðŸ˜„",
-            "Amazing game! You win! ðŸŽ‰",
-            "Respect! Great playing! ðŸ«¡"
+            "GG! You earned it! 🏆",
+            "Well played! Great game! 👏",
+            "You're too good! 🙌",
+            "Champion! Rematch? 😄",
+            "Amazing game! You win! 🎉",
+            "Respect! Great playing! 🫡"
         ],
         // When bot wins (humble)
         botWins: [
-            "GG! That was close! ðŸ¤",
-            "Fun game! Rematch? ðŸ˜Š",
-            "Great game everyone! ðŸŽ‰",
-            "That was exciting! ðŸ”¥",
-            "Good game! You almost had me! ðŸ’ª"
+            "GG! That was close! 🤝",
+            "Fun game! Rematch? 😊",
+            "Great game everyone! 🎉",
+            "That was exciting! 🔥",
+            "Good game! You almost had me! 💪"
         ],
         // Warpath-specific cut messages â€” intense but fun
         warpathCut: [
-            "COMING FOR YOU! ðŸ˜ˆðŸ”¥",
-            "No mercy! Just kidding... kinda! ðŸ‘¹",
+            "COMING FOR YOU! 😈🔥",
+            "No mercy! Just kidding... kinda! 👹",
             "You knew this was coming! âš”ï¸",
-            "Warpath activated! ðŸ’¥",
-            "Run! Just kidding, love you! ðŸ˜˜ðŸ’€"
+            "Warpath activated! 💥",
+            "Run! Just kidding, love you! 😘💀"
         ],
         // Warpath got cut â€” dramatic but fun
         warpathGotCut: [
-            "You dare?! ...respect tho ðŸ’ª",
-            "I'LL REMEMBER THIS! ðŸ˜¤ðŸ”¥",
-            "The hunter becomes the hunted! ðŸ˜±",
-            "Okay that was actually good ðŸ‘",
-            "This isn't over! ðŸ˜ˆ"
+            "You dare?! ...respect tho 💪",
+            "I'LL REMEMBER THIS! 😤🔥",
+            "The hunter becomes the hunted! 😱",
+            "Okay that was actually good 👏",
+            "This isn't over! 😈"
         ],
         // When bot enters safe zone or scores
         selfCelebrate: [
-            "Safe! Finally! ðŸ˜…",
-            "Made it! ðŸŽ‰",
-            "One step closer! ðŸ’ª",
-            "Catch me if you can! ðŸ˜œ"
+            "Safe! Finally! 😅",
+            "Made it! 🎉",
+            "One step closer! 💪",
+            "Catch me if you can! 😜"
         ]
     };
     
@@ -220,9 +219,6 @@
         showHighlights: true,     // Show legal move highlights
         showMoveAids: true,       // Show move helper popups
         hintMode: 'blink',        // 'blink' = blinking holes, 'dropdown' = suggestion list, 'voice' = audio hints, 'all' = all modes, 'none' = no hints
-        // Whether to auto-show the Mom introduction modal at game start.
-        // Default: false â€” helpers are off by default; players can open Ask Mom with the Help button.
-        showMomIntro: false,
         ftAutoTraverse: false,    // FastTrack auto-traverse: true = auto-move FT pegs around ring, false = manual choice each turn
         suggestionsDisabled: false // When true, move suggestion popups are suppressed â€” player uses blinking holes only
     };
@@ -317,7 +313,7 @@
         GAME_CONFIG.autoMoveForHumans = preset.autoMoveForHumans;
         GAME_CONFIG.showHighlights = preset.showHighlights;
         GAME_CONFIG.showMoveAids = preset.showMoveAids;
-        console.log(`ðŸŽ® Applied difficulty: ${difficulty}`, GAME_CONFIG);
+        console.log(`🎮 Applied difficulty: ${difficulty}`, GAME_CONFIG);
     }
     
     // Select difficulty (called from start screen)
@@ -352,7 +348,7 @@
     let myUserId = null;
     
     // Player avatars for slots
-    const slotAvatars = ['ðŸ¦Š', 'ðŸ¢', 'ðŸ¦„', 'ðŸ»'];
+    const slotAvatars = ['🦊', '🐢', '🦄', '🐻'];
     
     // Lightweight toast message (standalone, no CardUI dependency)
     function showMsg(msg, duration) {
@@ -381,7 +377,7 @@
         
         // Add icon for no legal moves
         if (isNoLegalMoves) {
-            toast.innerHTML = `<div style="font-size:32px; margin-bottom:10px;">ðŸš«</div>${msg}`;
+            toast.innerHTML = `<div style="font-size:32px; margin-bottom:10px;">🚫</div>${msg}`;
         } else {
             toast.textContent = msg;
         }
@@ -452,7 +448,7 @@
         });
     }
     
-    // ðŸŒŠ DIMENSIONAL: Lobby message intent manifold (replaces switch statement)
+    // 🌊 DIMENSIONAL: Lobby message intent manifold (replaces switch statement)
     const LobbyMessageIntents = {
         connected: (data) => {
             myUserId = data.user?.user_id ?? data.user_id;
@@ -547,7 +543,7 @@
 
         late_join_request: (data) => {
             (isLobbyHost || gameSessionSettings.isOrganizer) &&
-                addJoinRequest(data.player.user_id, data.player.username, data.player.avatar_id ?? 'ðŸ‘¤');
+                addJoinRequest(data.player.user_id, data.player.username, data.player.avatar_id ?? '👤');
         },
 
         late_player_joined: (data) => {
@@ -558,18 +554,18 @@
                 const p = data.player;
                 const slot = data.assigned_slot;
                 const slotType = data.slot_type;
-                const avatarEmojis = { person_smile:'ðŸ˜Š', person_cool:'ðŸ˜Ž', animal_lion:'ðŸ¦', animal_fox:'ðŸ¦Š', space_rocket:'ðŸš€', fantasy_dragon:'ðŸ²', scifi_robot:'ðŸ¤–', sport_soccer:'âš½' };
+                const avatarEmojis = { person_smile:'😊', person_cool:'😎', animal_lion:'🦁', animal_fox:'🦊', space_rocket:'🚀', fantasy_dragon:'🐲', scifi_robot:'🤖', sport_soccer:'⚽' };
                 const playerColors = ['#ff2020', '#2196ff', '#4caf50', '#ffeb3b', '#ff9800', '#9c27b0'];
 
                 (slotType === 'replace-bot' && gameState.players[slot]) ? (() => {
                     gameState.players[slot].isAI = false;
                     gameState.players[slot].name = p.username;
-                    gameState.players[slot].avatar = avatarEmojis[p.avatar_id] ?? 'ðŸ‘¤';
+                    gameState.players[slot].avatar = avatarEmojis[p.avatar_id] ?? '👤';
                     gameState.players[slot].userId = p.user_id;
                 })() : (() => {
                     const newPlayer = {
                         name: p.username,
-                        avatar: avatarEmojis[p.avatar_id] ?? 'ðŸ‘¤',
+                        avatar: avatarEmojis[p.avatar_id] ?? '👤',
                         userId: p.user_id,
                         colorHex: playerColors[slot % playerColors.length],
                         isAI: false,
@@ -602,7 +598,7 @@
         }
     };
 
-    // ðŸŒŠ DIMENSIONAL: Invoke intent directly (replaces switch statement)
+    // 🌊 DIMENSIONAL: Invoke intent directly (replaces switch statement)
     function handleLobbyMessage(data) {
         console.log('[Lobby] Received:', data.type, data);
         LobbyMessageIntents[data.type]?.(data);
@@ -610,7 +606,7 @@
     
     // Game mode selection
     window.selectGameMode = function(mode) {
-        // Solo â†’ redirect to ai_setup.html (dedicated setup wizard)
+        // Solo → redirect to ai_setup.html (dedicated setup wizard)
         if (mode === 'solo') {
             window.location.href = 'ai_setup.html';
             return;
@@ -636,7 +632,7 @@
         const startBtn = document.getElementById('start-btn');
         if (startBtn) {
             if (mode === 'quickmatch') {
-                startBtn.textContent = 'ðŸ” FIND MATCH';
+                startBtn.textContent = '🔍 FIND MATCH';
                 startBtn.style.display = 'block';
                 startBtn.onclick = () => joinMatchmaking();
             } else if (mode === 'private') {
@@ -804,7 +800,7 @@
         const musicBtn = document.getElementById('toggle-music-all-btn');
         if (musicBtn) {
             const on = settings.music_enabled !== false;
-            musicBtn.textContent = on ? 'ðŸŽµ Music: ON' : 'ðŸ”‡ Music: OFF';
+            musicBtn.textContent = on ? '🎵 Music: ON' : '🔇 Music: OFF';
             musicBtn.style.background = on ? '#7c3aed' : '#555';
         }
         const maxCountEl = document.getElementById('max-player-count');
@@ -846,7 +842,7 @@
             const slot = document.createElement('div');
             slot.className = `waiting-player-slot filled ${player.is_host ? 'host' : ''}`;
             slot.innerHTML = `
-                <div class="slot-avatar">${player.is_ai ? 'ðŸ¤–' : (slotAvatars[idx] || 'ðŸ‘¤')}</div>
+                <div class="slot-avatar">${player.is_ai ? '🤖' : (slotAvatars[idx] || '👤')}</div>
                 <div style="flex:1;">
                     <div class="slot-name">${escapeHtml(player.username)}${player.is_host ? ' (Host)' : ''}${isMe ? ' (You)' : ''}</div>
                     <div class="slot-status" style="color:${readyColor};font-size:12px;">${readyIcon} ${readyText}</div>
@@ -861,7 +857,7 @@
             const slot = document.createElement('div');
             slot.className = 'waiting-player-slot empty';
             slot.innerHTML = `
-                <div class="slot-avatar">â³</div>
+                <div class="slot-avatar">⏳</div>
                 <div style="flex:1;">
                     <div class="slot-name">Waiting...</div>
                     <div class="slot-status" style="font-size:12px;"></div>
@@ -897,7 +893,7 @@
         } else if (!isLobbyHost) {
             btn.textContent = 'Waiting for host to start...';
         } else {
-            btn.textContent = 'ðŸŽ® Start Game!';
+            btn.textContent = '🎮 Start Game!';
         }
     }
     
@@ -953,13 +949,13 @@
         
         list.innerHTML = pendingPlayers.map(p => `
             <div style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);border-radius:8px;padding:10px 14px;">
-                <span style="font-size:24px;">ðŸ‘¤</span>
+                <span style="font-size:24px;">👤</span>
                 <div style="flex:1;">
                     <div style="font-weight:bold;color:#fff;">${escapeHtml(p.username)}</div>
                     <div style="font-size:12px;color:#f59e0b;">Wants to join</div>
                 </div>
-                <button onclick="approvePlayer('${p.user_id}')" style="background:#22c55e;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:bold;cursor:pointer;">âœ“ Accept</button>
-                <button onclick="rejectPlayer('${p.user_id}')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;">âœ— Deny</button>
+                <button onclick="approvePlayer('${p.user_id}')" style="background:#22c55e;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:bold;cursor:pointer;">✓ Accept</button>
+                <button onclick="rejectPlayer('${p.user_id}')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;">✗ Deny</button>
             </div>
         `).join('');
     }
@@ -1005,10 +1001,10 @@
         navigator.clipboard.writeText(urlInput.value).then(() => {
             const btn = document.getElementById('copy-url-btn');
             if (btn) {
-                btn.textContent = 'âœ“ Copied!';
+                btn.textContent = '✓ Copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
-                    btn.textContent = 'ðŸ“‹ Copy';
+                    btn.textContent = '📋 Copy';
                     btn.classList.remove('copied');
                 }, 2000);
             }
@@ -1026,7 +1022,7 @@
     window.shareVia = function(platform) {
         const code = document.getElementById('private-share-code')?.textContent || '';
         const url = document.getElementById('private-share-url')?.value || '';
-        const message = `Join my Fast Track game! ðŸŽ¯\n\nCode: ${code}\n\n${url}`;
+        const message = `Join my Fast Track game! 🎯\n\nCode: ${code}\n\n${url}`;
         const encodedMsg = encodeURIComponent(message);
         const encodedUrl = encodeURIComponent(url);
         
@@ -1327,35 +1323,6 @@
         if (rules) rules.scrollIntoView({ behavior: 'smooth' });
     };
     
-    // ============================================================
-    // MOM HELPER SYSTEM
-    // Mom is your game guide - helps explain moves and options
-    // ============================================================
-    
-    let momIntroShown = false;
-    
-    // Show Mom's introduction at game start
-    function showMomIntro() {
-        // Don't show in Hard mode - no aids!
-        if (GAME_CONFIG.difficulty === 'hard') {
-            momIntroShown = true;
-            return;
-        }
-        
-        const modal = document.getElementById('mom-intro-modal');
-        if (modal && !momIntroShown) {
-            modal.classList.add('visible');
-            momIntroShown = true;
-        }
-    }
-    
-    function closeMomIntro() {
-        const modal = document.getElementById('mom-intro-modal');
-        if (modal) {
-            modal.classList.remove('visible');
-        }
-    }
-    window.closeMomIntro = closeMomIntro;
     
     // Open camera panel (delegates to GameUIMinimal)
     function openCameraPanel() {
@@ -1375,224 +1342,6 @@
     }
     window.openThemePanel = openThemePanel;
 
-    // Toggle Mom Daemon (persistent game helper)
-    function toggleMomDaemon() {
-        if (window.MomDaemon) {
-            window.MomDaemon.toggle();
-        }
-    }
-    window.toggleMomDaemon = toggleMomDaemon;
-    
-    // Show Mom's contextual help based on current game state (legacy - now uses daemon)
-    function showMomHelp() {
-        // Delegate to AskMomAdvisor if available (enhanced advisor with auto-execute)
-        if (window.AskMomAdvisor && typeof window.AskMomAdvisor.showAdvice === 'function') {
-            window.AskMomAdvisor.showAdvice();
-            return;
-        }
-
-        // Fallback to legacy Mom Help
-        const panel = document.getElementById('mom-help-panel');
-        const messageEl = document.getElementById('mom-message-text');
-        const optionsEl = document.getElementById('mom-options');
-        
-        if (!panel || !messageEl || !optionsEl) return;
-        
-        // Clear previous options
-        optionsEl.innerHTML = '';
-        
-        // Get context-aware help
-        const help = getMomContextHelp();
-        
-        messageEl.textContent = help.message;
-        
-        // Add option buttons
-        help.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'mom-option';
-            btn.textContent = opt.text;
-            btn.onclick = () => {
-                if (opt.action) opt.action();
-                if (opt.closePanel !== false) hideMomHelp();
-            };
-            optionsEl.appendChild(btn);
-        });
-        
-        panel.classList.add('visible');
-    }
-    window.showMomHelp = showMomHelp;
-    
-    function hideMomHelp() {
-        const panel = document.getElementById('mom-help-panel');
-        if (panel) {
-            panel.classList.remove('visible');
-        }
-        // Run cleanup synchronously when hide is invoked directly
-        try { _postHideMomCleanup(); } catch (e) { /* ignore if not ready */ }
-    }
-    window.hideMomHelp = hideMomHelp;
-    
-    // Ensure hiding Mom help unblocks UI and clears any temporary selection state
-    function _postHideMomCleanup() {
-        try {
-            // Clear any visual highlights left by advice
-            if (typeof clearHighlights === 'function') clearHighlights();
-
-            // Ensure card/deck UI is enabled for the human player
-            if (window.cardUI && typeof window.cardUI.setDeckEnabled === 'function') {
-                window.cardUI.setDeckEnabled(true);
-            }
-
-            // Hide move selection modal if present
-            if (window.moveSelectionModal && typeof window.moveSelectionModal.hide === 'function') {
-                window.moveSelectionModal.hide();
-            }
-
-            // Clear any pending banner-selection move so game logic isn't left waiting
-            if (typeof pendingMoveSelection !== 'undefined' && pendingMoveSelection !== null) {
-                pendingMoveSelection = null;
-            }
-        } catch (e) {
-            console.warn('[Mom] cleanup after hide failed', e);
-        }
-    }
-
-    // Attach global listener to ensure cleanup when panel is closed via outside clicks
-    document.addEventListener('click', (e) => {
-        const panel = document.getElementById('mom-help-panel');
-        if (panel && !panel.classList.contains('visible')) return; // only when visible
-        if (panel && panel.classList.contains('visible') && !panel.contains(e.target)) {
-            // Let existing handler hide the panel, then run cleanup shortly after
-            setTimeout(_postHideMomCleanup, 50);
-        }
-    });
-    
-    // Get contextual help based on current game state
-    function getMomContextHelp() {
-        if (!gameState) {
-            return {
-                message: "The game hasn't started yet. Click START GAME when you're ready!",
-                options: [{ text: "Got it!", action: null }]
-            };
-        }
-        
-        const phase = gameState.phase;
-        const player = gameState.currentPlayer;
-        const isMyTurn = !isAIPlayer(gameState.currentPlayerIndex);
-        const card = gameState.currentCard;
-        
-        // Not your turn
-        if (!isMyTurn) {
-            return {
-                message: "It's not your turn right now. Watch what the AI does - you might learn some good strategies!",
-                options: [{ text: "Okay, I'll watch", action: null }]
-            };
-        }
-        
-        // Draw phase
-        if (phase === 'draw') {
-            return {
-                message: "It's your turn! Click on the deck to draw a card. The card will tell you how many spaces you can move.",
-                options: [
-                    { text: "Where's the deck?", action: () => highlightDeck() },
-                    { text: "Thanks, Mom!", action: null }
-                ]
-            };
-        }
-        
-        // Play phase - have legal moves
-        if (phase === 'play' && legalMoves && legalMoves.length > 0) {
-            const cardInfo = card ? getCardExplanation(card) : '';
-            const moveCount = legalMoves.length;
-            
-            // Check for special situations
-            const hasCutMoves = legalMoves.some(m => findCutTargetAtHole(m.toHoleId));
-            const hasSafeZoneMoves = legalMoves.some(m => m.toHoleId.includes('safe-'));
-            const hasFastTrackMoves = legalMoves.some(m => m.isFastTrackEntry);
-            const hasEnterMoves = legalMoves.some(m => m.type === 'enter');
-            
-            // Get unique peg numbers that can move
-            const uniquePegIds = [...new Set(legalMoves.map(m => m.pegId).filter(Boolean))];
-            const pegNumbers = uniquePegIds.map(id => `#${getPegNumber(id)}`);
-            const multipleTokens = uniquePegIds.length > 1;
-            
-            let advice = `You drew a ${card?.value || 'card'}. ${cardInfo} `;
-            
-            // Show which pegs can move when multiple have options
-            if (multipleTokens) {
-                advice += `Pegs ${pegNumbers.join(', ')} can move. `;
-            }
-            
-            if (hasEnterMoves) {
-                advice += "You can bring a new peg onto the board! ";
-            }
-            if (hasSafeZoneMoves) {
-                advice += "You can move into your safe zone - that's great progress! ";
-            }
-            if (hasFastTrackMoves) {
-                advice += "You can enter the FastTrack for a shortcut! ";
-            }
-            if (hasCutMoves) {
-                advice += "You can cut an opponent and send them home! ";
-            }
-            
-            advice += `You have ${moveCount} possible move${moveCount > 1 ? 's' : ''}.`;
-            
-            const options = [];
-            if (GAME_CONFIG.showHighlights) {
-                options.push({ text: "Show me the green/red highlights", action: null });
-            }
-            options.push({ text: "What does this card do?", action: () => showCardHelp(card), closePanel: false });
-            options.push({ text: "Thanks, Mom!", action: null });
-            
-            return { message: advice, options };
-        }
-        
-        // Play phase - no legal moves
-        if (phase === 'play' && (!legalMoves || legalMoves.length === 0)) {
-            return {
-                message: "Oh no! You don't have any legal moves with this card. Your turn will be skipped. It happens sometimes - don't worry!",
-                options: [{ text: "That's okay, next time!", action: null }]
-            };
-        }
-        
-        // Default
-        return {
-            message: "I'm here if you need help! Just ask anytime.",
-            options: [{ text: "Thanks, Mom!", action: null }]
-        };
-    }
-    
-    // Get explanation for a card
-    function getCardExplanation(card) {
-        if (!card) return '';
-        const v = card.value;
-        
-        if (v === 'A' || v === '1') return "Ace lets you enter a peg from holding OR move 1 space. You get another turn!";
-        if (v === '6') return "Six lets you enter a peg from holding OR move 6 spaces. You get another turn!";
-        if (v === 'JOKER') return "Joker lets you enter from holding OR move 1 space. You get another turn!";
-        if (v === 'J' || v === 'Q' || v === 'K') return "Royal card â€” move 1 space, get another turn, AND can exit the bullseye to your FastTrack corner!";
-        if (v === '4') return "Four moves BACKWARDS 4 spaces. You cannot back into FastTrack, bullseye, or safe zone â€” but reaching your safe zone entry backwards DOES complete your circuit!";
-        if (v === '7') return "Seven is a WILD CARD - move any single token 1-7 spaces. Can enter safe zone, fast track, and center hole.";
-        
-        return `Move ${v} spaces clockwise.`;
-    }
-    
-    // Show detailed card help
-    function showCardHelp(card) {
-        const messageEl = document.getElementById('mom-message-text');
-        if (messageEl && card) {
-            messageEl.textContent = getCardExplanation(card);
-        }
-    }
-    
-    // Highlight the deck for new players
-    function highlightDeck() {
-        // Flash the deck area if CardUI exists
-        if (window.cardUI && typeof window.cardUI.flashDeck === 'function') {
-            window.cardUI.flashDeck();
-        }
-    }
     
     // 7 Card Split Move State - Interactive Mode
     let splitMoveState = {
@@ -1680,7 +1429,7 @@
         indicator.className = 'split-move-indicator';
         // Compact, non-blocking format at top of screen
         indicator.innerHTML = `
-            <span>âœ‚ï¸ 7 Split: ${message}</span>
+            <span>✂ï¸ 7 Split: ${message}</span>
             <span style="color: #ffd700; margin-left: 10px;">${remaining} left</span>
         `;
         document.body.appendChild(indicator);
@@ -1979,7 +1728,7 @@
         }
         const anyPegCanMove = singlePegMoves.length > 0;
 
-        // Fewer than 2 active pegs â†’ single-peg move is the only option
+        // Fewer than 2 active pegs → single-peg move is the only option
         if (activePegs.length < 2) {
             console.log(`[Split7] Only ${activePegs.length} active peg(s) â€” single-peg mode. Can move: ${anyPegCanMove}`);
             return { valid: anyPegCanMove, combinations: [], singlePegOnly: true, singlePegMoves };
@@ -2030,7 +1779,7 @@
     function aiExecuteSplit() {
         const splitCheck = canSplitSeven();
         if (!splitCheck.valid) {
-            console.log('ðŸ¤– [AI Split] No valid split â€” skipping turn');
+            console.log('🤖 [AI Split] No valid split â€” skipping turn');
             gameState.skipTurn();
             return;
         }
@@ -2071,7 +1820,7 @@
         }
         
         if (!bestCombo) {
-            console.error('ðŸ¤– [AI Split] No best combo found despite valid combinations');
+            console.error('🤖 [AI Split] No best combo found despite valid combinations');
             gameState.skipTurn();
             return;
         }
@@ -2079,7 +1828,7 @@
         const moveA = bestCombo.movesA[0];
         const moveB = bestCombo.movesB[0];
         
-        console.log(`ðŸ¤– [AI Split] Best split: ${moveA.pegId}â†’${moveA.toHoleId} (${bestCombo.stepsA}) + ${moveB.pegId}â†’${moveB.toHoleId} (${bestCombo.stepsB})`);
+        console.log(`🤖 [AI Split] Best split: ${moveA.pegId}→${moveA.toHoleId} (${bestCombo.stepsA}) + ${moveB.pegId}→${moveB.toHoleId} (${bestCombo.stepsB})`);
         
         // Set up split state manually for AI
         splitMoveState.active = true;
@@ -2228,7 +1977,7 @@
         
         // Initialize Stadium Controller with game events
         if (typeof StadiumController !== 'undefined') {
-            console.log('ðŸŸï¸ Stadium Controller detected - integrating audio systems');
+            console.log('🏟ï¸ Stadium Controller detected - integrating audio systems');
             
             // Make stadium activation happen on first game interaction
             document.addEventListener('click', function activateStadium() {
@@ -2352,7 +2101,7 @@
             };
             window.mobileUI.updatePlayerInfo(
                 gameState.currentPlayer.name,
-                gameState.currentPlayer.avatar || 'ðŸ‘¤',
+                gameState.currentPlayer.avatar || '👤',
                 gameState.currentPlayer.deck?.remaining || 54,
                 gameState.currentPlayer.colorHex
             );
@@ -2368,7 +2117,6 @@
             // A leftover splitMoveState.active=true will hijack executeMoveDirectly
             resetSplitMoveState();
             
-            // Dispatch event for Mom Daemon
             document.dispatchEvent(new CustomEvent('cardDrawn', { detail: { card } }));
             
             // Defensive check - if card is null or invalid, skip turn
@@ -2392,7 +2140,7 @@
             
             // Joker display helper â€” use emoji instead of the word "JOKER"
             const _cardRankDisplay = ((card.rank || card.value || '?').toString().toUpperCase() === 'JOKER')
-                ? 'ðŸƒ' : (card.rank || card.value || '?');
+                ? '🃏' : (card.rank || card.value || '?');
 
             // Update side panel to show drawn card
             if (window.updatePlayerCube) {
@@ -2455,7 +2203,7 @@
                 const beforeCount = legalMoves.length;
                 legalMoves = BoardManifold.filterLegalMoves(legalMoves, gameState);
                 if (legalMoves.length !== beforeCount) {
-                    console.log(`[BoardManifold] Filtered ${beforeCount} â†’ ${legalMoves.length} legal moves`);
+                    console.log(`[BoardManifold] Filtered ${beforeCount} → ${legalMoves.length} legal moves`);
                 }
             }
             // 7 card â€” split if 2+ pegs on field, otherwise a normal 7-space move
@@ -2477,12 +2225,12 @@
                 } else {
                     // 2+ pegs on field â€” interactive split mode
                     showCardRulePopup(card, splitCheck.combinations.length);
-                    showCardDrawnBanner(playerName, playerColor, '7 - SPLIT âœ‚ï¸', false);
+                    showCardDrawnBanner(playerName, playerColor, '7 - SPLIT ✂ï¸', false);
 
                     if (!isAIPlayer(playerIdx)) {
                         // HUMAN: Interactive split mode
                         console.log(`[onCardDrawn] 7 Card SPLIT for human`);
-                        showContextPopup('âœ‚ï¸', 'Split the 7',
+                        showContextPopup('✂ï¸', 'Split the 7',
                             'Pick a peg, move it 1-6 spaces. The leftover goes to a second peg.<br>Total must equal <b>7</b>. Tap a peg to begin.',
                             5000);
                         startSplitMoveMode();
@@ -2579,18 +2327,18 @@
                 
                 // Determine if current player is human or AI
                 const isAI = isAIPlayer(playerIdx);
-                console.log(`ðŸŽ² [onCardDrawn] Player ${playerIdx} (${playerName}), isAI: ${isAI}, legalMoves: ${legalMoves.length}`);
+                console.log(`🎲 [onCardDrawn] Player ${playerIdx} (${playerName}), isAI: ${isAI}, legalMoves: ${legalMoves.length}`);
                 
                 // Show all legal moves - HUMAN player must click on a destination
                 if (!isAI) {
-                    console.log(`ðŸ‘¤ [HUMAN] Showing ${legalMoves.length} legal moves for player ${playerIdx}`);
+                    console.log(`👤 [HUMAN] Showing ${legalMoves.length} legal moves for player ${playerIdx}`);
                     // Pre-position camera on the active peg BEFORE highlights appear
                     // so the action is already in frame when the player clicks
                     preCinematicCamera(playerIdx, legalMoves);
                     showCardRulePopup(card, legalMoves.length);
                     showCardDrawnBanner(playerName, playerColor, cardValue, legalMoves.length > 1);
 
-                    // â”€â”€ Contextual popups for special cards â”€â”€
+                    // ── Contextual popups for special cards ──
                     const rank = (card.rank || card.value || '').toString().toUpperCase();
                     const hasEnter = legalMoves.some(m => m.type === 'enter');
                     const hasNormal = legalMoves.some(m => m.type !== 'enter');
@@ -2602,14 +2350,14 @@
                     // 6 / Ace / Joker â€” deploy or move
                     if ((rank === 'A' || rank === '6' || rank === 'JOKER') && hasEnter && hasNormal) {
                         const label = rank === 'A' ? 'Ace' : rank === '6' ? 'Six' : 'Joker';
-                        showContextPopup('ðŸš€', `${label} â€” Deploy or Advance`,
+                        showContextPopup('🚀', `${label} â€” Deploy or Advance`,
                             'Bring a peg out of holding <b>or</b> move one already on the board. Your call, commander.',
                             4500);
                     }
 
                     // FastTrack commitment warning
                     if (hasFTpeg) {
-                        showContextPopup('âš¡', 'On the Express Lane',
+                        showContextPopup('⚡', 'On the Express Lane',
                             'You\'re riding FastTrack â€” commit to the ring or bail to the main track. No U-turns.',
                             4500);
                     }
@@ -2623,9 +2371,9 @@
                         const entity = ManifoldAI.getEntity(playerIdx);
                         if (entity) thinkDelay = entity.thinkingDelay;
                     }
-                    console.log(`ðŸ¤– [AI] Player ${playerIdx} has ${legalMoves.length} legal moves, scheduling selection in ${thinkDelay}ms`);
+                    console.log(`🤖 [AI] Player ${playerIdx} has ${legalMoves.length} legal moves, scheduling selection in ${thinkDelay}ms`);
                     setTimeout(() => {
-                        console.log(`ðŸ¤– [AI] Executing aiSelectAndClickMove for player ${gameState.currentPlayerIndex}`);
+                        console.log(`🤖 [AI] Executing aiSelectAndClickMove for player ${gameState.currentPlayerIndex}`);
                         aiSelectAndClickMove();
                     }, thinkDelay);
                 }
@@ -2640,7 +2388,7 @@
                 phase: gameState.phase
             });
 
-            // â”€â”€ Analytics: count turns â”€â”€
+            // ── Analytics: count turns ──
             if (window.FTAnalytics) FTAnalytics.turn();
             
             cardUI.updateCurrentPlayer(player);
@@ -2719,7 +2467,7 @@
                     pegsInHolding: p.pegsInHolding,
                     pegsInSafe: p.pegsInSafeZone,
                     deckRemaining: p.deck?.remaining ?? 54,
-                    avatar: p.avatar || 'ðŸ‘¤'
+                    avatar: p.avatar || '👤'
                 }));
                 GameStateBroadcaster.updateState({
                     currentPlayerIndex: gameState.currentPlayerIndex,
@@ -2738,7 +2486,7 @@
                 const currentPlayer = gameState.currentPlayer;
                 window.mobileUI.updatePlayerInfo(
                     currentPlayer.name || `Player ${currentPlayer.index + 1}`,
-                    'ðŸ‘¤',
+                    '👤',
                     currentPlayer.deck?.remaining || 0,
                     currentPlayer.colorHex
                 );
@@ -2751,8 +2499,8 @@
             const upcomingPlayerIdx = gameState.currentPlayerIndex;
             const upcomingPlayer = gameState.players[upcomingPlayerIdx];
             const upcomingPlayerName = upcomingPlayer.name || `Player ${upcomingPlayerIdx + 1}`;
-            const upcomingPlayerAvatar = upcomingPlayer.avatar || 'ðŸ‘¤';
-            const isBot = upcomingPlayer.isAI || upcomingPlayer.isBot || /[ðŸ¤–ðŸ”§âš™ï¸ðŸŽ®ðŸ’»]/.test(upcomingPlayerName);
+            const upcomingPlayerAvatar = upcomingPlayer.avatar || '👤';
+            const isBot = upcomingPlayer.isAI || upcomingPlayer.isBot || /[🤖🔧⚙ï¸🎮💻]/.test(upcomingPlayerName);
             
             // Show transition announcement
             if (wasExtraTurn && !isBot) {
@@ -2760,7 +2508,7 @@
                 showDrawAgainPopup();
             } else if (!wasExtraTurn) {
                 const readyMessage = isBot 
-                    ? `ðŸ¤– ${upcomingPlayerAvatar} ${upcomingPlayerName}'s turn` 
+                    ? `🤖 ${upcomingPlayerAvatar} ${upcomingPlayerName}'s turn` 
                     : `${upcomingPlayerAvatar} Board ready for ${upcomingPlayerName}`;
                 if (cardUI) cardUI.showMessage(readyMessage, 1500);
             }
@@ -2816,7 +2564,7 @@
             }
             
             // DEBUG: Log all move execution details
-            console.log('ðŸ“ onMoveExecuted called:', {
+            console.log('📍 onMoveExecuted called:', {
                 moveToHoleId: move.toHoleId,
                 isFastTrackEntry: move.isFastTrackEntry,
                 entryFlags: entryFlags,
@@ -2866,7 +2614,7 @@
             if (window.FastTrackThemes) {
                 // Exiting bullseye with a royal card - show royal banner (overrides fasttrack)
                 if (entryFlags.exitedBullseye) {
-                    console.log('ðŸ‘‘ GOT A ROYAL! Exiting bullseye, triggering reaction...');
+                    console.log('👑 GOT A ROYAL! Exiting bullseye, triggering reaction...');
                     triggerThemeSwirl();
                     FastTrackThemes.triggerGameEvent('royal', { 
                         playerColor: playerColor,
@@ -2875,7 +2623,7 @@
                 }
                 // Only trigger FastTrack banner when ENTERING (not traversing, not exiting bullseye)
                 else if (entryFlags.enteredFasttrack) {
-                    console.log('ðŸš€ FAST TRACK ENTRY! Triggering reaction...');
+                    console.log('🚀 FAST TRACK ENTRY! Triggering reaction...');
                     // Trigger dramatic swirl effect
                     triggerThemeSwirl();
                     FastTrackThemes.triggerGameEvent('fasttrack', { 
@@ -2899,7 +2647,7 @@
                 
                 // Check if sent someone home (cut)
                 if (cutPeg) {
-                    console.log('ðŸ  SEND HOME! Triggering reaction...');
+                    console.log('🏠 SEND HOME! Triggering reaction...');
                     FastTrackThemes.triggerGameEvent('sendHome', { 
                         playerColor: playerColor,
                         victimPlayer: cutPeg.player 
@@ -2913,7 +2661,7 @@
                 
                 // Only trigger Bullseye banner when ENTERING (not already in center)
                 if (entryFlags.enteredBullseye) {
-                    console.log('ðŸŽ¯ BULLSEYE ENTRY! Triggering reaction...');
+                    console.log('🎯 BULLSEYE ENTRY! Triggering reaction...');
                     triggerThemeSwirl();
                     FastTrackThemes.triggerGameEvent('bullseye', { 
                         playerColor: playerColor,
@@ -2995,9 +2743,9 @@
         
         gameState.onGameOver = (winner) => {
             const playerColor = getThemedPlayerColor(winner.index);
-            const avatar = winner.avatar || 'ðŸ‘¤';
+            const avatar = winner.avatar || '👤';
 
-            // â”€â”€ Analytics: Track game completion â”€â”€
+            // ── Analytics: Track game completion ──
             if (window.FTAnalytics) {
                 FTAnalytics.gameEnd(
                     winner.name || 'Player',
@@ -3093,8 +2841,8 @@
                 window.playerPanelUI.setMood(`player_${winner.index}`, 'celebration');
             }
             
-            // â”€â”€ VICTORY CEREMONY CUTSCENE â”€â”€
-            // Crown envelops peg â†’ rises â†’ giant peg with crown â†’ bow â†’ applause â†’ confetti â†’ replay
+            // ── VICTORY CEREMONY CUTSCENE ──
+            // Crown envelops peg → rises → giant peg with crown → bow → applause → confetti → replay
             const homeHole = holeRegistry.get(`home-${winner.boardPosition}`);
             const homePos = homeHole ? new THREE.Vector3(homeHole.position.x, homeHole.position.y, homeHole.position.z) : new THREE.Vector3(0, 0, 0);
             
@@ -3103,7 +2851,7 @@
                 if (typeof stopTurnTimer === 'function') stopTurnTimer();
                 
                 VictoryCeremony.start(winner, homePos, playerColor, () => {
-                    // Ceremony complete â†’ show replay button
+                    // Ceremony complete → show replay button
                     showPlayAgainButton(winner);
                 });
             } else {
@@ -3147,7 +2895,7 @@
             const playerIdx = gameState.currentPlayerIndex;
             const player = gameState.players[playerIdx];
             const playerName = player.name || `Player ${playerIdx + 1}`;
-            const playerAvatar = player.avatar || 'ðŸ‘¤';
+            const playerAvatar = player.avatar || '👤';
             const playerColor = '#' + getThemedPlayerColor(playerIdx).toString(16).padStart(6, '0');
             
             // Show who goes first (with avatar)
@@ -3383,12 +3131,12 @@
             });
         } else {
             botNames = [
-                { name: 'Turing', icon: 'ðŸ–¥ï¸' },
+                { name: 'Turing', icon: '🖥ï¸' },
                 { name: 'Ada', icon: 'âŒ¨ï¸' },
-                { name: 'Nexus', icon: 'ðŸŒ' },
-                { name: 'Cortex', icon: 'ðŸ§ ' },
+                { name: 'Nexus', icon: '🌐' },
+                { name: 'Cortex', icon: '🧠' },
                 { name: 'Qubit', icon: 'âš›ï¸' },
-                { name: 'Cipher', icon: 'ðŸ”' }
+                { name: 'Cipher', icon: '🔐' }
             ];
         }
         
@@ -3408,7 +3156,9 @@
             // Determine display name
             let displayName;
             if (i === 0) {
-                displayName = profile?.displayName || 'You';
+                // Priority: URL ?name= param → saved profile → fallback
+                const _urlName = new URLSearchParams(window.location.search).get('name');
+                displayName = _urlName || profile?.displayName || 'You';
             } else if (isAI) {
                 // Use AI_CONFIG order: players[0]=1, players[1]=2, etc.
                 const botIndex = AI_CONFIG.players.indexOf(i);
@@ -3531,7 +3281,7 @@
         const drawnCard = gameState.drawCard();
         console.log('[handleDrawCard] gameState.drawCard() returned:', drawnCard);
 
-        // Reveal drawn card in the centered deck overlay (flip face â†’ rank)
+        // Reveal drawn card in the centered deck overlay (flip face → rank)
         if (window._centeredDeckActive && drawnCard) {
             updateCenteredDeckRank(drawnCard);
         }
@@ -3695,7 +3445,7 @@
         
         // HARD MODE: No highlights, user must count their own moves
         if (GAME_CONFIG.difficulty === 'hard') {
-            console.log('ðŸ”¥ [HARD MODE] No move highlights - user must count moves manually');
+            console.log('🔥 [HARD MODE] No move highlights - user must count moves manually');
             // Just enable click handling but don't show any visual aids
             addHardModeClickListeners();
             return;
@@ -3732,9 +3482,9 @@
                 gameState.currentPlayer.peg.find(p => p.id === m.pegId && p.onFasttrack)
             );
             if (ftTraverseMove) {
-                console.log(`ðŸš€ [FT Auto-Traverse] Auto-executing FT move: ${ftTraverseMove.fromHoleId} â†’ ${ftTraverseMove.toHoleId}`);
+                console.log(`🚀 [FT Auto-Traverse] Auto-executing FT move: ${ftTraverseMove.fromHoleId} → ${ftTraverseMove.toHoleId}`);
                 if (cardUI) {
-                    cardUI.showActionBanner('ðŸš€ Auto-traversing FastTrack...', 'default');
+                    cardUI.showActionBanner('🚀 Auto-traversing FastTrack...', 'default');
                     setTimeout(() => { if (cardUI) cardUI.hideActionBanner(); }, 800);
                 }
                 setTimeout(() => {
@@ -3749,12 +3499,12 @@
         
         // Make pegs with legal moves blink (unless highlights are disabled)
         if (GAME_CONFIG.showHighlights) {
-            console.log('âœ¨ [highlightLegalMoves] Enabling peg blinking for', moves.length, 'moves');
+            console.log('✨ [highlightLegalMoves] Enabling peg blinking for', moves.length, 'moves');
             
             // LOG ALL LEGAL MOVES - EXHAUSTIVE LIST
-            console.log('ðŸ“‹ [EXHAUSTIVE LEGAL MOVES] Total:', moves.length);
+            console.log('📋 [EXHAUSTIVE LEGAL MOVES] Total:', moves.length);
             moves.forEach((move, idx) => {
-                console.log(`   ${idx + 1}. Peg ${move.pegId}: ${move.fromHoleId} â†’ ${move.toHoleId} (${move.steps} steps)${move.isFastTrackEntry ? ' [FT Entry]' : ''}${move.isLeaveFastTrack ? ' [Leave FT]' : ''}${move.type === 'enter' ? ' [ENTER]' : ''}`);
+                console.log(`   ${idx + 1}. Peg ${move.pegId}: ${move.fromHoleId} → ${move.toHoleId} (${move.steps} steps)${move.isFastTrackEntry ? ' [FT Entry]' : ''}${move.isLeaveFastTrack ? ' [Leave FT]' : ''}${move.type === 'enter' ? ' [ENTER]' : ''}`);
             });
             
             blinkMovablePegs(moves);
@@ -3763,7 +3513,7 @@
             const uniquePegIds = new Set(moves.map(m => m.pegId).filter(Boolean));
             showPegNumbers([...uniquePegIds]);
         } else {
-            console.log('âš ï¸ [highlightLegalMoves] showHighlights is FALSE - no visual aids');
+            console.log('⚠ï¸ [highlightLegalMoves] showHighlights is FALSE - no visual aids');
         }
         
         // Voice hints - announce available moves
@@ -3780,7 +3530,7 @@
         highlightsActive = true;
         focusOnChoices(moves);
         
-        // â”€â”€ Assign per-peg color indices and peg numbers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Assign per-peg color indices and peg numbers ─────────────────────────
         const _pegColorMap = {};
         let _colorCounter = 0;
         moves.forEach(move => {
@@ -3833,8 +3583,8 @@
 
                     // Gradient: progress 0 = dim (near peg), 1 = bright (near destination)
                     const progress = path.length > 2 ? (i - 1) / (path.length - 2) : 0.5;
-                    const baseOpacity = 0.25 + progress * 0.35;  // 0.25 â†’ 0.60
-                    const emissiveStr = 0.2 + progress * 0.4;    // 0.2 â†’ 0.6
+                    const baseOpacity = 0.25 + progress * 0.35;  // 0.25 → 0.60
+                    const emissiveStr = 0.2 + progress * 0.4;    // 0.2 → 0.6
 
                     const pathColor = MOVE_COLORS[move._colorIdx ?? 0].three;  // Per-move color
                     const pathMat = new THREE.MeshStandardMaterial({
@@ -3877,7 +3627,7 @@
 
             // Now highlight DESTINATION holes (bright, large glow ring)
             // MUST highlight ALL legal moves - this is EXHAUSTIVE
-            console.log(`ðŸŽ¯ [DESTINATION HIGHLIGHTING] Processing ${moves.length} destination holes...`);
+            console.log(`🎯 [DESTINATION HIGHLIGHTING] Processing ${moves.length} destination holes...`);
             let highlightedCount = 0;
             let missingCount = 0;
             
@@ -3932,7 +3682,7 @@
             
             console.log(`âœ… [DESTINATION HIGHLIGHTING] Highlighted ${highlightedCount}/${moves.length} holes (${missingCount} missing)`);
             if (missingCount > 0) {
-                console.warn(`âš ï¸ ${missingCount} destination holes were NOT highlighted due to missing registry entries!`);
+                console.warn(`⚠ï¸ ${missingCount} destination holes were NOT highlighted due to missing registry entries!`);
             }
             
             // Start pulsing/blinking animation (includes path pulse)
@@ -3968,7 +3718,7 @@
             const item = document.createElement('div');
             item.className = 'choice-item';
 
-            let icon = 'ðŸ“';
+            let icon = '📍';
             let name = move.toHoleId;
             let desc = `${move.steps || '?'} step${(move.steps || 0) !== 1 ? 's' : ''}`;
             let cls = '';
@@ -3984,28 +3734,28 @@
                 icon = 'âš”ï¸'; name = `Cut at ${friendly}`; cls = 'cut-choice';
                 desc = `Capture ${cutTarget.player.name}'s peg`;
             } else if (move.isCenterOption || move.toHoleId === 'center') {
-                icon = 'ðŸŽ¯'; name = 'Enter the Bullseye'; cls = 'ft-choice';
+                icon = '🎯'; name = 'Enter the Bullseye'; cls = 'ft-choice';
                 desc = 'Safe spot â€” exit with J, Q, or K';
             } else if (isAlternativeToCenter) {
                 icon = 'âž¡ï¸'; name = `Skip Bullseye`; cls = '';
                 desc = `Continue to ${friendly}`;
             } else if (move.isFastTrackEntry) {
-                icon = 'âš¡'; name = 'Take the FastTrack shortcut'; cls = 'ft-choice';
+                icon = '⚡'; name = 'Take the FastTrack shortcut'; cls = 'ft-choice';
                 desc = 'Speed across the inner ring';
             } else if (move.isLeaveFastTrack) {
-                icon = 'ðŸ”„'; name = 'Exit FastTrack'; cls = '';
+                icon = '🔄'; name = 'Exit FastTrack'; cls = '';
                 desc = `Back to ${friendly}`;
             } else if (move.toHoleId.startsWith('safe-')) {
-                icon = 'ðŸ›¡ï¸'; name = friendly; cls = 'safe-choice';
+                icon = '🛡ï¸'; name = friendly; cls = 'safe-choice';
                 desc = 'Protected â€” cannot be cut!';
             } else if (move.toHoleId.startsWith('ft-')) {
-                icon = 'â­'; name = friendly;
+                icon = '⭐'; name = friendly;
                 desc = `${move.steps} step${move.steps !== 1 ? 's' : ''} on inner ring`;
             } else if (move.type === 'enter') {
-                icon = 'ðŸš€'; name = 'Enter the board';
+                icon = '🚀'; name = 'Enter the board';
                 desc = 'Bring a peg out of holding';
             } else if (move.toHoleId.startsWith('home-')) {
-                icon = 'ðŸ’Ž'; name = friendly;
+                icon = '💎'; name = friendly;
                 desc = move.steps === 1 ? 'Land on the home hole' : `${move.steps} steps to home`;
             } else {
                 name = `Move to ${friendly}`;
@@ -4153,26 +3903,17 @@
         if (fromHoleId.includes('safe') || toHoleId.includes('safe')) return -1;
         if (fromHoleId.includes('winner') || toHoleId.includes('winner')) return -1;
 
-        // Build the clockwise track order (PARALLEL LAYOUT):
-        // ft-p â†’ side-left-p-6 â†’ ... â†’ side-left-p-1 â†’ outer-p-0 â†’ ... â†’ outer-p-3 â†’ home-p â†’
-        // side-right-p-1 â†’ ... â†’ side-right-p-6 â†’ ft-(p+1)
+        // Build the clockwise track order (6 holes per player section):
+        // ft-p → outer-p-0 → outer-p-1 → outer-p-2 → outer-p-3 → home-p → ft-(p+1)
         const clockwiseTrack = [];
         for (let p = 0; p < 6; p++) {
-            clockwiseTrack.push(`ft-${p}`);  // Start at FT hole
-            // Side-left: 6 holes going from FT toward outer corner (6 to 1)
-            for (let h = 6; h >= 1; h--) {
-                clockwiseTrack.push(`side-left-${p}-${h}`);
-            }
+            clockwiseTrack.push(`ft-${p}`);  // FastTrack pentagon hole
             // Outer track: 4 holes (0 to 3)
             for (let h = 0; h < 4; h++) {
                 clockwiseTrack.push(`outer-${p}-${h}`);
             }
             // Home hole
             clockwiseTrack.push(`home-${p}`);
-            // Side-right: 6 holes going from home toward next FT (1 to 6)
-            for (let h = 1; h <= 6; h++) {
-                clockwiseTrack.push(`side-right-${p}-${h}`);
-            }
         }
 
         const fromIdx = clockwiseTrack.indexOf(fromHoleId);
@@ -4212,7 +3953,7 @@
                 if (hole.mesh && hole.mesh.material && hole.isPathHighlighted) {
                     const offsetTime = time + (hole.highlightTime || 0);
                     const progress = hole.pathProgress || 0.5;
-                    // Traveling wave: brighter pulse moves from start â†’ end
+                    // Traveling wave: brighter pulse moves from start → end
                     const wave = (Math.sin(offsetTime * 3 - progress * 4) + 1) / 2;
                     const baseOp = 0.2 + progress * 0.3;
                     const opacity = baseOp + wave * 0.2;
@@ -4253,10 +3994,10 @@
                     hole.mesh.material.opacity = opacity;
                     hole.mesh.material.emissiveIntensity = emissiveIntensity;
                     
-                    // Animate bullseye orb layers â€” cascade sparkle blink inwardâ†’outward
+                    // Animate bullseye orb layers â€” cascade sparkle blink inward→outward
                     if (hole.bullseyeRings) {
                         hole.bullseyeRings.forEach(r => {
-                            // Each layer offset in phase â†’ cascading sparkle ripple
+                            // Each layer offset in phase → cascading sparkle ripple
                             const phase = offsetTime * 5 - r.idx * 1.4;
                             const wave = (Math.sin(phase) + 1) / 2;
                             const opacity = r.baseOpacity * (0.4 + wave * 0.6);
@@ -4467,7 +4208,7 @@
                         // Select this peg
                         hardModeSelectedPeg = pegId;
                         showHardModePegSelected(pegData);
-                        console.log('ðŸ”¥ [HARD MODE] Selected peg:', pegId, 'with', pegMoves.length, 'possible moves');
+                        console.log('🔥 [HARD MODE] Selected peg:', pegId, 'with', pegMoves.length, 'possible moves');
                         return;
                     }
                     
@@ -4480,7 +4221,7 @@
                             );
                             
                             if (validMove) {
-                                console.log('âœ… [HARD MODE] Valid move (via peg click):', hardModeSelectedPeg, 'â†’', pegHoleId);
+                                console.log('âœ… [HARD MODE] Valid move (via peg click):', hardModeSelectedPeg, '→', pegHoleId);
                                 clearHardModeSelection();
                                 executeMoveDirectly(validMove);
                                 return;
@@ -4506,12 +4247,12 @@
                     
                     if (validMove) {
                         // Valid move! Execute it
-                        console.log('âœ… [HARD MODE] Valid move:', hardModeSelectedPeg, 'â†’', holeId);
+                        console.log('âœ… [HARD MODE] Valid move:', hardModeSelectedPeg, '→', holeId);
                         clearHardModeSelection();
                         executeMoveDirectly(validMove);
                     } else {
                         // Invalid move - provide detailed reason
-                        console.log('âŒ [HARD MODE] Invalid move:', hardModeSelectedPeg, 'â†’', holeId);
+                        console.log('âŒ [HARD MODE] Invalid move:', hardModeSelectedPeg, '→', holeId);
                         const reason = getIllegalMoveReason(hardModeSelectedPeg, holeId);
                         showIllegalMovePopup(reason);
                     }
@@ -4627,7 +4368,7 @@
     let pegDestHighlightedHoles = [];   // holes highlighted for a specific peg's destinations
     let pegDestHighlightObjects = [];   // THREE.js objects (rings, labels) to clean up
 
-    // â”€â”€ Highlight all destination holes (and path) for a specific peg's moves â”€â”€
+    // ── Highlight all destination holes (and path) for a specific peg's moves ──
     function highlightPegDestinations(moves) {
         if (!moves || moves.length === 0) return;
         const destColors = {
@@ -5011,7 +4752,7 @@
             item.className = 'dropdown-item';
             
             // Determine move type and styling
-            let icon = 'ðŸ“';
+            let icon = '📍';
             let moveName = move.toHoleId;
             let moveSteps = `${move.steps} step${move.steps !== 1 ? 's' : ''}`;
             
@@ -5029,53 +4770,53 @@
             // Check if FastTrack entry
             else if (move.isFastTrackEntry) {
                 item.classList.add('fasttrack-move');
-                icon = 'âš¡';
+                icon = '⚡';
                 moveName = 'Take the FastTrack shortcut';
             }
             // Check if leaving FastTrack to perimeter
             else if (move.isLeaveFastTrack) {
                 if (move.isForcedFTExit) {
-                    icon = 'âš ï¸';
+                    icon = '⚠ï¸';
                     moveName = 'Blocked â€” Exit FastTrack';
                 } else {
-                    icon = 'ðŸ”„';
+                    icon = '🔄';
                     moveName = `Exit FastTrack to ${friendly}`;
                 }
             }
             // Check if bullseye/center
             else if (move.toHoleId === 'center') {
                 item.classList.add('fasttrack-move');
-                icon = 'ðŸŽ¯';
+                icon = '🎯';
                 moveName = 'Enter the Bullseye';
                 moveSteps = 'Safe spot â€” exit with J, Q, or K';
             }
             // Check if safe zone
             else if (move.toHoleId.startsWith('safe-')) {
                 item.classList.add('safe-move');
-                icon = 'ðŸ›¡ï¸';
+                icon = '🛡ï¸';
                 moveName = friendly;
                 moveSteps = 'Protected â€” cannot be cut!';
             }
             // Check if winner hole
             else if (move.toHoleId.includes('winner')) {
                 item.classList.add('safe-move');
-                icon = 'ðŸ†';
+                icon = '🏆';
                 moveName = 'Winner Hole!';
             }
             // Enter from holding
             else if (move.type === 'enter') {
-                icon = 'ðŸš€';
+                icon = '🚀';
                 moveName = 'Enter the board';
                 moveSteps = 'Bring a peg into play';
             }
             // Home hole
             else if (move.toHoleId.startsWith('home-')) {
-                icon = 'ðŸ’Ž';
+                icon = '💎';
                 moveName = friendly;
             }
             // FastTrack corner (traversing)
             else if (move.toHoleId.startsWith('ft-')) {
-                icon = 'â­';
+                icon = '⭐';
                 moveName = friendly;
             }
             // Regular perimeter hole
@@ -5094,7 +4835,7 @@
             // Add click handler - pass full move object, not just holeId
             // This is important for FastTrack entry where two moves have same holeId
             item.addEventListener('click', () => {
-                console.log('ðŸ“ Dropdown click - executing move:', move, 'isFastTrackEntry:', move.isFastTrackEntry);
+                console.log('📍 Dropdown click - executing move:', move, 'isFastTrackEntry:', move.isFastTrackEntry);
                 hidePegMoveDropdown();
                 executeMoveDirectly(move);
             });
@@ -5181,11 +4922,6 @@
         }
         
         // Global panel dismiss: close info panels when tapping outside
-        // Mom Help Panel
-        const momHelp = document.getElementById('mom-help-panel');
-        if (momHelp && momHelp.classList.contains('visible') && !momHelp.contains(e.target)) {
-            hideMomHelp();
-        }
         
         // Rules Modal
         const rulesModal = document.getElementById('rules-modal');
@@ -5231,7 +4967,7 @@
         
         // If multiple moves to same hole, show dropdown to let player choose
         if (movesToHole.length > 1) {
-            console.log('ðŸ“ Multiple moves to same hole, showing choice dropdown:', movesToHole);
+            console.log('📍 Multiple moves to same hole, showing choice dropdown:', movesToHole);
             // Show dropdown near center of screen
             showHoleMoveDropdown(movesToHole, window.innerWidth / 2, window.innerHeight / 2);
             return;
@@ -5255,37 +4991,37 @@
         }
         
         const titleEl = dropdown.querySelector('.dropdown-title');
-        if (titleEl) titleEl.textContent = 'ðŸŽ¯ Choose Move Type';
+        if (titleEl) titleEl.textContent = '🎯 Choose Move Type';
         itemsContainer.innerHTML = '';
         
         moves.forEach((move) => {
             const item = document.createElement('div');
             item.className = 'dropdown-item';
             
-            let icon = 'ðŸ“';
+            let icon = '📍';
             let moveName = move.toHoleId;
             let moveDesc = '';
             
             if (move.isFastTrackEntry) {
-                icon = 'âš¡';
+                icon = '⚡';
                 moveName = 'Enter FastTrack';
                 moveDesc = 'Traverse inner ring';
                 item.classList.add('fasttrack-move');
             } else if (move.isLeaveFastTrack && move.isForcedFTExit) {
-                icon = 'âš ï¸';
+                icon = '⚠ï¸';
                 moveName = 'Blocked â€” Exit FastTrack';
                 moveDesc = 'Own peg blocking FT ring';
             } else if (move.isLeaveFastTrack) {
-                icon = 'ðŸ”„';
+                icon = '🔄';
                 moveName = 'Leave FastTrack';
                 moveDesc = 'Continue on outer perimeter';
             } else if (move.isCenterOption) {
-                icon = 'ðŸŽ¯';
+                icon = '🎯';
                 moveName = 'Enter Bullseye';
                 moveDesc = 'Center hole';
                 item.classList.add('fasttrack-move');
             } else if (move.toHoleId.startsWith('ft-')) {
-                icon = 'â­ï¸';
+                icon = '⏭ï¸';
                 moveName = 'Continue on Track';
                 moveDesc = 'Stay on perimeter';
             } else {
@@ -5302,7 +5038,7 @@
             `;
             
             item.addEventListener('click', () => {
-                console.log('ðŸ“ Hole dropdown click - executing move:', move, 'isFastTrackEntry:', move.isFastTrackEntry);
+                console.log('📍 Hole dropdown click - executing move:', move, 'isFastTrackEntry:', move.isFastTrackEntry);
                 hidePegMoveDropdown();
                 executeMoveDirectly(move);
             });
@@ -5319,11 +5055,11 @@
     // This ensures the correct move object is used, including isFastTrackEntry flag
     function executeMoveDirectly(move) {
         if (!move) {
-            console.error('ðŸ“ executeMoveDirectly: No move provided!');
+            console.error('📍 executeMoveDirectly: No move provided!');
             return;
         }
 
-        console.log('ðŸ“ executeMoveDirectly called:', move.toHoleId, 'type:', move.type, 'isFastTrackEntry:', move.isFastTrackEntry, 'splitPhase:', splitMoveState?.phase);
+        console.log('📍 executeMoveDirectly called:', move.toHoleId, 'type:', move.type, 'isFastTrackEntry:', move.isFastTrackEntry, 'splitPhase:', splitMoveState?.phase);
 
         // SPLIT MODE: Handle first destination click BEFORE phase check
         // (Split mode continues in 'play' phase but we want to be lenient)
@@ -5340,10 +5076,10 @@
 
         // Phase check for non-split moves
         if (gameState.phase !== 'play') {
-            console.error('ðŸ“ executeMoveDirectly: Wrong phase!', gameState.phase, 'expected: play');
+            console.error('📍 executeMoveDirectly: Wrong phase!', gameState.phase, 'expected: play');
             // PHASE RECOVERY: If stuck in 'animating' for too long, force back to 'play' and retry
             if (gameState.phase === 'animating') {
-                console.warn('âš ï¸ PHASE RECOVERY: Forcing phase from animating â†’ play');
+                console.warn('⚠ï¸ PHASE RECOVERY: Forcing phase from animating → play');
                 gameState.phase = 'play';
                 // Retry the move after recovery
                 setTimeout(() => executeMoveDirectly(move), 100);
@@ -5351,7 +5087,7 @@
             }
             // If phase is 'draw', the move came too late â€” skip this call
             if (gameState.phase === 'draw') {
-                console.warn('âš ï¸ executeMoveDirectly called during draw phase â€” ignoring stale move');
+                console.warn('⚠ï¸ executeMoveDirectly called during draw phase â€” ignoring stale move');
                 return;
             }
             return;
@@ -5366,7 +5102,7 @@
         
         // SPECIAL: Joker backward move - show jack-in-the-box celebration!
         if (move.type === 'joker_backward') {
-            console.log('ðŸƒ [Joker Backward] Triggering special effects!');
+            console.log('🃏 [Joker Backward] Triggering special effects!');
             showJokerBackwardCelebration(move, () => {
                 console.log('[executeMoveDirectly] Starting animation for Joker backward move:', move.toHoleId);
                 animatePegMove(move, () => {
@@ -5382,7 +5118,7 @@
                         if (!landingResult.valid) {
                             console.error(`[BoardManifold] LANDING VIOLATION: ${landingResult.reason}`);
                         } else {
-                            console.log(`[BoardManifold] Landing validated: ${move.pegId} â†’ ${actualHole}`);
+                            console.log(`[BoardManifold] Landing validated: ${move.pegId} → ${actualHole}`);
                         }
                     }
                     cardUI.clearCard();
@@ -5395,7 +5131,6 @@
             animatePegMove(move, () => {
                 console.log('[executeMoveDirectly] Animation complete, calling gameState.executeMove');
                 
-                // Dispatch event for Mom Daemon
                 document.dispatchEvent(new CustomEvent('moveMade', { detail: { move } }));
                 
                 gameState.executeMove(move);
@@ -5409,7 +5144,7 @@
                     if (!landingResult.valid) {
                         console.error(`[BoardManifold] LANDING VIOLATION: ${landingResult.reason}`);
                     } else {
-                        console.log(`[BoardManifold] Landing validated: ${move.pegId} â†’ ${actualHole}`);
+                        console.log(`[BoardManifold] Landing validated: ${move.pegId} → ${actualHole}`);
                     }
                 }
                 cardUI.clearCard();
@@ -5417,7 +5152,6 @@
             });
         }
     }
-    // Expose executeMoveDirectly and executeHoleClick for external modules (ask_mom.js)
     window.executeMoveDirectly = executeMoveDirectly;
     window.executeHoleClick = executeHoleClick;
     window.clearHighlights = clearHighlights;
@@ -5565,7 +5299,7 @@
                 const planned = splitMoveState.aiPlannedSecondMove;
                 if (planned && selectablePegs.includes(planned.pegId)) {
                     // Use the pre-planned second move
-                    console.log(`ðŸ¤– [AI Split] Using planned 2nd move: ${planned.pegId}â†’${planned.toHoleId}`);
+                    console.log(`🤖 [AI Split] Using planned 2nd move: ${planned.pegId}→${planned.toHoleId}`);
                     splitMoveState.selectedPeg = planned.pegId;
                     splitMoveState.phase = 'select_second_dest';
                     clearSplitPegHighlights();
@@ -5624,14 +5358,14 @@
             _animationWatchdogTimer = null;
             // If phase is still 'play' and no highlights visible, the animation callback never fired
             if (gameState && gameState.phase === 'play' && legalMoves.length === 0) {
-                console.error('â° WATCHDOG: Animation callback never fired! Forcing completion for move:', move?.toHoleId);
+                console.error('⏰ WATCHDOG: Animation callback never fired! Forcing completion for move:', move?.toHoleId);
                 if (onComplete) {
-                    try { onComplete(); } catch(e) { console.error('â° WATCHDOG onComplete error:', e); }
+                    try { onComplete(); } catch(e) { console.error('⏰ WATCHDOG onComplete error:', e); }
                 }
             }
             // If stuck in 'animating' phase (executeMove started but endTurn never completed)
             if (gameState && gameState.phase === 'animating') {
-                console.error('â° WATCHDOG: Stuck in animating phase! Forcing endTurn');
+                console.error('⏰ WATCHDOG: Stuck in animating phase! Forcing endTurn');
                 resetSplitMoveState();
                 gameState.phase = 'play';
                 gameState.endTurn();
@@ -5704,9 +5438,9 @@
         
         // Get the path to traverse (array of hole IDs)
         const path = move.path || [move.fromHoleId, move.toHoleId];
-        console.log(`ðŸ›¤ï¸ Path traversal: ${path.join(' â†’ ')}`);
+        console.log(`🛤ï¸ Path traversal: ${path.join(' → ')}`);
         
-        // â”€â”€ CAMERA FOCUS FIRST â”€â”€
+        // ── CAMERA FOCUS FIRST ──
         // Focus camera on the peg's starting position before any movement begins.
         // Once the camera arrives, THEN start the hop animation.
         const pegStartX = peg.mesh.position.x;
@@ -5910,7 +5644,7 @@
         const targetHole = holeRegistry.get(toHoleId);
         
         if (!peg || !peg.mesh || !targetHole) {
-            console.warn('ðŸ”§ updatePegPosition: Could not find peg or hole', pegId, toHoleId);
+            console.warn('🔧 updatePegPosition: Could not find peg or hole', pegId, toHoleId);
             return false;
         }
         
@@ -5921,7 +5655,7 @@
         peg.mesh.position.set(x, y, z);
         peg.currentHole = toHoleId;
         
-        console.log(`ðŸ”§ updatePegPosition: Moved ${pegId} to ${toHoleId} at (${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)})`);
+        console.log(`🔧 updatePegPosition: Moved ${pegId} to ${toHoleId} at (${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)})`);
         return true;
     }
     
@@ -5938,7 +5672,7 @@
         // 5. Camera smoothly pans back to the triumphant attacker peg
         // 6. Attacker peg does a victory dance with jingle
         // ============================================================
-        console.log('ðŸŽ¬ Cinematic vanquish for:', cutPegInfo);
+        console.log('🎬 Cinematic vanquish for:', cutPegInfo);
         
         if (!cutPegInfo || !cutPegInfo.peg || !cutPegInfo.player) {
             console.warn('Invalid cut peg info');
@@ -6053,7 +5787,7 @@
                         GameSFX._playImpact(GameSFX.audioContext.currentTime, 0.4);
                     }
                     
-                    console.log(`ðŸ˜¢ Peg ${victimPeg.id} vanquished to ${targetHoleId}`);
+                    console.log(`😢 Peg ${victimPeg.id} vanquished to ${targetHoleId}`);
                     
                     // === PHASE 3: Pause at landing so player sees peg in holding ===
                     // Focus camera on the landing spot for a beat
@@ -6161,7 +5895,7 @@
                         attackerPegMesh.rotation.y = 0;
                         attackerPegMesh.position.y = bounceBaseY;
                         attackerPegMesh.scale.set(1, 1, 1);
-                        console.log('ðŸ’ƒ Victory dance complete!');
+                        console.log('💃 Victory dance complete!');
                         // Signal cut scene is fully finished
                         if (typeof onComplete === 'function') onComplete();
                     }
@@ -6228,7 +5962,7 @@
                 pegMesh.position.y = baseY;
                 pegMesh.rotation.y = 0;
                 pegMesh.scale.set(1, 1, 1);
-                console.log('ðŸŽŠ Safe zone dance complete!');
+                console.log('🎊 Safe zone dance complete!');
             }
         }
 
@@ -6287,7 +6021,7 @@
     
     // Show Joker backward move celebration - jack-in-the-box joker pops out!
     function showJokerBackwardCelebration(move, onComplete) {
-        console.log('ðŸƒ [Joker Celebration] Starting jack-in-the-box animation!');
+        console.log('🃏 [Joker Celebration] Starting jack-in-the-box animation!');
         
         // Play the special Joker backward sound effect
         if (window.GameSFX) {
@@ -6319,7 +6053,7 @@
             animation: popOut 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             transform-origin: bottom center;
         `;
-        jackBox.textContent = 'ðŸƒ';
+        jackBox.textContent = '🃏';
         
         // Fanfare text
         const fanfare = document.createElement('div');
@@ -6331,7 +6065,7 @@
             margin-top: 20px;
             animation: bounce 0.6s ease-in-out infinite alternate;
         `;
-        fanfare.textContent = 'ðŸŽª JOKER SURPRISE! ðŸŽª';
+        fanfare.textContent = '🎪 JOKER SURPRISE! 🎪';
         
         // Subtitle
         const subtitle = document.createElement('div');
@@ -6421,7 +6155,7 @@
         }
     }
     
-    // â”€â”€ "DRAW AGAIN!" popup â€” shown immediately when a peg lands on an extra-turn card â”€â”€
+    // ── "DRAW AGAIN!" popup â€” shown immediately when a peg lands on an extra-turn card ──
     function showDrawAgainPopup() {
         // Remove any existing popup
         const old = document.getElementById('draw-again-popup');
@@ -6429,7 +6163,7 @@
         
         const el = document.createElement('div');
         el.id = 'draw-again-popup';
-        el.innerHTML = 'ðŸƒ DRAW AGAIN!';
+        el.innerHTML = '🃏 DRAW AGAIN!';
         Object.assign(el.style, {
             position: 'fixed',
             top: '32%',
@@ -6479,8 +6213,8 @@
     // ============================================================
 
     const CARD_RULES = {
-        'A':     { icon: 'ðŸ…°ï¸', rule: 'Enter a peg OR hop 1. Draw again.' },
-        'JOKER': { icon: 'ðŸƒ', rule: 'Enter a peg OR hop 1. Draw again.' },
+        'A':     { icon: '🅰ï¸', rule: 'Enter a peg OR hop 1. Draw again.' },
+        'JOKER': { icon: '🃏', rule: 'Enter a peg OR hop 1. Draw again.' },
         '2':     { icon: '2ï¸âƒ£',  rule: 'Hop 2 forward.' },
         '3':     { icon: '3ï¸âƒ£',  rule: 'Hop 3 forward.' },
         '4':     { icon: '4ï¸âƒ£',  rule: 'Hop 4 BACKWARD. FT pegs must exit.' },
@@ -6489,10 +6223,10 @@
         '7':     { icon: '7ï¸âƒ£',  rule: 'Move 7 â€” or split between 2 pegs.' },
         '8':     { icon: '8ï¸âƒ£',  rule: 'Hop 8 forward.' },
         '9':     { icon: '9ï¸âƒ£',  rule: 'Hop 9 forward.' },
-        '10':    { icon: 'ðŸ”Ÿ', rule: 'Hop 10 forward.' },
-        'J':     { icon: 'ðŸ¤´', rule: 'Hop 1 + draw again + exit bullseye.' },
-        'Q':     { icon: 'ðŸ‘¸', rule: 'Hop 1 + draw again + exit bullseye.' },
-        'K':     { icon: 'ðŸ‘‘', rule: 'Hop 1 + draw again + exit bullseye.' },
+        '10':    { icon: '🔟', rule: 'Hop 10 forward.' },
+        'J':     { icon: '🤴', rule: 'Hop 1 + draw again + exit bullseye.' },
+        'Q':     { icon: '👸', rule: 'Hop 1 + draw again + exit bullseye.' },
+        'K':     { icon: '👑', rule: 'Hop 1 + draw again + exit bullseye.' },
     };
 
     // Inject popup CSS once
@@ -6553,7 +6287,7 @@
                 color: rgba(255,255,255,0.6);
                 font-weight: 400;
             }
-            /* â”€â”€ Joker special card face â”€â”€ */
+            /* ── Joker special card face ── */
             #card-rule-popup .crp-card.joker {
                 background: linear-gradient(135deg, #1a0035 0%, #6b00cc 55%, #b0008a 100%);
                 color: #ffd700;
@@ -6590,7 +6324,7 @@
         document.head.appendChild(s);
     })();
 
-    // â”€â”€ No Legal Moves Popup (human players only) â”€â”€
+    // ── No Legal Moves Popup (human players only) ──
     (function injectNoMovesCSS() {
         if (document.getElementById('no-moves-popup-css')) return;
         const s = document.createElement('style');
@@ -6689,8 +6423,8 @@
         const info = CARD_RULES[rank] || { rule: 'Hop ' + (card.movement || '?') + ' forward.' };
 
         const isJokerCard = rank === 'JOKER';
-        const cardIcon = isJokerCard ? 'ðŸƒ' : (rank === 'A' ? 'ðŸ…°ï¸' : (rank === 'J' ? 'ðŸ¤´' : (rank === 'Q' ? 'ðŸ‘¸' : (rank === 'K' ? 'ðŸ‘‘' : rank))));
-        const jokerFaceHTML = `<span style="font-size:36px;filter:drop-shadow(0 0 8px rgba(255,215,0,0.8))">ðŸƒ</span><span style="font-size:9px;font-weight:900;letter-spacing:2px;color:#ffd700;text-shadow:0 0 8px rgba(255,215,0,0.9)">JOKER</span>`;
+        const cardIcon = isJokerCard ? '🃏' : (rank === 'A' ? '🅰ï¸' : (rank === 'J' ? '🤴' : (rank === 'Q' ? '👸' : (rank === 'K' ? '👑' : rank))));
+        const jokerFaceHTML = `<span style="font-size:36px;filter:drop-shadow(0 0 8px rgba(255,215,0,0.8))">🃏</span><span style="font-size:9px;font-weight:900;letter-spacing:2px;color:#ffd700;text-shadow:0 0 8px rgba(255,215,0,0.9)">JOKER</span>`;
         const cardInnerHTML = isJokerCard ? jokerFaceHTML : `<span>${cardIcon}</span><span class="nmp-suit">${suitSym}</span>`;
 
         // Overlay
@@ -6707,7 +6441,7 @@
                 <div style="font-size:64px; margin-bottom:8px; animation: jailShake 0.5s ease-in-out infinite alternate;">â›“ï¸</div>
                 <div class="nmp-body">
                     <div class="nmp-title" style="color:#ff9944;">Still in jail!</div>
-                    <div style="font-size:40px; margin:8px 0;">ðŸ‘®â€â™‚ï¸ðŸ”’</div>
+                    <div style="font-size:40px; margin:8px 0;">👮â€â™‚ï¸🔒</div>
                     <div class="nmp-msg" style="color:#ffcc88;">You need an Ace or a Face card (J, Q, K) to break out!<br>Hang in there â€” freedom is just a card away.</div>
                     <div class="nmp-card ${isJokerCard ? 'joker' : (isRed ? 'red' : '')}" style="margin:12px auto 0; width:fit-content; ${isJokerCard ? 'background:linear-gradient(135deg,#1a0035,#6b00cc,#b0008a);border-color:rgba(255,215,0,0.7);' : ''}">
                         ${cardInnerHTML}
@@ -6767,7 +6501,7 @@
         const rank = (card.rank || card.value || '?').toString().toUpperCase();
         const suitSym = getSuitSymbol(card.suit);
         const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
-        const info = CARD_RULES[rank] || { icon: 'ðŸ‚ ', rule: 'Hop ' + (card.movement || '?') + ' forward.' };
+        const info = CARD_RULES[rank] || { icon: '🂠', rule: 'Hop ' + (card.movement || '?') + ' forward.' };
 
         // Build hint line
         let hint = '';
@@ -6781,8 +6515,8 @@
 
         const isJoker = rank === 'JOKER';
         const cardFaceHTML = isJoker
-            ? `<span class="crp-joker-face">ðŸƒ</span><span class="crp-joker-label">JOKER</span>`
-            : `<span>${rank === 'A' ? 'ðŸ…°ï¸' : (rank === 'J' ? 'ðŸ¤´' : (rank === 'Q' ? 'ðŸ‘¸' : (rank === 'K' ? 'ðŸ‘‘' : rank)))}</span>
+            ? `<span class="crp-joker-face">🃏</span><span class="crp-joker-label">JOKER</span>`
+            : `<span>${rank === 'A' ? '🅰ï¸' : (rank === 'J' ? '🤴' : (rank === 'Q' ? '👸' : (rank === 'K' ? '👑' : rank)))}</span>
                <span class="crp-suit">${suitSym}</span>`;
 
         const popup = document.createElement('div');
@@ -6812,7 +6546,7 @@
     }
     window.dismissCardRulePopup = dismissCardRulePopup;
 
-    // â”€â”€ Context Popup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Context Popup ─────────────────────────────────────────
     // Reusable pithy info popup that appears top-center and auto-dismisses.
     // icon: emoji string, title: bold heading, body: explanatory text, durationMs: auto-close
     function showContextPopup(icon, title, body, durationMs) {
@@ -6891,13 +6625,13 @@
                 }
             </style>
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 3rem; margin-bottom: 8px;">âœ¨</div>
+                <div style="font-size: 3rem; margin-bottom: 8px;">✨</div>
                 <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin-bottom: 8px;">Card 7 - Wild Card</div>
                 <div style="font-size: 0.9rem; color: #aaa;">Move any token 1-7 spaces</div>
             </div>
             
             <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                <div style="font-weight: bold; color: #4ade80; margin-bottom: 12px; font-size: 1.1rem;">ðŸ“‹ How It Works:</div>
+                <div style="font-weight: bold; color: #4ade80; margin-bottom: 12px; font-size: 1.1rem;">📋 How It Works:</div>
                 <div style="line-height: 1.8; color: #ddd;">
                     <div style="margin-bottom: 8px;">1ï¸âƒ£ <strong>Click a peg</strong> to select it</div>
                     <div style="margin-bottom: 8px;">2ï¸âƒ£ <strong>Click a glowing hole</strong> to move (1-7 spaces)</div>
@@ -6908,7 +6642,7 @@
             
             <div style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
                 <div style="font-size: 0.85rem; color: #ffd700;">
-                    ðŸ’¡ <strong>Examples:</strong><br>
+                    💡 <strong>Examples:</strong><br>
                     â€¢ Move peg #1 three spaces, then peg #2 four spaces<br>
                     â€¢ Move peg #1 all seven spaces (no second peg needed)<br>
                     â€¢ Both moves are clockwise only
@@ -6959,7 +6693,7 @@
         if (document.getElementById('centered-deck-css')) return;
         const s = document.createElement('style');
         s.id = 'centered-deck-css';
-        // Golden ratio: height = width Ã— 1.618  â†’  185 Ã— 299
+        // Golden ratio: height = width Ã— 1.618  →  185 Ã— 299
         s.textContent = `
             #centered-deck-overlay {
                 position: fixed; inset: 0; z-index: 20010;
@@ -7098,7 +6832,7 @@
 
         const playerName  = player.name  || `Player ${playerIdx + 1}`;
         const playerColor = '#' + getThemedPlayerColor(playerIdx).toString(16).padStart(6, '0');
-        const playerAvatar = player.avatar || 'ðŸ‘¤';
+        const playerAvatar = player.avatar || '👤';
 
         const overlay = document.createElement('div');
         overlay.id = 'centered-deck-overlay';
@@ -7118,7 +6852,7 @@
 
         const face = document.createElement('div');
         face.className = 'cdk-face back';
-        face.innerHTML = `<div class="cdk-back-icon">ðŸŽ´</div>`;
+        face.innerHTML = `<div class="cdk-back-icon">🎴</div>`;
         deckCard.appendChild(face);
         wrapper.appendChild(deckCard);
 
@@ -7131,7 +6865,7 @@
         overlay.appendChild(instruction);
         document.body.appendChild(overlay);
 
-        // â”€â”€ Flip & draw handler â”€â”€
+        // ── Flip & draw handler ──
         let _drawing = false;
         function onDeckTap() {
             if (_drawing) return;
@@ -7175,12 +6909,12 @@
         const rank = card.rank || card.value || '?';
         const isRed = ['hearts', 'diamonds', 'red'].includes(card.suit);
         const color = isRed ? '#dc2626' : '#1a1a2e';
-        const suits = { hearts: 'â™¥', diamonds: 'â™¦', clubs: 'â™£', spades: 'â™ ' };
+        const suits = { hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠' };
         const isJoker = rank.toString().toUpperCase() === 'JOKER';
 
         if (isJoker) {
             rankEl.style.color = '#7b2dcf';
-            rankEl.textContent = 'ðŸƒ';
+            rankEl.textContent = '🃏';
             rankEl.style.fontSize = 'clamp(64px, 16vw, 110px)';
         } else {
             rankEl.style.color = color;
@@ -7240,9 +6974,9 @@
             // Determine icon & label
             let icon  = 'âž¡ï¸';
             let label = `Move ${pegNum}`;
-            if (move.type === 'enter')   { icon = 'ðŸš€'; label = `Enter (Peg ${pegNum})`; }
+            if (move.type === 'enter')   { icon = '🚀'; label = `Enter (Peg ${pegNum})`; }
             else if (move.type === 'cut')   { icon = 'âš”ï¸'; label = `Cut! (Peg ${pegNum})`; }
-            else if (move.type === 'safezone' || move.isSafezone) { icon = 'ðŸ›¡ï¸'; label = `Safe zone (Peg ${pegNum})`; }
+            else if (move.type === 'safezone' || move.isSafezone) { icon = '🛡ï¸'; label = `Safe zone (Peg ${pegNum})`; }
             else if (move.spaces)           { label = `+${move.spaces} (Peg ${pegNum})`; }
 
             const btn = document.createElement('button');
@@ -7307,7 +7041,7 @@
         info.className = 'mcb-info';
         let label = 'Confirm move?';
         if (move.type === 'cut')        label = 'âš”ï¸ Confirm cut?';
-        else if (move.type === 'enter')  label = 'ðŸš€ Confirm entry?';
+        else if (move.type === 'enter')  label = '🚀 Confirm entry?';
         else if (move.spaces)            label = `Move +${move.spaces} spaces?`;
         info.textContent = label;
 
@@ -7315,7 +7049,7 @@
         goBtn.className = 'mcb-go';
         goBtn.style.background = colorHex;
         goBtn.style.color = '#000';
-        goBtn.textContent = 'âœ“ Go!';
+        goBtn.textContent = '✓ Go!';
         goBtn.addEventListener('click', () => {
             hideMoveSuggestionPanel();
             executeMoveDirectly(move);
@@ -7323,7 +7057,7 @@
 
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'mcb-cancel';
-        cancelBtn.textContent = 'âœ•';
+        cancelBtn.textContent = '✕';
         cancelBtn.addEventListener('click', () => {
             document.querySelectorAll('.msb-btn.previewed').forEach(b => b.classList.remove('previewed'));
             _msbPreviewing = null;
@@ -7402,18 +7136,18 @@
                     color: #fff;
                 }
             </style>
-            <div style="font-size: 28px; margin-bottom: 8px;">âš¡ FastTrack Entered!</div>
+            <div style="font-size: 28px; margin-bottom: 8px;">⚡ FastTrack Entered!</div>
             <div style="font-size: 14px; color: #ccc; margin-bottom: 20px;">
                 How do you want to traverse the inner ring?
             </div>
             <button class="ft-choice-btn ft-auto-btn" onclick="window._ftChooseMode('auto')">
-                ðŸš€ Auto Traverse
+                🚀 Auto Traverse
                 <div style="font-size:12px;font-weight:normal;margin-top:4px;opacity:0.8;">
                     Automatically move around the ring each turn
                 </div>
             </button>
             <button class="ft-choice-btn ft-manual-btn" onclick="window._ftChooseMode('manual')">
-                ðŸŽ¯ Manual Control
+                🎯 Manual Control
                 <div style="font-size:12px;font-weight:normal;margin-top:4px;opacity:0.8;">
                     Choose your move each turn (continue, exit, or bullseye)
                 </div>
@@ -7426,7 +7160,7 @@
     // Handle FT traversal mode choice
     window._ftChooseMode = function(mode) {
         GAME_CONFIG.ftAutoTraverse = (mode === 'auto');
-        console.log(`âš¡ [FT Choice] Player chose ${mode} FastTrack traversal (ftAutoTraverse=${GAME_CONFIG.ftAutoTraverse})`);
+        console.log(`⚡ [FT Choice] Player chose ${mode} FastTrack traversal (ftAutoTraverse=${GAME_CONFIG.ftAutoTraverse})`);
         
         const dialog = document.getElementById('ft-traversal-dialog');
         if (dialog) {
@@ -7439,8 +7173,8 @@
         // Show confirmation banner
         if (cardUI) {
             const msg = mode === 'auto' 
-                ? 'ðŸš€ Auto-traversing FastTrack ring' 
-                : 'ðŸŽ¯ Manual FastTrack mode â€” choose each move';
+                ? '🚀 Auto-traversing FastTrack ring' 
+                : '🎯 Manual FastTrack mode â€” choose each move';
             cardUI.showActionBanner(msg, 'default');
             setTimeout(() => { if (cardUI) cardUI.hideActionBanner(); }, 2000);
         }
@@ -7483,7 +7217,7 @@
                     20%,40%,60%,80% { transform: translate(-50%, -50%) translateX(5px); }
                 }
             </style>
-            <div style="font-size: 26px; margin-bottom: 8px;">ðŸš« Illegal Move</div>
+            <div style="font-size: 26px; margin-bottom: 8px;">🚫 Illegal Move</div>
             <div style="font-size: 14px; color: #ffcccc; line-height: 1.5;">
                 ${reason}
             </div>
@@ -7511,7 +7245,7 @@
 
     function showAutoMoveBanner() {
         if (cardUI) {
-            cardUI.showActionBanner('âš¡ Auto-moving (only one choice)', 'default');
+            cardUI.showActionBanner('⚡ Auto-moving (only one choice)', 'default');
             // Auto-hide after a short delay
             setTimeout(() => {
                 if (cardUI) cardUI.hideActionBanner();
@@ -7574,7 +7308,7 @@
         });
         
         // Winner announcement
-        const winnerAvatar = winner.avatar || 'ðŸ‘¤';
+        const winnerAvatar = winner.avatar || '👤';
         const winnerColor = winner.colorHex || '#ffd700';
         
         const winnerText = document.createElement('div');
@@ -7596,7 +7330,7 @@
             marginBottom: '25px',
             letterSpacing: '4px'
         });
-        winsTitle.textContent = 'ðŸ‘‘ WINS! ðŸ‘‘';
+        winsTitle.textContent = '👑 WINS! 👑';
         overlay.appendChild(winsTitle);
         
         // Medallion points (only for public lobby games)
@@ -7610,14 +7344,14 @@
                 marginBottom: '20px'
             });
             pointsDiv.innerHTML = `
-                <div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 5px;">ðŸ… Medallion Points Awarded</div>
+                <div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 5px;">🏅 Medallion Points Awarded</div>
                 <div style="font-size: 20px; color: #ffd700; font-weight: bold;">Winner: +100 pts</div>
                 <div style="font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 5px;">Participants: +25 pts</div>
             `;
             overlay.appendChild(pointsDiv);
         }
         
-        // â”€â”€ ButterflyFX Growth: Victory Share Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── ButterflyFX Growth: Victory Share Panel ─────────────
         if (window.GrowthSubstrate) {
             GrowthSubstrate.injectVictoryShare(overlay, winner, {
                 turns: gameState.turnCount || 0,
@@ -7681,35 +7415,35 @@
             return btn;
         };
         
-        // â”€â”€ Buttons depend on game type â”€â”€
+        // ── Buttons depend on game type ──
         if (gameSessionType === 'public') {
-            // MATCH GAME â†’ Rematch (back to lobby)
-            btnContainer.appendChild(makePrimaryBtn('ðŸ”„ Rematch', () => {
+            // MATCH GAME → Rematch (back to lobby)
+            btnContainer.appendChild(makePrimaryBtn('🔄 Rematch', () => {
                 requestReplay(true, overlay, winner);
             }));
-            btnContainer.appendChild(makeSecondaryBtn('ðŸ  Back to Lobby', () => {
+            btnContainer.appendChild(makeSecondaryBtn('🏠 Back to Lobby', () => {
                 overlay.remove();
                 window.location.href = 'lobby.html';
             }));
         } else if (gameSessionType === 'private') {
-            // PRIVATE GAME â†’ Replay + Leave Game
-            btnContainer.appendChild(makePrimaryBtn(`ðŸ”„ Replay`, () => {
+            // PRIVATE GAME → Replay + Leave Game
+            btnContainer.appendChild(makePrimaryBtn(`🔄 Replay`, () => {
                 overlay.remove();
                 isReplayGame = true;
                 initGame(activePlayerCount);
             }));
-            btnContainer.appendChild(makeSecondaryBtn('ðŸšª Leave Game', () => {
+            btnContainer.appendChild(makeSecondaryBtn('🚪 Leave Game', () => {
                 overlay.remove();
                 window.location.href = window.location.pathname.includes('board_3d') ? '.' : 'index.html';
             }));
         } else {
-            // SOLO / AI â†’ Replay (back to landing page)
-            btnContainer.appendChild(makePrimaryBtn(`ðŸ”„ Play Again`, () => {
+            // SOLO / AI → Replay (back to landing page)
+            btnContainer.appendChild(makePrimaryBtn(`🔄 Play Again`, () => {
                 overlay.remove();
                 isReplayGame = true;
                 initGame(activePlayerCount);
             }));
-            btnContainer.appendChild(makeSecondaryBtn('ðŸ  Back to Menu', () => {
+            btnContainer.appendChild(makeSecondaryBtn('🏠 Back to Menu', () => {
                 overlay.remove();
                 window.location.href = window.location.pathname.includes('board_3d') ? '.' : 'index.html';
             }));
@@ -7735,7 +7469,7 @@
             });
             waitingDiv.id = 'replay-waiting';
             waitingDiv.innerHTML = `
-                <div style="color: #7dd3fc; margin-bottom: 10px;">â³ Waiting for all players...</div>
+                <div style="color: #7dd3fc; margin-bottom: 10px;">⏳ Waiting for all players...</div>
                 <div id="replay-votes" style="font-size: 14px; color: rgba(255,255,255,0.7);"></div>
             `;
             overlay.appendChild(waitingDiv);
@@ -7819,9 +7553,9 @@
         });
         
         if (reason === 'winner') {
-            text.innerHTML = `ðŸ† <span style="color: ${playerColor}">${playerName}</span> goes first!`;
+            text.innerHTML = `🏆 <span style="color: ${playerColor}">${playerName}</span> goes first!`;
         } else {
-            text.innerHTML = `ðŸŽ² <span style="color: ${playerColor}">${playerName}</span> goes first!`;
+            text.innerHTML = `🎲 <span style="color: ${playerColor}">${playerName}</span> goes first!`;
         }
         announcement.appendChild(text);
         
@@ -7868,7 +7602,7 @@
         }
         
         // Update player name to indicate bot
-        player.name = `ðŸ¤– ${oldName} (Bot)`;
+        player.name = `🤖 ${oldName} (Bot)`;
         player.isBot = true;
         
         // Update player panel
@@ -7894,7 +7628,7 @@
         const msgEl = document.getElementById('bot-alert-message');
         
         if (alert && titleEl && msgEl) {
-            titleEl.textContent = isReplacement ? 'Player Replaced' : 'âš ï¸ Warning';
+            titleEl.textContent = isReplacement ? 'Player Replaced' : '⚠ï¸ Warning';
             msgEl.textContent = message;
             alert.classList.add('visible');
             
@@ -7999,7 +7733,7 @@
             manualBtn.style.borderColor = enabled ? '#555' : '#888';
         }
         
-        console.log(`âš¡ Auto-move for humans: ${enabled ? 'ENABLED' : 'DISABLED'}`);
+        console.log(`⚡ Auto-move for humans: ${enabled ? 'ENABLED' : 'DISABLED'}`);
     }
     window.toggleAutoMove = toggleAutoMove;
 
@@ -8136,7 +7870,7 @@
         // Mark player as AI
         player.isAI = true;
         player.wasHuman = true; // Track that this was a human
-        player.name = `ðŸ¤– ${player.name} (Bot)`;
+        player.name = `🤖 ${player.name} (Bot)`;
         
         // Update UI
         if (window.GameUIMinimal) {
@@ -8244,7 +7978,7 @@
         const player = gameState.players[myPlayerIndex];
         if (player) {
             player.isAI = false;
-            player.name = player.name.replace('ðŸ¤– ', '').replace(' (Bot)', '');
+            player.name = player.name.replace('🤖 ', '').replace(' (Bot)', '');
             
             // Update UI
             if (window.GameUIMinimal) {
@@ -8311,7 +8045,7 @@
             return `
                 <div class="org-player-item ${isAI ? 'is-ai' : ''} ${isOrganizer ? 'is-host' : ''}">
                     <div class="player-info">
-                        <span class="player-avatar">${p.avatar || 'ðŸ‘¤'}</span>
+                        <span class="player-avatar">${p.avatar || '👤'}</span>
                         <span class="player-name" style="color: ${p.colorHex || '#fff'}">${p.name}${isMe ? ' (You)' : ''}</span>
                     </div>
                     ${!isOrganizer && !isMe ? `<button class="boot-btn" onclick="bootPlayer(${idx})">Boot</button>` : ''}
@@ -8356,7 +8090,7 @@
     let pendingJoinRequests = []; // Array of { id, name, avatar, timestamp }
     let currentJoinRequest = null; // For the notification popup
     
-    function addJoinRequest(playerId, playerName, playerAvatar = 'ðŸ‘¤') {
+    function addJoinRequest(playerId, playerName, playerAvatar = '👤') {
         // Only organizer handles join requests
         if (!gameSessionSettings.isOrganizer) return;
         
@@ -8402,8 +8136,8 @@
                             <span class="request-name">${req.name}</span>
                         </div>
                         <div class="request-actions">
-                            <button class="approve-btn" onclick="approveJoinRequestById('${req.id}')">âœ“ Approve</button>
-                            <button class="deny-btn" onclick="denyJoinRequestById('${req.id}')">âœ—</button>
+                            <button class="approve-btn" onclick="approveJoinRequestById('${req.id}')">✓ Approve</button>
+                            <button class="deny-btn" onclick="denyJoinRequestById('${req.id}')">✗</button>
                         </div>
                     </div>
                 `).join('');
@@ -8443,7 +8177,7 @@
                     // Only bot replacement available
                     slotOptions.style.display = 'none';
                     slotInfo.style.display = 'block';
-                    slotInfo.innerHTML = 'ðŸ¤– Will replace a bot player';
+                    slotInfo.innerHTML = '🤖 Will replace a bot player';
                 } else if (availableSlots.hasEmptySlot) {
                     // Only new slot available
                     slotOptions.style.display = 'none';
@@ -8453,7 +8187,7 @@
                     // No slots - shouldn't happen but handle it
                     slotOptions.style.display = 'none';
                     slotInfo.style.display = 'block';
-                    slotInfo.innerHTML = 'âš ï¸ No available slots';
+                    slotInfo.innerHTML = '⚠ï¸ No available slots';
                 }
             }
             
@@ -8690,7 +8424,7 @@
         addJoinRequest(
             data.playerId || data.user_id,
             data.playerName || data.username,
-            data.avatar || data.avatar_id || 'ðŸ‘¤'
+            data.avatar || data.avatar_id || '👤'
         );
     }
     window.handleServerJoinRequest = handleServerJoinRequest;
@@ -8748,7 +8482,7 @@
                     if (timerDisplay) timerDisplay.style.display = 'block';
                     if (label) label.textContent = 'Time Remaining';
                     if (warning) {
-                        warning.textContent = 'âš ï¸ Make your move!';
+                        warning.textContent = '⚠ï¸ Make your move!';
                         warning.style.display = 'block';
                     }
                     if (countdown) countdown.classList.add('warning');
@@ -8761,7 +8495,7 @@
                 // Critical phase (last 15 seconds) â€” pulse red
                 if (turnTimerState.secondsRemaining <= 15) {
                     if (countdown) countdown.classList.add('critical');
-                    if (warning) warning.textContent = 'â° Hurry up!';
+                    if (warning) warning.textContent = '⏰ Hurry up!';
                 }
                 
                 // Time fully expired
@@ -8930,7 +8664,7 @@
         // Update opt button
         const optBtn = document.getElementById('game-chat-opt-btn');
         if (optBtn) {
-            optBtn.textContent = gameChatState.optedOut ? 'ðŸ”” Opt In' : 'ðŸ”‡ Opt Out';
+            optBtn.textContent = gameChatState.optedOut ? '🔔 Opt In' : '🔇 Opt Out';
         }
     }
     
@@ -9014,7 +8748,7 @@
         msgEl.dataset.senderId = data.senderId;
         msgEl.innerHTML = `
             <span class="game-chat-sender ${data.isGuildmaster ? 'guildmaster' : ''}">
-                ${escapeHtmlChat(data.senderName)}${data.isGuildmaster ? ' ðŸ‘‘' : ''}:
+                ${escapeHtmlChat(data.senderName)}${data.isGuildmaster ? ' 👑' : ''}:
             </span>
             <span class="game-chat-text">${escapeHtmlChat(data.message)}</span>
             <span class="game-chat-time">${time}</span>
@@ -9205,12 +8939,12 @@
             evaluate: (move, context) => {
                 // FastTrack (not bullseye) is generally safe and valuable
                 if (move.isFastTrackEntry === true) {
-                    console.log(`ðŸ¤– [AI FT] FastTrack ENTRY option detected: ${move.toHoleId}, returning score 1.0`);
+                    console.log(`🤖 [AI FT] FastTrack ENTRY option detected: ${move.toHoleId}, returning score 1.0`);
                     return 1.0;
                 }
                 // Penalize NON-entry when landing on ft-* (incentivize choosing FastTrack entry)
                 if (move.toHoleId.startsWith('ft-') && !move.isFastTrackEntry && !context.peg?.onFasttrack) {
-                    console.log(`ðŸ¤– [AI FT] FastTrack PASS-THROUGH option (not entering): ${move.toHoleId}, returning score -0.3`);
+                    console.log(`🤖 [AI FT] FastTrack PASS-THROUGH option (not entering): ${move.toHoleId}, returning score -0.3`);
                     return -0.3;  // Slight penalty for NOT entering FastTrack when on ft-* hole
                 }
                 return 0;
@@ -9247,7 +8981,7 @@
                     if (cutAtDest && diffPreset.aiFTLeaveToCut) {
                         // Strategic reason to leave FT: CUT!
                         // Return positive score â€” the isCutMove rule will add MORE on top
-                        console.log(`ðŸ¤– [AI FT] Leave FT FOR CUT at ${move.toHoleId} â€” allowing (difficulty: ${GAME_CONFIG.difficulty})`);
+                        console.log(`🤖 [AI FT] Leave FT FOR CUT at ${move.toHoleId} â€” allowing (difficulty: ${GAME_CONFIG.difficulty})`);
                         return 0.3;  // Slight positive â€” let isCutMove weight decide final priority
                     }
                     
@@ -9256,7 +8990,7 @@
                         const centerCut = typeof findCutTargetAtHole === 'function'
                             ? findCutTargetAtHole('center') : null;
                         if (centerCut) {
-                            console.log(`ðŸ¤– [AI FT] Leave FT to CUT in BULLSEYE â€” high priority!`);
+                            console.log(`🤖 [AI FT] Leave FT to CUT in BULLSEYE â€” high priority!`);
                             return 1.0;  // Must beat FT continue (1.0) â€” isBullseyeCut adds more
                         }
                         return 0.5;  // Empty bullseye is still a strong strategic position
@@ -9304,14 +9038,14 @@
                                 }
                             }
                             if (positionScore > 0) {
-                                console.log(`ðŸ”¥ [WARPATH FT] Leaving FT to HUNT â€” positioning at ${move.toHoleId} (score: ${positionScore})`);
+                                console.log(`🔥 [WARPATH FT] Leaving FT to HUNT â€” positioning at ${move.toHoleId} (score: ${positionScore})`);
                                 return positionScore;
                             }
                         }
                     }
                     
                     // No strategic reason â€” penalize leaving
-                    console.log(`ðŸ¤– [AI FT] Leave FT with no cut target â€” penalized`);
+                    console.log(`🤖 [AI FT] Leave FT with no cut target â€” penalized`);
                     return -0.5;
                 }
                 
@@ -9569,28 +9303,28 @@
                     for (const oppPeg of opponent.peg) {
                         if (oppPeg.holeType === 'holding') continue;
                         
-                        // â”€â”€ PRIORITY 1: Opponent in HOME STRETCH â”€â”€
+                        // ── PRIORITY 1: Opponent in HOME STRETCH ──
                         // Pegs in home stretch are about to win. Any move that
                         // positions us to intercept them is top priority.
                         const oppInHomeStretch = oppPeg.inHomeStretch || oppPeg.lockedToSafeZone || oppPeg.eligibleForSafeZone;
                         
-                        // â”€â”€ PRIORITY 2: Opponent in BULLSEYE/CENTER â”€â”€
+                        // ── PRIORITY 2: Opponent in BULLSEYE/CENTER ──
                         const oppInCenter = oppPeg.inBullseye || oppPeg.holeId === 'center';
                         
-                        // â”€â”€ PRIORITY 3: Opponent on FASTTRACK â”€â”€
+                        // ── PRIORITY 3: Opponent on FASTTRACK ──
                         const oppOnFT = oppPeg.onFasttrack && oppPeg.holeId?.startsWith('ft-');
                         
                         // Direct CUT â€” landing exactly on opponent
                         if (oppPeg.holeId === destHoleId) {
                             if (oppInHomeStretch) {
                                 huntScore = Math.max(huntScore, 1.0);  // Maximum â€” derail their win
-                                console.log(`ðŸ”¥ [WARPATH] DIRECT CUT on home-stretch peg at ${destHoleId}!`);
+                                console.log(`🔥 [WARPATH] DIRECT CUT on home-stretch peg at ${destHoleId}!`);
                             } else if (oppInCenter) {
                                 huntScore = Math.max(huntScore, 0.95);
-                                console.log(`ðŸ”¥ [WARPATH] DIRECT CUT on bullseye peg!`);
+                                console.log(`🔥 [WARPATH] DIRECT CUT on bullseye peg!`);
                             } else if (oppOnFT) {
                                 huntScore = Math.max(huntScore, 0.9);
-                                console.log(`ðŸ”¥ [WARPATH] DIRECT CUT on FT peg at ${destHoleId}!`);
+                                console.log(`🔥 [WARPATH] DIRECT CUT on FT peg at ${destHoleId}!`);
                             } else {
                                 huntScore = Math.max(huntScore, 0.8);
                             }
@@ -9660,72 +9394,72 @@
                 let strategyScore = 0;
                 const moveDistance = move.steps || 1;
                 
-                // â”€â”€ PRIORITY 1: FastTrack Entry (distance matters) â”€â”€
+                // ── PRIORITY 1: FastTrack Entry (distance matters) ──
                 // If peg can enter FastTrack, prefer the exact distance needed
                 if (move.isFastTrackEntry) {
                     // Entering FastTrack is always good with 7 card
                     strategyScore += 0.9;
-                    console.log(`ðŸŽ² [7-Card] FastTrack entry at distance ${moveDistance}: +0.9`);
+                    console.log(`🎲 [7-Card] FastTrack entry at distance ${moveDistance}: +0.9`);
                 }
                 
-                // â”€â”€ PRIORITY 2: Safe Zone Entry (distance precision) â”€â”€
+                // ── PRIORITY 2: Safe Zone Entry (distance precision) ──
                 // If peg is eligible for safe zone, prefer distance that enters it
                 if (peg.eligibleForSafeZone && move.toHoleId.includes('safe')) {
                     strategyScore += 0.95;
-                    console.log(`ðŸŽ² [7-Card] Safe zone entry at distance ${moveDistance}: +0.95`);
+                    console.log(`🎲 [7-Card] Safe zone entry at distance ${moveDistance}: +0.95`);
                 }
                 
-                // â”€â”€ PRIORITY 3: Cutting Opponents (any distance works) â”€â”€
+                // ── PRIORITY 3: Cutting Opponents (any distance works) ──
                 const cutTarget = findCutTargetAtHole(move.toHoleId);
                 if (cutTarget) {
                     // Cutting is valuable - distance doesn't matter much
                     strategyScore += 0.8;
-                    console.log(`ðŸŽ² [7-Card] Cut opportunity at distance ${moveDistance}: +0.8`);
+                    console.log(`🎲 [7-Card] Cut opportunity at distance ${moveDistance}: +0.8`);
                 }
                 
-                // â”€â”€ PRIORITY 4: Center/Bullseye Entry â”€â”€
+                // ── PRIORITY 4: Center/Bullseye Entry ──
                 if (move.toHoleId === 'center' || move.isCenterOption) {
                     // Check if opponent is there (handled by isBullseyeCut)
                     const centerCut = findCutTargetAtHole('center');
                     if (!centerCut) {
                         // Empty bullseye - moderate value
                         strategyScore += 0.6;
-                        console.log(`ðŸŽ² [7-Card] Bullseye entry at distance ${moveDistance}: +0.6`);
+                        console.log(`🎲 [7-Card] Bullseye entry at distance ${moveDistance}: +0.6`);
                     }
                 }
                 
-                // â”€â”€ PRIORITY 5: Exit FastTrack to Safe Zone â”€â”€
+                // ── PRIORITY 5: Exit FastTrack to Safe Zone ──
                 if (peg.onFasttrack && move.toHoleId.includes('safe')) {
                     // Exiting FT directly to safe zone is excellent
                     strategyScore += 0.85;
-                    console.log(`ðŸŽ² [7-Card] FT exit to safe zone at distance ${moveDistance}: +0.85`);
+                    console.log(`🎲 [7-Card] FT exit to safe zone at distance ${moveDistance}: +0.85`);
                 }
                 
-                // â”€â”€ PRIORITY 6: Stay on FastTrack (prefer longer distances) â”€â”€
+                // ── PRIORITY 6: Stay on FastTrack (prefer longer distances) ──
                 if (peg.onFasttrack && move.toHoleId.startsWith('ft-') && !move.isLeaveFastTrack) {
                     // Longer moves on FT are better (cover more ground)
                     const ftBonus = moveDistance / 7 * 0.5;  // 0.07 to 0.5
                     strategyScore += ftBonus;
-                    console.log(`ðŸŽ² [7-Card] FT traversal distance ${moveDistance}: +${ftBonus.toFixed(2)}`);
+                    console.log(`🎲 [7-Card] FT traversal distance ${moveDistance}: +${ftBonus.toFixed(2)}`);
                 }
                 
-                // â”€â”€ PRIORITY 7: Avoid Wasting Movement â”€â”€
+                // ── PRIORITY 7: Avoid Wasting Movement ──
                 // Penalize very short moves (1-2) unless there's a strategic reason
                 if (moveDistance <= 2 && !cutTarget && !move.isFastTrackEntry && 
                     !move.toHoleId.includes('safe') && move.toHoleId !== 'center') {
                     strategyScore -= 0.3;
-                    console.log(`ðŸŽ² [7-Card] Short move (${moveDistance}) with no strategy: -0.3`);
+                    console.log(`🎲 [7-Card] Short move (${moveDistance}) with no strategy: -0.3`);
                 }
                 
-                // â”€â”€ PRIORITY 8: Maximize Distance (when no special targets) â”€â”€
+                // ── PRIORITY 8: Maximize Distance (when no special targets) ──
                 // If no strategic reason, prefer longer moves (cover more ground)
                 if (strategyScore === 0) {
                     const distanceBonus = moveDistance / 7 * 0.4;  // 0.06 to 0.4
                     strategyScore += distanceBonus;
-                    console.log(`ðŸŽ² [7-Card] Distance bonus (${moveDistance}): +${distanceBonus.toFixed(2)}`);
+                    console.log(`🎲 [7-Card] Distance bonus (${moveDistance}): +${distanceBonus.toFixed(2)}`);
                 }
                 
-                // â”€â”€ PRIORITY 9: Peg Selection (which peg to move) â”€â”€
+                // ── PRIORITY 9: Peg Selection (which peg to move) ──
                 // Prefer moving pegs that are:
                 // - Closest to safe zone (about to finish)
                 // - On FastTrack (maximize FT advantage)
@@ -9749,7 +9483,7 @@
                             if (distance >= 1 && distance <= 6) {
                                 // Peg is in danger - prioritize moving it
                                 strategyScore += 0.25;
-                                console.log(`ðŸŽ² [7-Card] Peg in danger, moving to escape: +0.25`);
+                                console.log(`🎲 [7-Card] Peg in danger, moving to escape: +0.25`);
                                 break;
                             }
                         }
@@ -9802,13 +9536,13 @@
         const getBotName = (playerIdx) => {
             const player = gameState.players?.[playerIdx];
             if (player?.name) {
-                // Strip emoji prefix for cleaner chat (icon is in name like "ðŸ–¥ï¸ Turing")
+                // Strip emoji prefix for cleaner chat (icon is in name like "🖥ï¸ Turing")
                 return player.name.replace(/^[^\w\s]+\s*/, '').trim() || player.name;
             }
             return 'Bot';
         };
         
-        // â”€â”€ ManifoldAI Adaptation: shift entity's position on the surface â”€â”€
+        // ── ManifoldAI Adaptation: shift entity's position on the surface ──
         if (window.ManifoldAI) {
             if (isMovingPlayerAI) {
                 if (cutPeg) ManifoldAI.adaptEntity(movingPlayerIdx, 'made_cut');
@@ -9845,23 +9579,23 @@
                     reactionList = isWarpath ? AI_REACTIONS.warpathCut : AI_REACTIONS.cut;
                     chatList = isWarpath ? AI_CHAT_MESSAGES.warpathCut : AI_CHAT_MESSAGES.cut;
                     chatBotIdx = movingPlayerIdx;
-                    console.log(`ðŸ¤– AI Player ${movingPlayerIdx} playfully reacting to cutting human!`);
+                    console.log(`🤖 AI Player ${movingPlayerIdx} playfully reacting to cutting human!`);
                 } else if (cutPeg && isAIPlayer(cutPeg.player?.index)) {
                     // AI cut another AI â€” just a small celebration, no chat needed
                     reactionList = AI_REACTIONS.positive;
-                    console.log(`ðŸ¤– AI Player ${movingPlayerIdx} cut fellow AI â€” small celebration`);
+                    console.log(`🤖 AI Player ${movingPlayerIdx} cut fellow AI â€” small celebration`);
                 } else if (entryFlags.enteredFasttrack || entryFlags.enteredBullseye) {
                     // AI entered special area
                     reactionList = AI_REACTIONS.special;
                     chatList = AI_CHAT_MESSAGES.selfCelebrate;
                     chatBotIdx = movingPlayerIdx;
-                    console.log(`ðŸ¤– AI Player ${movingPlayerIdx} reacting to special move!`);
+                    console.log(`🤖 AI Player ${movingPlayerIdx} reacting to special move!`);
                 } else if (move.toHoleId?.includes('safe-') || move.toHoleId?.includes('winner')) {
                     // AI reached safe zone or winner
                     reactionList = AI_REACTIONS.positive;
                     chatList = AI_CHAT_MESSAGES.selfCelebrate;
                     chatBotIdx = movingPlayerIdx;
-                    console.log(`ðŸ¤– AI Player ${movingPlayerIdx} celebrating safe/winner!`);
+                    console.log(`🤖 AI Player ${movingPlayerIdx} celebrating safe/winner!`);
                 }
             }
             
@@ -9876,35 +9610,35 @@
                     reactionList = AI_REACTIONS.negative;
                     chatList = isWarpath ? AI_CHAT_MESSAGES.warpathGotCut : AI_CHAT_MESSAGES.gotCut;
                     chatBotIdx = victimIdx;
-                    console.log(`ðŸ¤– AI Player ${victimIdx} reacting to being cut by human â€” good sport!`);
+                    console.log(`🤖 AI Player ${victimIdx} reacting to being cut by human â€” good sport!`);
                 } else if (entryFlags.enteredFasttrack || entryFlags.enteredBullseye) {
                     // Human entered FT or bullseye â€” bots are impressed!
                     reactionList = AI_REACTIONS.encouragement;
                     chatList = AI_CHAT_MESSAGES.encouragement;
                     // Random AI reacts
                     chatBotIdx = AI_CONFIG.players[Math.floor(Math.random() * AI_CONFIG.players.length)];
-                    console.log(`ðŸ¤– AI cheering human's FT/bullseye entry!`);
+                    console.log(`🤖 AI cheering human's FT/bullseye entry!`);
                 } else if (move.toHoleId?.includes('safe-')) {
                     // Human reached safe zone â€” bots acknowledge
                     if (Math.random() < 0.5) { // Only sometimes â€” don't overdo it
                         reactionList = AI_REACTIONS.encouragement;
                         chatList = AI_CHAT_MESSAGES.encouragement;
                         chatBotIdx = AI_CONFIG.players[Math.floor(Math.random() * AI_CONFIG.players.length)];
-                        console.log(`ðŸ¤– AI acknowledging human's safe zone entry`);
+                        console.log(`🤖 AI acknowledging human's safe zone entry`);
                     }
                 } else if (move.toHoleId?.includes('winner')) {
                     // Human scored a peg â€” bots cheer/impressed
                     reactionList = AI_REACTIONS.encouragement;
                     chatList = AI_CHAT_MESSAGES.encouragement;
                     chatBotIdx = AI_CONFIG.players[Math.floor(Math.random() * AI_CONFIG.players.length)];
-                    console.log(`ðŸ¤– AI cheering human's winning peg!`);
+                    console.log(`🤖 AI cheering human's winning peg!`);
                 }
             }
             
             // Send emoji reaction
             if (shouldReact && reactionList && reactionList.length > 0) {
                 const reaction = pick(reactionList);
-                console.log(`ðŸ¤– AI sending reaction: ${reaction.emoji} (${reaction.name})`);
+                console.log(`🤖 AI sending reaction: ${reaction.emoji} (${reaction.name})`);
                 sendDesktopReaction(reaction.emoji, reaction.name);
             }
             
@@ -9913,7 +9647,7 @@
                 setTimeout(() => {
                     const msg = pick(chatList);
                     const name = getBotName(chatBotIdx);
-                    console.log(`ðŸ’¬ AI Chat: [${name}] "${msg}"`);
+                    console.log(`💬 AI Chat: [${name}] "${msg}"`);
                     aiSendChatBubble(msg, name);
                 }, chatDelay - reactionDelay);
             }
@@ -10090,7 +9824,7 @@
         scoredMoves.sort((a, b) => b.score - a.score);
         
         // Log decision tree for debugging
-        console.log(`ðŸ¤– [AI Decision Tree] Difficulty=${GAME_CONFIG.difficulty}, cutPriority=${difficultyPreset.aiCutPriority}`);
+        console.log(`🤖 [AI Decision Tree] Difficulty=${GAME_CONFIG.difficulty}, cutPriority=${difficultyPreset.aiCutPriority}`);
         scoredMoves.slice(0, 5).forEach((sm, i) => {
             const topRules = Object.entries(sm.ruleScores)
                 .filter(([_, v]) => v.weighted > 0)
@@ -10142,7 +9876,7 @@
         const currentCard = gameState.currentCard;
         const playerIdx = gameState.currentPlayerIndex;
         
-        // â”€â”€ ManifoldAI Path: Use geometric surface for decision-making â”€â”€
+        // ── ManifoldAI Path: Use geometric surface for decision-making ──
         if (window.ManifoldAI && AI_CONFIG.useManifold) {
             const entity = ManifoldAI.getEntity(playerIdx);
             if (entity) {
@@ -10161,19 +9895,19 @@
             }
         }
         
-        // â”€â”€ Legacy Path: Original weighted evaluation â”€â”€
+        // ── Legacy Path: Original weighted evaluation ──
         try {
             const scoredMoves = evaluateMoves(legalMoves, player, currentCard);
             
             if (scoredMoves.length === 0) {
-                console.warn('ðŸ¤– evaluateMoves returned empty array');
+                console.warn('🤖 evaluateMoves returned empty array');
                 return null;
             }
             
             // Return the highest scored move
             return scoredMoves[0].move;
         } catch (error) {
-            console.error('ðŸ¤– Error in AI move evaluation:', error);
+            console.error('🤖 Error in AI move evaluation:', error);
             return null; // Fallback will be used in aiSelectAndClickMove
         }
     }
@@ -10192,7 +9926,7 @@
         
         // Execute the selected move
         if (selectedMove) {
-            console.log('ðŸ¤– AI executing best move:', selectedMove.toHoleId, selectedMove);
+            console.log('🤖 AI executing best move:', selectedMove.toHoleId, selectedMove);
             clearHighlights();
             
             // 7 card is now WILD - AI uses normal move execution
@@ -10205,34 +9939,34 @@
     
     // AI selects a move and simulates clicking on the destination hole
     function aiSelectAndClickMove() {
-        console.log('ðŸ¤– aiSelectAndClickMove called, legalMoves:', legalMoves.length);
+        console.log('🤖 aiSelectAndClickMove called, legalMoves:', legalMoves.length);
         
         if (!gameState || gameState.winner) {
-            console.log('ðŸ¤– aiSelectAndClickMove: Game over or no state');
+            console.log('🤖 aiSelectAndClickMove: Game over or no state');
             return;
         }
         if (!isAIPlayer(gameState.currentPlayerIndex)) {
-            console.log('ðŸ¤– aiSelectAndClickMove: Not AI player turn');
+            console.log('🤖 aiSelectAndClickMove: Not AI player turn');
             return;
         }
         
         // CRITICAL: AI never uses split mode â€” ensure it's reset
         if (splitMoveState && splitMoveState.active) {
-            console.warn('ðŸ¤– AI found stale splitMoveState.active=true â€” resetting');
+            console.warn('🤖 AI found stale splitMoveState.active=true â€” resetting');
             resetSplitMoveState();
         }
         
         hideAIThinking();
         
         if (legalMoves.length === 0) {
-            console.log('ðŸ¤– aiSelectAndClickMove: No legal moves - skipping turn');
+            console.log('🤖 aiSelectAndClickMove: No legal moves - skipping turn');
             gameState.skipTurn();
             return;
         }
         
         // Safety timeout: if AI hasn't executed within 5s, force a move
         const safetyTimer = setTimeout(() => {
-            console.error('ðŸ¤– AI SAFETY TIMEOUT: Forcing move after 5s');
+            console.error('🤖 AI SAFETY TIMEOUT: Forcing move after 5s');
             if (gameState && gameState.phase === 'play' && legalMoves.length > 0) {
                 clearHighlights();
                 executeMoveDirectly(legalMoves[0]);
@@ -10246,12 +9980,12 @@
         try {
             selectedMove = aiSelectBestMove();
         } catch (err) {
-            console.error('ðŸ¤– AI evaluation CRASHED:', err);
+            console.error('🤖 AI evaluation CRASHED:', err);
         }
         
         // FALLBACK: If AI evaluation failed, pick the best available move intelligently
         if (!selectedMove && legalMoves.length > 0) {
-            console.warn('ðŸ¤– AI evaluation returned null - using smart fallback');
+            console.warn('🤖 AI evaluation returned null - using smart fallback');
             const card = gameState.currentCard;
             
             // 7-card is split-only (handled by aiExecuteSplit), should never reach here
@@ -10261,7 +9995,7 @@
         // Execute the move
         clearTimeout(safetyTimer);
         if (selectedMove) {
-            console.log('ðŸ¤– AI clicking on hole:', selectedMove.toHoleId, 'with flags:', {
+            console.log('🤖 AI clicking on hole:', selectedMove.toHoleId, 'with flags:', {
                 isFastTrackEntry: selectedMove.isFastTrackEntry,
                 isCenterOption: selectedMove.isCenterOption,
                 isLeaveFastTrack: selectedMove.isLeaveFastTrack,
@@ -10271,7 +10005,7 @@
             clearHighlights();
             executeMoveDirectly(selectedMove);
         } else {
-            console.error('ðŸ¤– AI has no valid move despite legalMoves existing - forcing skip');
+            console.error('🤖 AI has no valid move despite legalMoves existing - forcing skip');
             gameState.skipTurn();
         }
     }
@@ -10290,7 +10024,7 @@
      */
     function aiEvaluate7CardSplit(player) {
         const difficultyPreset = getDifficultyPreset();
-        console.log(`ðŸ¤– [AI 7-Split] Evaluating split options, difficulty=${GAME_CONFIG.difficulty}`);
+        console.log(`🤖 [AI 7-Split] Evaluating split options, difficulty=${GAME_CONFIG.difficulty}`);
         
         // Find all active pegs (not in holding, not completed)
         const activePegs = player.peg.filter(p => 
@@ -10298,13 +10032,13 @@
         );
         
         if (activePegs.length === 0) {
-            console.log('ðŸ¤– [AI 7-Split] No active pegs for split');
+            console.log('🤖 [AI 7-Split] No active pegs for split');
             return null;
         }
         
         if (activePegs.length === 1) {
             // Only one peg - must use all 7 on it
-            console.log('ðŸ¤– [AI 7-Split] Only one peg - doing full 7 move');
+            console.log('🤖 [AI 7-Split] Only one peg - doing full 7 move');
             return null; // Use normal flow
         }
         
@@ -10404,7 +10138,7 @@
         }
         
         if (splitCombinations.length === 0) {
-            console.log('ðŸ¤– [AI 7-Split] No valid split combinations found');
+            console.log('🤖 [AI 7-Split] No valid split combinations found');
             return null;
         }
         
@@ -10412,11 +10146,11 @@
         splitCombinations.sort((a, b) => b.combinedScore - a.combinedScore);
         
         // Log top 3 options
-        console.log(`ðŸ¤– [AI 7-Split] Found ${splitCombinations.length} combinations. Top 3:`);
+        console.log(`🤖 [AI 7-Split] Found ${splitCombinations.length} combinations. Top 3:`);
         splitCombinations.slice(0, 3).forEach((combo, i) => {
             const peg1Num = getPegNumber(combo.peg1.id);
             const peg2Num = getPegNumber(combo.peg2.id);
-            console.log(`  ${i+1}. Peg#${peg1Num}(${combo.steps1}) + Peg#${peg2Num}(${combo.steps2}) = ${combo.combinedScore.toFixed(1)} ${combo.hasCut ? 'âœ‚ï¸CUT!' : ''}`);
+            console.log(`  ${i+1}. Peg#${peg1Num}(${combo.steps1}) + Peg#${peg2Num}(${combo.steps2}) = ${combo.combinedScore.toFixed(1)} ${combo.hasCut ? '✂ï¸CUT!' : ''}`);
         });
         
         return splitCombinations[0];
@@ -10431,7 +10165,7 @@
         const playerIdx = gameState.currentPlayerIndex;
         let bestSplit = null;
 
-        // â”€â”€ ManifoldAI Path: Use geometric surface for split evaluation â”€â”€
+        // ── ManifoldAI Path: Use geometric surface for split evaluation ──
         if (window.ManifoldAI && AI_CONFIG.useManifold) {
             const entity = ManifoldAI.getEntity(playerIdx);
             if (entity) {
@@ -10452,11 +10186,11 @@
         
         if (!bestSplit) {
             // No split found or only one peg - use normal full move
-            console.log('ðŸ¤– [AI 7-Split] No split possible, using full move');
+            console.log('🤖 [AI 7-Split] No split possible, using full move');
             return false;
         }
         
-        console.log(`ðŸ¤– [AI 7-Split] Executing split: Peg#${getPegNumber(bestSplit.peg1.id)} moves ${bestSplit.steps1}, Peg#${getPegNumber(bestSplit.peg2.id)} moves ${bestSplit.steps2}`);
+        console.log(`🤖 [AI 7-Split] Executing split: Peg#${getPegNumber(bestSplit.peg1.id)} moves ${bestSplit.steps1}, Peg#${getPegNumber(bestSplit.peg2.id)} moves ${bestSplit.steps2}`);
         
         // Execute first move using proper game state method (handles cuts, FastTrack, etc.)
         clearHighlights();
@@ -10472,7 +10206,7 @@
             
             // Small delay then execute second move
             setTimeout(() => {
-                console.log(`ðŸ¤– [AI 7-Split] Executing second move...`);
+                console.log(`🤖 [AI 7-Split] Executing second move...`);
                 
                 // RECALCULATE move2 from updated board state â€” peg1 has moved,
                 // so peg2's path/destination may need updating.
@@ -10484,9 +10218,9 @@
                         // Prefer same destination if still valid, else best available
                         const sameDest = freshDests.find(m => m.toHoleId === bestSplit.move2.toHoleId);
                         move2 = sameDest || freshDests[0];
-                        console.log(`ðŸ¤– [AI 7-Split] Recalculated move2: ${move2.toHoleId} (was ${bestSplit.move2.toHoleId})`);
+                        console.log(`🤖 [AI 7-Split] Recalculated move2: ${move2.toHoleId} (was ${bestSplit.move2.toHoleId})`);
                     } else {
-                        console.warn(`ðŸ¤– [AI 7-Split] No valid move2 after recalculation! Ending split.`);
+                        console.warn(`🤖 [AI 7-Split] No valid move2 after recalculation! Ending split.`);
                         cardUI.clearCard();
                         if (window.mobileUI) window.mobileUI.hideFloatingCard();
                         gameState.endTurn();
@@ -10590,7 +10324,7 @@
         const playerCount = Math.max(2, Math.min(4, requestedPlayers)); // Clamp 2-4
         const playerName = sessionParams.get('name') || 'You';
         // Decode avatar (it's URL encoded like %F0%9F%8E%AE)
-        const playerAvatar = decodeURIComponent(sessionParams.get('avatar') || 'ðŸŽ®');
+        const playerAvatar = decodeURIComponent(sessionParams.get('avatar') || '🎮');
         const difficulty = sessionParams.get('difficulty') || 'normal';
 
         // Apply sound & camera preferences from localStorage (set in ai_setup.html)
@@ -10603,7 +10337,7 @@
             musicAutoStarted = true; // suppress autoStartMusicOnFirstDraw()
             // Ensure music button shows OFF state
             const musicBtn = document.getElementById('music-toggle-btn');
-            if (musicBtn) { musicBtn.textContent = 'ðŸ”‡'; musicBtn.title = 'Music: OFF'; musicBtn.classList.remove('music-on'); }
+            if (musicBtn) { musicBtn.textContent = '🔇'; musicBtn.title = 'Music: OFF'; musicBtn.classList.remove('music-on'); }
         } else {
             // Start music automatically when game begins
             if (typeof autoStartMusicOnFirstDraw === 'function') {
@@ -10629,7 +10363,7 @@
         console.log(`[startGameSession] Calling initGame(${playerCount})...`);
         initGame(playerCount);
 
-        // â”€â”€ Analytics: Track game start â”€â”€
+        // ── Analytics: Track game start ──
         if (window.FTAnalytics) {
             FTAnalytics.gameStart(currentGameMode, playerCount, difficulty);
         }
@@ -10650,9 +10384,9 @@
             });
         } else {
             botPool = [
-                { name: 'Turing', avatar: 'ðŸ–¥ï¸', personality: 'turing' },
-                { name: 'Nexus', avatar: 'ðŸŒ', personality: 'nexus' },
-                { name: 'Cortex', avatar: 'ðŸ§ ', personality: 'cortex' },
+                { name: 'Turing', avatar: '🖥ï¸', personality: 'turing' },
+                { name: 'Nexus', avatar: '🌐', personality: 'nexus' },
+                { name: 'Cortex', avatar: '🧠', personality: 'cortex' },
             ];
         }
         
@@ -10781,16 +10515,6 @@
                 });
             }, 100);
             
-            // Show Mom's introduction (if enabled and not hard mode)
-            setTimeout(() => {
-                try {
-                    if (GAME_CONFIG.showMomIntro) {
-                        showMomIntro();
-                    }
-                } catch (e) {
-                    console.warn('[startGameSession] showMomIntro skipped due to error', e);
-                }
-            }, 500);
             
             console.log(`Game started! You are ${playerAvatar} ${playerName} (Player 1). Click the deck to draw.`);
         }
@@ -10898,7 +10622,7 @@
                     window.location.href = 'index.html';
                 }, 2000);
             } else {
-                // ðŸŒŠ DIMENSIONAL: Manifest AI action based on phase (no if-else needed)
+                // 🌊 DIMENSIONAL: Manifest AI action based on phase (no if-else needed)
                 const isHumanTurn = gameState.currentPlayerIndex === humanPlayerIdx;
                 isHumanTurn && ObservationSubstrate.after(
                     () => IntentManifold.invokePhase('ai'),
@@ -10929,7 +10653,7 @@
             animation: fadeInOut 3s ease-in-out forwards;
         `;
         notification.innerHTML = `
-            <div style="font-size: 48px; margin-bottom: 10px;">ðŸšª</div>
+            <div style="font-size: 48px; margin-bottom: 10px;">🚪</div>
             <div style="font-size: 1.3em; color: #fff; font-weight: bold;">${playerName} left the game</div>
             <div style="font-size: 0.9em; color: #aaa; margin-top: 8px;">AI is now playing</div>
         `;
@@ -10967,18 +10691,18 @@
     }
     window.hideExitButton = hideExitButton;
 
-    // ðŸŒŠ DIMENSIONAL: Observe board manifestation (replaces polling loop)
-    // ðŸ› TEMPORARY: Using setTimeout for debugging
+    // 🌊 DIMENSIONAL: Observe board manifestation (replaces polling loop)
+    // 🐛 TEMPORARY: Using setTimeout for debugging
     setTimeout(() => updateLoadingStatus('Initializing board...'), 100);
 
-    // ðŸ› TEMPORARY: Using setInterval for debugging
+    // 🐛 TEMPORARY: Using setInterval for debugging
     const boardReadyCheck = setInterval(() => {
         const hr = window.holeRegistry || holeRegistry;
         if (hr && hr.size > 0) {
             clearInterval(boardReadyCheck);
             boardReady = true;
             window.boardReady = true;
-            updateLoadingStatus('âœ“ Board ready! Click START GAME', true);
+            updateLoadingStatus('✓ Board ready! Click START GAME', true);
             console.log('Board initialized with', hr.size, 'holes');
 
             // Seal every hole onto the z=xy / z=xyÂ² manifold surface
@@ -10991,11 +10715,11 @@
     // Observe timeout condition
     setTimeout(() => {
         if (!boardReady) {
-            updateLoadingStatus('âš  Board loading taking long... please wait');
+            updateLoadingStatus('⚠ Board loading taking long... please wait');
         }
     }, 10000);
 
-    // ðŸŒŠ DIMENSIONAL: Observe script loading (replaces setTimeout debug)
+    // 🌊 DIMENSIONAL: Observe script loading (replaces setTimeout debug)
     ObservationSubstrate.after(() => {
         console.log('=== SCRIPT LOAD CHECK ===');
         console.log('GameUIMinimal:', typeof window.GameUIMinimal);
@@ -11089,9 +10813,9 @@
             const touchControls = document.createElement('div');
             touchControls.className = 'touch-controls';
             touchControls.innerHTML = `
-                <button class="touch-btn" id="btn-zoom-in" aria-label="Zoom In">ðŸ”+</button>
-                <button class="touch-btn" id="btn-zoom-out" aria-label="Zoom Out">ðŸ”âˆ’</button>
-                <button class="touch-btn" id="btn-reset-view" aria-label="Reset View">ðŸŽ¯</button>
+                <button class="touch-btn" id="btn-zoom-in" aria-label="Zoom In">🔍+</button>
+                <button class="touch-btn" id="btn-zoom-out" aria-label="Zoom Out">🔍âˆ’</button>
+                <button class="touch-btn" id="btn-reset-view" aria-label="Reset View">🎯</button>
             `;
             document.body.appendChild(touchControls);
             
@@ -11234,7 +10958,7 @@
             handleOrientationChange();
             preventPullToRefresh();
             
-            console.log('ðŸ“± Mobile enhancements initialized:', {
+            console.log('📱 Mobile enhancements initialized:', {
                 isMobile,
                 isTablet,
                 hasTouch,

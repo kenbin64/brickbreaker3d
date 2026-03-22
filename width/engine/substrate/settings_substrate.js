@@ -16,7 +16,7 @@ const SettingsSubstrate = (function() {
     // Default settings (the generative basis)
     const DEFAULTS = {
         // Audio
-        musicEnabled: true,
+        musicEnabled: false,
         musicVolume: 0.5,
         sfxEnabled: true,
         sfxVolume: 0.7,

@@ -51,19 +51,42 @@
                 console.log('[QUICKPLAY] Manifesting from observation...');
                 const startScreen = document.getElementById('start-game-screen');
                 if (startScreen) startScreen.style.display = 'none';
-                
+
+                function launchQuickplay() {
+                    if (window.GameInit) {
+                        console.log('[QUICKPLAY] Using GameInit.waitAndStart()');
+                        window.GameInit.waitAndStart(10000);
+                    } else {
+                        // GameInit not loaded — fall back to startGameSession() which reads URL params directly
+                        console.warn('[QUICKPLAY] GameInit not found, falling back to startGameSession()');
+                        let boardAttempts = 0;
+                        const waitForBoard = setInterval(() => {
+                            boardAttempts++;
+                            const hr = window.holeRegistry;
+                            const isReady = window.boardReady || (hr && hr.size > 0);
+                            if (isReady || boardAttempts >= 100) {
+                                clearInterval(waitForBoard);
+                                window.boardReady = true;
+                                if (typeof window.startGameSession === 'function') {
+                                    window.startGameSession();
+                                } else {
+                                    console.error('[QUICKPLAY] startGameSession not available');
+                                }
+                            }
+                        }, 100);
+                    }
+                }
+
+                // Give GameInit a brief moment to load (it's in a script tag just before board_3d_game.js)
                 if (window.GameInit) {
-                    window.GameInit.waitAndStart(10000);
+                    launchQuickplay();
                 } else {
                     let waitAttempts = 0;
                     const waitForGameInit = setInterval(() => {
                         waitAttempts++;
-                        if (window.GameInit) {
+                        if (window.GameInit || waitAttempts >= 20) {
                             clearInterval(waitForGameInit);
-                            window.GameInit.waitAndStart(10000);
-                        } else if (waitAttempts >= 50) {
-                            clearInterval(waitForGameInit);
-                            console.error('GameInit not ready after 5 seconds');
+                            launchQuickplay();
                         }
                     }, 100);
                 }
@@ -97,7 +120,7 @@
                     
                     if (window.GameInit && window.GameInit.isReady()) {
                         clearInterval(waitForDebugReady);
-                        window.GameInit.startGame(3);
+                        window.GameInit.start({ players: 3 });
                     } else if (debugAttempts >= 100) {
                         clearInterval(waitForDebugReady);
                         console.error('Debug mode timeout');
@@ -424,7 +447,7 @@
                             nameText += ' (You)';
                         }
                         if (player.playerType === 'ai') {
-                            nameText += ' ðŸ¤–';
+                            nameText += ' 🤖';
                         }
                         nameEl.textContent = nameText;
                     }
@@ -439,7 +462,7 @@
                         if (player.avatarUrl) {
                             avatarEl.innerHTML = `<img src="${player.avatarUrl}" style="width:30px;height:30px;border-radius:50%;">`;
                         } else {
-                            avatarEl.textContent = player.avatarId || 'ðŸ‘¤';
+                            avatarEl.textContent = player.avatarId || '👤';
                         }
                         
                         panel.insertBefore(avatarEl, panel.firstChild);
